@@ -19,7 +19,7 @@ func (obj *Performance) Disable() (err error) {
 	return
 }
 func (obj *Performance) GetMetrics() (response struct {
-	Metrics []types.Performance_Metric `json:"metrics"`
+	Metrics []types.Performance_Metric `json:"metrics"`// Current values for run-time metrics.
 }, err error) {
 	err = obj.conn.Send("Performance.getMetrics", nil, &response)
 	return

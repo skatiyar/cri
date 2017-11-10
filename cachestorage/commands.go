@@ -12,32 +12,32 @@ func New(conn cri.Connector) *CacheStorage {
 }
 
 type RequestCacheNamesRequest struct {
-	SecurityOrigin string `json:"securityOrigin"`
+	SecurityOrigin string `json:"securityOrigin"`// Security origin.
 }
 
 func (obj *CacheStorage) RequestCacheNames(request *RequestCacheNamesRequest) (response struct {
-	Caches []types.CacheStorage_Cache `json:"caches"`
+	Caches []types.CacheStorage_Cache `json:"caches"`// Caches for the security origin.
 }, err error) {
 	err = obj.conn.Send("CacheStorage.requestCacheNames", request, &response)
 	return
 }
 
 type RequestEntriesRequest struct {
-	CacheId   types.CacheStorage_CacheId `json:"cacheId"`
-	SkipCount int                        `json:"skipCount"`
-	PageSize  int                        `json:"pageSize"`
+	CacheId		types.CacheStorage_CacheId	`json:"cacheId"`// ID of cache to get entries from.
+	SkipCount	int				`json:"skipCount"`// Number of records to skip.
+	PageSize	int				`json:"pageSize"`// Number of records to fetch.
 }
 
 func (obj *CacheStorage) RequestEntries(request *RequestEntriesRequest) (response struct {
-	CacheDataEntries []types.CacheStorage_DataEntry `json:"cacheDataEntries"`
-	HasMore          bool                           `json:"hasMore"`
+	CacheDataEntries	[]types.CacheStorage_DataEntry	`json:"cacheDataEntries"`// Array of object store data entries.
+	HasMore			bool				`json:"hasMore"`// If true, there are more entries to fetch in the given range.
 }, err error) {
 	err = obj.conn.Send("CacheStorage.requestEntries", request, &response)
 	return
 }
 
 type DeleteCacheRequest struct {
-	CacheId types.CacheStorage_CacheId `json:"cacheId"`
+	CacheId types.CacheStorage_CacheId `json:"cacheId"`// Id of cache for deletion.
 }
 
 func (obj *CacheStorage) DeleteCache(request *DeleteCacheRequest) (err error) {
@@ -46,8 +46,8 @@ func (obj *CacheStorage) DeleteCache(request *DeleteCacheRequest) (err error) {
 }
 
 type DeleteEntryRequest struct {
-	CacheId types.CacheStorage_CacheId `json:"cacheId"`
-	Request string                     `json:"request"`
+	CacheId	types.CacheStorage_CacheId	`json:"cacheId"`// Id of cache where the entry will be deleted.
+	Request	string				`json:"request"`// URL spec of the request.
 }
 
 func (obj *CacheStorage) DeleteEntry(request *DeleteEntryRequest) (err error) {
@@ -56,12 +56,12 @@ func (obj *CacheStorage) DeleteEntry(request *DeleteEntryRequest) (err error) {
 }
 
 type RequestCachedResponseRequest struct {
-	CacheId    types.CacheStorage_CacheId `json:"cacheId"`
-	RequestURL string                     `json:"requestURL"`
+	CacheId		types.CacheStorage_CacheId	`json:"cacheId"`// Id of cache that contains the enty.
+	RequestURL	string				`json:"requestURL"`// URL spec of the request.
 }
 
 func (obj *CacheStorage) RequestCachedResponse(request *RequestCachedResponseRequest) (response struct {
-	Response types.CacheStorage_CachedResponse `json:"response"`
+	Response types.CacheStorage_CachedResponse `json:"response"`// Response read from the cache.
 }, err error) {
 	err = obj.conn.Send("CacheStorage.requestCachedResponse", request, &response)
 	return

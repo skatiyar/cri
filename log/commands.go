@@ -24,7 +24,7 @@ func (obj *Log) Clear() (err error) {
 }
 
 type StartViolationsReportRequest struct {
-	Config []types.Log_ViolationSetting `json:"config"`
+	Config []types.Log_ViolationSetting `json:"config"`// Configuration for violations.
 }
 
 func (obj *Log) StartViolationsReport(request *StartViolationsReportRequest) (err error) {

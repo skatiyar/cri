@@ -12,8 +12,8 @@ func New(conn cri.Connector) *Storage {
 }
 
 type ClearDataForOriginRequest struct {
-	Origin       string `json:"origin"`
-	StorageTypes string `json:"storageTypes"`
+	Origin		string	`json:"origin"`// Security origin.
+	StorageTypes	string	`json:"storageTypes"`// Comma separated origin names.
 }
 
 func (obj *Storage) ClearDataForOrigin(request *ClearDataForOriginRequest) (err error) {
@@ -22,20 +22,20 @@ func (obj *Storage) ClearDataForOrigin(request *ClearDataForOriginRequest) (err 
 }
 
 type GetUsageAndQuotaRequest struct {
-	Origin string `json:"origin"`
+	Origin string `json:"origin"`// Security origin.
 }
 
 func (obj *Storage) GetUsageAndQuota(request *GetUsageAndQuotaRequest) (response struct {
-	Usage          float32                      `json:"usage"`
-	Quota          float32                      `json:"quota"`
-	UsageBreakdown []types.Storage_UsageForType `json:"usageBreakdown"`
+	Usage		float32				`json:"usage"`// Storage usage (bytes).
+	Quota		float32				`json:"quota"`// Storage quota (bytes).
+	UsageBreakdown	[]types.Storage_UsageForType	`json:"usageBreakdown"`// Storage usage per type (bytes).
 }, err error) {
 	err = obj.conn.Send("Storage.getUsageAndQuota", request, &response)
 	return
 }
 
 type TrackCacheStorageForOriginRequest struct {
-	Origin string `json:"origin"`
+	Origin string `json:"origin"`// Security origin.
 }
 
 func (obj *Storage) TrackCacheStorageForOrigin(request *TrackCacheStorageForOriginRequest) (err error) {
@@ -44,7 +44,7 @@ func (obj *Storage) TrackCacheStorageForOrigin(request *TrackCacheStorageForOrig
 }
 
 type UntrackCacheStorageForOriginRequest struct {
-	Origin string `json:"origin"`
+	Origin string `json:"origin"`// Security origin.
 }
 
 func (obj *Storage) UntrackCacheStorageForOrigin(request *UntrackCacheStorageForOriginRequest) (err error) {
@@ -53,7 +53,7 @@ func (obj *Storage) UntrackCacheStorageForOrigin(request *UntrackCacheStorageFor
 }
 
 type TrackIndexedDBForOriginRequest struct {
-	Origin string `json:"origin"`
+	Origin string `json:"origin"`// Security origin.
 }
 
 func (obj *Storage) TrackIndexedDBForOrigin(request *TrackIndexedDBForOriginRequest) (err error) {
@@ -62,7 +62,7 @@ func (obj *Storage) TrackIndexedDBForOrigin(request *TrackIndexedDBForOriginRequ
 }
 
 type UntrackIndexedDBForOriginRequest struct {
-	Origin string `json:"origin"`
+	Origin string `json:"origin"`// Security origin.
 }
 
 func (obj *Storage) UntrackIndexedDBForOrigin(request *UntrackIndexedDBForOriginRequest) (err error) {

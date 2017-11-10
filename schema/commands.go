@@ -11,7 +11,7 @@ func New(conn cri.Connector) *Schema {
 	return &Schema{conn}
 }
 func (obj *Schema) GetDomains() (response struct {
-	Domains []types.Schema_Domain `json:"domains"`
+	Domains []types.Schema_Domain `json:"domains"`// List of supported domains.
 }, err error) {
 	err = obj.conn.Send("Schema.getDomains", nil, &response)
 	return

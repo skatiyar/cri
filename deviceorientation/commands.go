@@ -11,9 +11,9 @@ func New(conn cri.Connector) *DeviceOrientation {
 }
 
 type SetDeviceOrientationOverrideRequest struct {
-	Alpha float32 `json:"alpha"`
-	Beta  float32 `json:"beta"`
-	Gamma float32 `json:"gamma"`
+	Alpha	float32	`json:"alpha"`// Mock alpha
+	Beta	float32	`json:"beta"`// Mock beta
+	Gamma	float32	`json:"gamma"`// Mock gamma
 }
 
 func (obj *DeviceOrientation) SetDeviceOrientationOverride(request *SetDeviceOrientationOverrideRequest) (err error) {

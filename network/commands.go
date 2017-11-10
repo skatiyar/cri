@@ -12,8 +12,8 @@ func New(conn cri.Connector) *Network {
 }
 
 type EnableRequest struct {
-	MaxTotalBufferSize    *int `json:"maxTotalBufferSize,omitempty"`
-	MaxResourceBufferSize *int `json:"maxResourceBufferSize,omitempty"`
+	MaxTotalBufferSize	*int	`json:"maxTotalBufferSize,omitempty"`// Buffer size in bytes to use when preserving network payloads (XHRs, etc).
+	MaxResourceBufferSize	*int	`json:"maxResourceBufferSize,omitempty"`// Per-resource buffer size in bytes to use when preserving network payloads (XHRs, etc).
 }
 
 func (obj *Network) Enable(request *EnableRequest) (err error) {
@@ -26,7 +26,7 @@ func (obj *Network) Disable() (err error) {
 }
 
 type SetUserAgentOverrideRequest struct {
-	UserAgent string `json:"userAgent"`
+	UserAgent string `json:"userAgent"`// User agent to use.
 }
 
 func (obj *Network) SetUserAgentOverride(request *SetUserAgentOverrideRequest) (err error) {
@@ -35,7 +35,7 @@ func (obj *Network) SetUserAgentOverride(request *SetUserAgentOverrideRequest) (
 }
 
 type SetExtraHTTPHeadersRequest struct {
-	Headers types.Network_Headers `json:"headers"`
+	Headers types.Network_Headers `json:"headers"`// Map with extra HTTP headers.
 }
 
 func (obj *Network) SetExtraHTTPHeaders(request *SetExtraHTTPHeadersRequest) (err error) {
@@ -44,19 +44,19 @@ func (obj *Network) SetExtraHTTPHeaders(request *SetExtraHTTPHeadersRequest) (er
 }
 
 type GetResponseBodyRequest struct {
-	RequestId types.Network_RequestId `json:"requestId"`
+	RequestId types.Network_RequestId `json:"requestId"`// Identifier of the network request to get content for.
 }
 
 func (obj *Network) GetResponseBody(request *GetResponseBodyRequest) (response struct {
-	Body          string `json:"body"`
-	Base64Encoded bool   `json:"base64Encoded"`
+	Body		string	`json:"body"`// Response body.
+	Base64Encoded	bool	`json:"base64Encoded"`// True, if content was sent as base64.
 }, err error) {
 	err = obj.conn.Send("Network.getResponseBody", request, &response)
 	return
 }
 
 type SetBlockedURLsRequest struct {
-	Urls []string `json:"urls"`
+	Urls []string `json:"urls"`// URL patterns to block. Wildcards ('*') are allowed.
 }
 
 func (obj *Network) SetBlockedURLs(request *SetBlockedURLsRequest) (err error) {
@@ -65,7 +65,7 @@ func (obj *Network) SetBlockedURLs(request *SetBlockedURLsRequest) (err error) {
 }
 
 type ReplayXHRRequest struct {
-	RequestId types.Network_RequestId `json:"requestId"`
+	RequestId types.Network_RequestId `json:"requestId"`// Identifier of XHR to replay.
 }
 
 func (obj *Network) ReplayXHR(request *ReplayXHRRequest) (err error) {
@@ -73,7 +73,7 @@ func (obj *Network) ReplayXHR(request *ReplayXHRRequest) (err error) {
 	return
 }
 func (obj *Network) CanClearBrowserCache() (response struct {
-	Result bool `json:"result"`
+	Result bool `json:"result"`// True if browser cache can be cleared.
 }, err error) {
 	err = obj.conn.Send("Network.canClearBrowserCache", nil, &response)
 	return
@@ -83,7 +83,7 @@ func (obj *Network) ClearBrowserCache() (err error) {
 	return
 }
 func (obj *Network) CanClearBrowserCookies() (response struct {
-	Result bool `json:"result"`
+	Result bool `json:"result"`// True if browser cookies can be cleared.
 }, err error) {
 	err = obj.conn.Send("Network.canClearBrowserCookies", nil, &response)
 	return
@@ -94,27 +94,27 @@ func (obj *Network) ClearBrowserCookies() (err error) {
 }
 
 type GetCookiesRequest struct {
-	Urls []string `json:"urls,omitempty"`
+	Urls []string `json:"urls,omitempty"`// The list of URLs for which applicable cookies will be fetched
 }
 
 func (obj *Network) GetCookies(request *GetCookiesRequest) (response struct {
-	Cookies []types.Network_Cookie `json:"cookies"`
+	Cookies []types.Network_Cookie `json:"cookies"`// Array of cookie objects.
 }, err error) {
 	err = obj.conn.Send("Network.getCookies", request, &response)
 	return
 }
 func (obj *Network) GetAllCookies() (response struct {
-	Cookies []types.Network_Cookie `json:"cookies"`
+	Cookies []types.Network_Cookie `json:"cookies"`// Array of cookie objects.
 }, err error) {
 	err = obj.conn.Send("Network.getAllCookies", nil, &response)
 	return
 }
 
 type DeleteCookiesRequest struct {
-	Name   string  `json:"name"`
-	Url    *string `json:"url,omitempty"`
-	Domain *string `json:"domain,omitempty"`
-	Path   *string `json:"path,omitempty"`
+	Name	string	`json:"name"`// Name of the cookies to remove.
+	Url	*string	`json:"url,omitempty"`// If specified, deletes all the cookies with the given name where domain and path match provided URL.
+	Domain	*string	`json:"domain,omitempty"`// If specified, deletes only cookies with the exact domain.
+	Path	*string	`json:"path,omitempty"`// If specified, deletes only cookies with the exact path.
 }
 
 func (obj *Network) DeleteCookies(request *DeleteCookiesRequest) (err error) {
@@ -123,26 +123,26 @@ func (obj *Network) DeleteCookies(request *DeleteCookiesRequest) (err error) {
 }
 
 type SetCookieRequest struct {
-	Name     string                        `json:"name"`
-	Value    string                        `json:"value"`
-	Url      *string                       `json:"url,omitempty"`
-	Domain   *string                       `json:"domain,omitempty"`
-	Path     *string                       `json:"path,omitempty"`
-	Secure   *bool                         `json:"secure,omitempty"`
-	HttpOnly *bool                         `json:"httpOnly,omitempty"`
-	SameSite *types.Network_CookieSameSite `json:"sameSite,omitempty"`
-	Expires  *types.Network_TimeSinceEpoch `json:"expires,omitempty"`
+	Name		string				`json:"name"`// Cookie name.
+	Value		string				`json:"value"`// Cookie value.
+	Url		*string				`json:"url,omitempty"`// The request-URI to associate with the setting of the cookie. This value can affect the default domain and path values of the created cookie.
+	Domain		*string				`json:"domain,omitempty"`// Cookie domain.
+	Path		*string				`json:"path,omitempty"`// Cookie path.
+	Secure		*bool				`json:"secure,omitempty"`// True if cookie is secure.
+	HttpOnly	*bool				`json:"httpOnly,omitempty"`// True if cookie is http-only.
+	SameSite	*types.Network_CookieSameSite	`json:"sameSite,omitempty"`// Cookie SameSite type.
+	Expires		*types.Network_TimeSinceEpoch	`json:"expires,omitempty"`// Cookie expiration date, session cookie if not set
 }
 
 func (obj *Network) SetCookie(request *SetCookieRequest) (response struct {
-	Success bool `json:"success"`
+	Success bool `json:"success"`// True if successfully set cookie.
 }, err error) {
 	err = obj.conn.Send("Network.setCookie", request, &response)
 	return
 }
 
 type SetCookiesRequest struct {
-	Cookies []types.Network_CookieParam `json:"cookies"`
+	Cookies []types.Network_CookieParam `json:"cookies"`// Cookies to be set.
 }
 
 func (obj *Network) SetCookies(request *SetCookiesRequest) (err error) {
@@ -150,18 +150,18 @@ func (obj *Network) SetCookies(request *SetCookiesRequest) (err error) {
 	return
 }
 func (obj *Network) CanEmulateNetworkConditions() (response struct {
-	Result bool `json:"result"`
+	Result bool `json:"result"`// True if emulation of network conditions is supported.
 }, err error) {
 	err = obj.conn.Send("Network.canEmulateNetworkConditions", nil, &response)
 	return
 }
 
 type EmulateNetworkConditionsRequest struct {
-	Offline            bool                          `json:"offline"`
-	Latency            float32                       `json:"latency"`
-	DownloadThroughput float32                       `json:"downloadThroughput"`
-	UploadThroughput   float32                       `json:"uploadThroughput"`
-	ConnectionType     *types.Network_ConnectionType `json:"connectionType,omitempty"`
+	Offline			bool				`json:"offline"`// True to emulate internet disconnection.
+	Latency			float32				`json:"latency"`// Minimum latency from request sent to response headers received (ms).
+	DownloadThroughput	float32				`json:"downloadThroughput"`// Maximal aggregated download throughput (bytes/sec). -1 disables download throttling.
+	UploadThroughput	float32				`json:"uploadThroughput"`// Maximal aggregated upload throughput (bytes/sec).  -1 disables upload throttling.
+	ConnectionType		*types.Network_ConnectionType	`json:"connectionType,omitempty"`// Connection type if known.
 }
 
 func (obj *Network) EmulateNetworkConditions(request *EmulateNetworkConditionsRequest) (err error) {
@@ -170,7 +170,7 @@ func (obj *Network) EmulateNetworkConditions(request *EmulateNetworkConditionsRe
 }
 
 type SetCacheDisabledRequest struct {
-	CacheDisabled bool `json:"cacheDisabled"`
+	CacheDisabled bool `json:"cacheDisabled"`// Cache disabled state.
 }
 
 func (obj *Network) SetCacheDisabled(request *SetCacheDisabledRequest) (err error) {
@@ -179,7 +179,7 @@ func (obj *Network) SetCacheDisabled(request *SetCacheDisabledRequest) (err erro
 }
 
 type SetBypassServiceWorkerRequest struct {
-	Bypass bool `json:"bypass"`
+	Bypass bool `json:"bypass"`// Bypass service worker and load from network.
 }
 
 func (obj *Network) SetBypassServiceWorker(request *SetBypassServiceWorkerRequest) (err error) {
@@ -188,8 +188,8 @@ func (obj *Network) SetBypassServiceWorker(request *SetBypassServiceWorkerReques
 }
 
 type SetDataSizeLimitsForTestRequest struct {
-	MaxTotalSize    int `json:"maxTotalSize"`
-	MaxResourceSize int `json:"maxResourceSize"`
+	MaxTotalSize	int	`json:"maxTotalSize"`// Maximum total buffer size.
+	MaxResourceSize	int	`json:"maxResourceSize"`// Maximum per-resource size.
 }
 
 func (obj *Network) SetDataSizeLimitsForTest(request *SetDataSizeLimitsForTestRequest) (err error) {
@@ -198,7 +198,7 @@ func (obj *Network) SetDataSizeLimitsForTest(request *SetDataSizeLimitsForTestRe
 }
 
 type GetCertificateRequest struct {
-	Origin string `json:"origin"`
+	Origin string `json:"origin"`// Origin to get certificate for.
 }
 
 func (obj *Network) GetCertificate(request *GetCertificateRequest) (response struct {
@@ -209,7 +209,7 @@ func (obj *Network) GetCertificate(request *GetCertificateRequest) (response str
 }
 
 type SetRequestInterceptionRequest struct {
-	Patterns []types.Network_RequestPattern `json:"patterns"`
+	Patterns []types.Network_RequestPattern `json:"patterns"`// Requests matching any of these patterns will be forwarded and wait for the corresponding continueInterceptedRequest call.
 }
 
 func (obj *Network) SetRequestInterception(request *SetRequestInterceptionRequest) (err error) {
@@ -218,14 +218,14 @@ func (obj *Network) SetRequestInterception(request *SetRequestInterceptionReques
 }
 
 type ContinueInterceptedRequestRequest struct {
-	InterceptionId        types.Network_InterceptionId         `json:"interceptionId"`
-	ErrorReason           *types.Network_ErrorReason           `json:"errorReason,omitempty"`
-	RawResponse           *string                              `json:"rawResponse,omitempty"`
-	Url                   *string                              `json:"url,omitempty"`
-	Method                *string                              `json:"method,omitempty"`
-	PostData              *string                              `json:"postData,omitempty"`
-	Headers               *types.Network_Headers               `json:"headers,omitempty"`
-	AuthChallengeResponse *types.Network_AuthChallengeResponse `json:"authChallengeResponse,omitempty"`
+	InterceptionId		types.Network_InterceptionId		`json:"interceptionId"`
+	ErrorReason		*types.Network_ErrorReason		`json:"errorReason,omitempty"`// If set this causes the request to fail with the given reason. Passing <code>Aborted</code> for requests marked with <code>isNavigationRequest</code> also cancels the navigation. Must not be set in response to an authChallenge.
+	RawResponse		*string					`json:"rawResponse,omitempty"`// If set the requests completes using with the provided base64 encoded raw response, including HTTP status line and headers etc... Must not be set in response to an authChallenge.
+	Url			*string					`json:"url,omitempty"`// If set the request url will be modified in a way that's not observable by page. Must not be set in response to an authChallenge.
+	Method			*string					`json:"method,omitempty"`// If set this allows the request method to be overridden. Must not be set in response to an authChallenge.
+	PostData		*string					`json:"postData,omitempty"`// If set this allows postData to be set. Must not be set in response to an authChallenge.
+	Headers			*types.Network_Headers			`json:"headers,omitempty"`// If set this allows the request headers to be changed. Must not be set in response to an authChallenge.
+	AuthChallengeResponse	*types.Network_AuthChallengeResponse	`json:"authChallengeResponse,omitempty"`// Response to a requestIntercepted with an authChallenge. Must not be set otherwise.
 }
 
 func (obj *Network) ContinueInterceptedRequest(request *ContinueInterceptedRequestRequest) (err error) {

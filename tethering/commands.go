@@ -11,7 +11,7 @@ func New(conn cri.Connector) *Tethering {
 }
 
 type BindRequest struct {
-	Port int `json:"port"`
+	Port int `json:"port"`// Port number to bind.
 }
 
 func (obj *Tethering) Bind(request *BindRequest) (err error) {
@@ -20,7 +20,7 @@ func (obj *Tethering) Bind(request *BindRequest) (err error) {
 }
 
 type UnbindRequest struct {
-	Port int `json:"port"`
+	Port int `json:"port"`// Port number to unbind.
 }
 
 func (obj *Tethering) Unbind(request *UnbindRequest) (err error) {

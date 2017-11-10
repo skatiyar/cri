@@ -20,8 +20,8 @@ func (obj *Security) Disable() (err error) {
 }
 
 type HandleCertificateErrorRequest struct {
-	EventId int                                   `json:"eventId"`
-	Action  types.Security_CertificateErrorAction `json:"action"`
+	EventId	int					`json:"eventId"`// The ID of the event.
+	Action	types.Security_CertificateErrorAction	`json:"action"`// The action to take on the certificate error.
 }
 
 func (obj *Security) HandleCertificateError(request *HandleCertificateErrorRequest) (err error) {
@@ -30,7 +30,7 @@ func (obj *Security) HandleCertificateError(request *HandleCertificateErrorReque
 }
 
 type SetOverrideCertificateErrorsRequest struct {
-	Override bool `json:"override"`
+	Override bool `json:"override"`// If true, certificate errors will be overridden.
 }
 
 func (obj *Security) SetOverrideCertificateErrors(request *SetOverrideCertificateErrorsRequest) (err error) {

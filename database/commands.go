@@ -31,14 +31,14 @@ func (obj *Database) GetDatabaseTableNames(request *GetDatabaseTableNamesRequest
 }
 
 type ExecuteSQLRequest struct {
-	DatabaseId types.Database_DatabaseId `json:"databaseId"`
-	Query      string                    `json:"query"`
+	DatabaseId	types.Database_DatabaseId	`json:"databaseId"`
+	Query		string				`json:"query"`
 }
 
 func (obj *Database) ExecuteSQL(request *ExecuteSQLRequest) (response struct {
-	ColumnNames []string              `json:"columnNames,omitempty"`
-	Values      []interface{}         `json:"values,omitempty"`
-	SqlError    *types.Database_Error `json:"sqlError,omitempty"`
+	ColumnNames	[]string		`json:"columnNames,omitempty"`
+	Values		[]interface{}		`json:"values,omitempty"`
+	SqlError	*types.Database_Error	`json:"sqlError,omitempty"`
 }, err error) {
 	err = obj.conn.Send("Database.executeSQL", request, &response)
 	return

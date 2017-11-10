@@ -20,7 +20,7 @@ func (obj *Overlay) Disable() (err error) {
 }
 
 type SetShowPaintRectsRequest struct {
-	Result bool `json:"result"`
+	Result bool `json:"result"`// True for showing paint rectangles
 }
 
 func (obj *Overlay) SetShowPaintRects(request *SetShowPaintRectsRequest) (err error) {
@@ -29,7 +29,7 @@ func (obj *Overlay) SetShowPaintRects(request *SetShowPaintRectsRequest) (err er
 }
 
 type SetShowDebugBordersRequest struct {
-	Show bool `json:"show"`
+	Show bool `json:"show"`// True for showing debug borders
 }
 
 func (obj *Overlay) SetShowDebugBorders(request *SetShowDebugBordersRequest) (err error) {
@@ -38,7 +38,7 @@ func (obj *Overlay) SetShowDebugBorders(request *SetShowDebugBordersRequest) (er
 }
 
 type SetShowFPSCounterRequest struct {
-	Show bool `json:"show"`
+	Show bool `json:"show"`// True for showing the FPS counter
 }
 
 func (obj *Overlay) SetShowFPSCounter(request *SetShowFPSCounterRequest) (err error) {
@@ -47,7 +47,7 @@ func (obj *Overlay) SetShowFPSCounter(request *SetShowFPSCounterRequest) (err er
 }
 
 type SetShowScrollBottleneckRectsRequest struct {
-	Show bool `json:"show"`
+	Show bool `json:"show"`// True for showing scroll bottleneck rects
 }
 
 func (obj *Overlay) SetShowScrollBottleneckRects(request *SetShowScrollBottleneckRectsRequest) (err error) {
@@ -56,7 +56,7 @@ func (obj *Overlay) SetShowScrollBottleneckRects(request *SetShowScrollBottlenec
 }
 
 type SetShowViewportSizeOnResizeRequest struct {
-	Show bool `json:"show"`
+	Show bool `json:"show"`// Whether to paint size or not.
 }
 
 func (obj *Overlay) SetShowViewportSizeOnResize(request *SetShowViewportSizeOnResizeRequest) (err error) {
@@ -65,7 +65,7 @@ func (obj *Overlay) SetShowViewportSizeOnResize(request *SetShowViewportSizeOnRe
 }
 
 type SetPausedInDebuggerMessageRequest struct {
-	Message *string `json:"message,omitempty"`
+	Message *string `json:"message,omitempty"`// The message to display, also triggers resume and step over controls.
 }
 
 func (obj *Overlay) SetPausedInDebuggerMessage(request *SetPausedInDebuggerMessageRequest) (err error) {
@@ -74,7 +74,7 @@ func (obj *Overlay) SetPausedInDebuggerMessage(request *SetPausedInDebuggerMessa
 }
 
 type SetSuspendedRequest struct {
-	Suspended bool `json:"suspended"`
+	Suspended bool `json:"suspended"`// Whether overlay should be suspended and not consume any resources until resumed.
 }
 
 func (obj *Overlay) SetSuspended(request *SetSuspendedRequest) (err error) {
@@ -83,8 +83,8 @@ func (obj *Overlay) SetSuspended(request *SetSuspendedRequest) (err error) {
 }
 
 type SetInspectModeRequest struct {
-	Mode            types.Overlay_InspectMode      `json:"mode"`
-	HighlightConfig *types.Overlay_HighlightConfig `json:"highlightConfig,omitempty"`
+	Mode		types.Overlay_InspectMode	`json:"mode"`// Set an inspection mode.
+	HighlightConfig	*types.Overlay_HighlightConfig	`json:"highlightConfig,omitempty"`// A descriptor for the highlight appearance of hovered-over nodes. May be omitted if <code>enabled == false</code>.
 }
 
 func (obj *Overlay) SetInspectMode(request *SetInspectModeRequest) (err error) {
@@ -93,12 +93,12 @@ func (obj *Overlay) SetInspectMode(request *SetInspectModeRequest) (err error) {
 }
 
 type HighlightRectRequest struct {
-	X            int             `json:"x"`
-	Y            int             `json:"y"`
-	Width        int             `json:"width"`
-	Height       int             `json:"height"`
-	Color        *types.DOM_RGBA `json:"color,omitempty"`
-	OutlineColor *types.DOM_RGBA `json:"outlineColor,omitempty"`
+	X		int		`json:"x"`// X coordinate
+	Y		int		`json:"y"`// Y coordinate
+	Width		int		`json:"width"`// Rectangle width
+	Height		int		`json:"height"`// Rectangle height
+	Color		*types.DOM_RGBA	`json:"color,omitempty"`// The highlight fill color (default: transparent).
+	OutlineColor	*types.DOM_RGBA	`json:"outlineColor,omitempty"`// The highlight outline color (default: transparent).
 }
 
 func (obj *Overlay) HighlightRect(request *HighlightRectRequest) (err error) {
@@ -107,9 +107,9 @@ func (obj *Overlay) HighlightRect(request *HighlightRectRequest) (err error) {
 }
 
 type HighlightQuadRequest struct {
-	Quad         types.DOM_Quad  `json:"quad"`
-	Color        *types.DOM_RGBA `json:"color,omitempty"`
-	OutlineColor *types.DOM_RGBA `json:"outlineColor,omitempty"`
+	Quad		types.DOM_Quad	`json:"quad"`// Quad to highlight
+	Color		*types.DOM_RGBA	`json:"color,omitempty"`// The highlight fill color (default: transparent).
+	OutlineColor	*types.DOM_RGBA	`json:"outlineColor,omitempty"`// The highlight outline color (default: transparent).
 }
 
 func (obj *Overlay) HighlightQuad(request *HighlightQuadRequest) (err error) {
@@ -118,10 +118,10 @@ func (obj *Overlay) HighlightQuad(request *HighlightQuadRequest) (err error) {
 }
 
 type HighlightNodeRequest struct {
-	HighlightConfig types.Overlay_HighlightConfig `json:"highlightConfig"`
-	NodeId          *types.DOM_NodeId             `json:"nodeId,omitempty"`
-	BackendNodeId   *types.DOM_BackendNodeId      `json:"backendNodeId,omitempty"`
-	ObjectId        *types.Runtime_RemoteObjectId `json:"objectId,omitempty"`
+	HighlightConfig	types.Overlay_HighlightConfig	`json:"highlightConfig"`// A descriptor for the highlight appearance.
+	NodeId		*types.DOM_NodeId		`json:"nodeId,omitempty"`// Identifier of the node to highlight.
+	BackendNodeId	*types.DOM_BackendNodeId	`json:"backendNodeId,omitempty"`// Identifier of the backend node to highlight.
+	ObjectId	*types.Runtime_RemoteObjectId	`json:"objectId,omitempty"`// JavaScript object id of the node to be highlighted.
 }
 
 func (obj *Overlay) HighlightNode(request *HighlightNodeRequest) (err error) {
@@ -130,9 +130,9 @@ func (obj *Overlay) HighlightNode(request *HighlightNodeRequest) (err error) {
 }
 
 type HighlightFrameRequest struct {
-	FrameId             types.Page_FrameId `json:"frameId"`
-	ContentColor        *types.DOM_RGBA    `json:"contentColor,omitempty"`
-	ContentOutlineColor *types.DOM_RGBA    `json:"contentOutlineColor,omitempty"`
+	FrameId			types.Page_FrameId	`json:"frameId"`// Identifier of the frame to highlight.
+	ContentColor		*types.DOM_RGBA		`json:"contentColor,omitempty"`// The content box highlight fill color (default: transparent).
+	ContentOutlineColor	*types.DOM_RGBA		`json:"contentOutlineColor,omitempty"`// The content box highlight outline color (default: transparent).
 }
 
 func (obj *Overlay) HighlightFrame(request *HighlightFrameRequest) (err error) {
@@ -145,11 +145,11 @@ func (obj *Overlay) HideHighlight() (err error) {
 }
 
 type GetHighlightObjectForTestRequest struct {
-	NodeId types.DOM_NodeId `json:"nodeId"`
+	NodeId types.DOM_NodeId `json:"nodeId"`// Id of the node to get highlight object for.
 }
 
 func (obj *Overlay) GetHighlightObjectForTest(request *GetHighlightObjectForTestRequest) (response struct {
-	Highlight map[string]interface{} `json:"highlight"`
+	Highlight map[string]interface{} `json:"highlight"`// Highlight data for the node.
 }, err error) {
 	err = obj.conn.Send("Overlay.getHighlightObjectForTest", request, &response)
 	return

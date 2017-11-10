@@ -86,9 +86,9 @@ func (obj *ServiceWorker) SetForceUpdateOnPageLoad(request *SetForceUpdateOnPage
 }
 
 type DeliverPushMessageRequest struct {
-	Origin         string `json:"origin"`
-	RegistrationId string `json:"registrationId"`
-	Data           string `json:"data"`
+	Origin		string	`json:"origin"`
+	RegistrationId	string	`json:"registrationId"`
+	Data		string	`json:"data"`
 }
 
 func (obj *ServiceWorker) DeliverPushMessage(request *DeliverPushMessageRequest) (err error) {
@@ -97,10 +97,10 @@ func (obj *ServiceWorker) DeliverPushMessage(request *DeliverPushMessageRequest)
 }
 
 type DispatchSyncEventRequest struct {
-	Origin         string `json:"origin"`
-	RegistrationId string `json:"registrationId"`
-	Tag            string `json:"tag"`
-	LastChance     bool   `json:"lastChance"`
+	Origin		string	`json:"origin"`
+	RegistrationId	string	`json:"registrationId"`
+	Tag		string	`json:"tag"`
+	LastChance	bool	`json:"lastChance"`
 }
 
 func (obj *ServiceWorker) DispatchSyncEvent(request *DispatchSyncEventRequest) (err error) {

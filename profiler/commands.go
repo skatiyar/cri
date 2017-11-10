@@ -20,7 +20,7 @@ func (obj *Profiler) Disable() (err error) {
 }
 
 type SetSamplingIntervalRequest struct {
-	Interval int `json:"interval"`
+	Interval int `json:"interval"`// New sampling interval in microseconds.
 }
 
 func (obj *Profiler) SetSamplingInterval(request *SetSamplingIntervalRequest) (err error) {
@@ -32,15 +32,15 @@ func (obj *Profiler) Start() (err error) {
 	return
 }
 func (obj *Profiler) Stop() (response struct {
-	Profile types.Profiler_Profile `json:"profile"`
+	Profile types.Profiler_Profile `json:"profile"`// Recorded profile.
 }, err error) {
 	err = obj.conn.Send("Profiler.stop", nil, &response)
 	return
 }
 
 type StartPreciseCoverageRequest struct {
-	CallCount *bool `json:"callCount,omitempty"`
-	Detailed  *bool `json:"detailed,omitempty"`
+	CallCount	*bool	`json:"callCount,omitempty"`// Collect accurate call counts beyond simple 'covered' or 'not covered'.
+	Detailed	*bool	`json:"detailed,omitempty"`// Collect block-based coverage.
 }
 
 func (obj *Profiler) StartPreciseCoverage(request *StartPreciseCoverageRequest) (err error) {
@@ -52,13 +52,13 @@ func (obj *Profiler) StopPreciseCoverage() (err error) {
 	return
 }
 func (obj *Profiler) TakePreciseCoverage() (response struct {
-	Result []types.Profiler_ScriptCoverage `json:"result"`
+	Result []types.Profiler_ScriptCoverage `json:"result"`// Coverage data for the current isolate.
 }, err error) {
 	err = obj.conn.Send("Profiler.takePreciseCoverage", nil, &response)
 	return
 }
 func (obj *Profiler) GetBestEffortCoverage() (response struct {
-	Result []types.Profiler_ScriptCoverage `json:"result"`
+	Result []types.Profiler_ScriptCoverage `json:"result"`// Coverage data for the current isolate.
 }, err error) {
 	err = obj.conn.Send("Profiler.getBestEffortCoverage", nil, &response)
 	return
@@ -72,7 +72,7 @@ func (obj *Profiler) StopTypeProfile() (err error) {
 	return
 }
 func (obj *Profiler) TakeTypeProfile() (response struct {
-	Result []types.Profiler_ScriptTypeProfile `json:"result"`
+	Result []types.Profiler_ScriptTypeProfile `json:"result"`// Type profile for all scripts since startTypeProfile() was turned on.
 }, err error) {
 	err = obj.conn.Send("Profiler.takeTypeProfile", nil, &response)
 	return

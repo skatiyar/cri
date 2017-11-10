@@ -19,14 +19,14 @@ func (obj *Animation) Disable() (err error) {
 	return
 }
 func (obj *Animation) GetPlaybackRate() (response struct {
-	PlaybackRate float32 `json:"playbackRate"`
+	PlaybackRate float32 `json:"playbackRate"`// Playback rate for animations on page.
 }, err error) {
 	err = obj.conn.Send("Animation.getPlaybackRate", nil, &response)
 	return
 }
 
 type SetPlaybackRateRequest struct {
-	PlaybackRate float32 `json:"playbackRate"`
+	PlaybackRate float32 `json:"playbackRate"`// Playback rate for animations on page
 }
 
 func (obj *Animation) SetPlaybackRate(request *SetPlaybackRateRequest) (err error) {
@@ -35,19 +35,19 @@ func (obj *Animation) SetPlaybackRate(request *SetPlaybackRateRequest) (err erro
 }
 
 type GetCurrentTimeRequest struct {
-	Id string `json:"id"`
+	Id string `json:"id"`// Id of animation.
 }
 
 func (obj *Animation) GetCurrentTime(request *GetCurrentTimeRequest) (response struct {
-	CurrentTime float32 `json:"currentTime"`
+	CurrentTime float32 `json:"currentTime"`// Current time of the page.
 }, err error) {
 	err = obj.conn.Send("Animation.getCurrentTime", request, &response)
 	return
 }
 
 type SetPausedRequest struct {
-	Animations []string `json:"animations"`
-	Paused     bool     `json:"paused"`
+	Animations	[]string	`json:"animations"`// Animations to set the pause state of.
+	Paused		bool		`json:"paused"`// Paused state to set to.
 }
 
 func (obj *Animation) SetPaused(request *SetPausedRequest) (err error) {
@@ -56,9 +56,9 @@ func (obj *Animation) SetPaused(request *SetPausedRequest) (err error) {
 }
 
 type SetTimingRequest struct {
-	AnimationId string  `json:"animationId"`
-	Duration    float32 `json:"duration"`
-	Delay       float32 `json:"delay"`
+	AnimationId	string	`json:"animationId"`// Animation id.
+	Duration	float32	`json:"duration"`// Duration of the animation.
+	Delay		float32	`json:"delay"`// Delay of the animation.
 }
 
 func (obj *Animation) SetTiming(request *SetTimingRequest) (err error) {
@@ -67,8 +67,8 @@ func (obj *Animation) SetTiming(request *SetTimingRequest) (err error) {
 }
 
 type SeekAnimationsRequest struct {
-	Animations  []string `json:"animations"`
-	CurrentTime float32  `json:"currentTime"`
+	Animations	[]string	`json:"animations"`// List of animation ids to seek.
+	CurrentTime	float32		`json:"currentTime"`// Set the current time of each animation.
 }
 
 func (obj *Animation) SeekAnimations(request *SeekAnimationsRequest) (err error) {
@@ -77,7 +77,7 @@ func (obj *Animation) SeekAnimations(request *SeekAnimationsRequest) (err error)
 }
 
 type ReleaseAnimationsRequest struct {
-	Animations []string `json:"animations"`
+	Animations []string `json:"animations"`// List of animation ids to seek.
 }
 
 func (obj *Animation) ReleaseAnimations(request *ReleaseAnimationsRequest) (err error) {
@@ -86,11 +86,11 @@ func (obj *Animation) ReleaseAnimations(request *ReleaseAnimationsRequest) (err 
 }
 
 type ResolveAnimationRequest struct {
-	AnimationId string `json:"animationId"`
+	AnimationId string `json:"animationId"`// Animation id.
 }
 
 func (obj *Animation) ResolveAnimation(request *ResolveAnimationRequest) (response struct {
-	RemoteObject types.Runtime_RemoteObject `json:"remoteObject"`
+	RemoteObject types.Runtime_RemoteObject `json:"remoteObject"`// Corresponding remote object.
 }, err error) {
 	err = obj.conn.Send("Animation.resolveAnimation", request, &response)
 	return

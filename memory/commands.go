@@ -11,9 +11,9 @@ func New(conn cri.Connector) *Memory {
 	return &Memory{conn}
 }
 func (obj *Memory) GetDOMCounters() (response struct {
-	Documents        int `json:"documents"`
-	Nodes            int `json:"nodes"`
-	JsEventListeners int `json:"jsEventListeners"`
+	Documents		int	`json:"documents"`
+	Nodes			int	`json:"nodes"`
+	JsEventListeners	int	`json:"jsEventListeners"`
 }, err error) {
 	err = obj.conn.Send("Memory.getDOMCounters", nil, &response)
 	return
@@ -24,7 +24,7 @@ func (obj *Memory) PrepareForLeakDetection() (err error) {
 }
 
 type SetPressureNotificationsSuppressedRequest struct {
-	Suppressed bool `json:"suppressed"`
+	Suppressed bool `json:"suppressed"`// If true, memory pressure notifications will be suppressed.
 }
 
 func (obj *Memory) SetPressureNotificationsSuppressed(request *SetPressureNotificationsSuppressedRequest) (err error) {
@@ -33,7 +33,7 @@ func (obj *Memory) SetPressureNotificationsSuppressed(request *SetPressureNotifi
 }
 
 type SimulatePressureNotificationRequest struct {
-	Level types.Memory_PressureLevel `json:"level"`
+	Level types.Memory_PressureLevel `json:"level"`// Memory pressure level of the notification.
 }
 
 func (obj *Memory) SimulatePressureNotification(request *SimulatePressureNotificationRequest) (err error) {

@@ -102,6 +102,16 @@ func parseParameter(p Parameter, domain, structName string, notTypes bool) (*ast
 		},
 	}
 
+	if len(p.Description) > 0 {
+		nField.Comment = &ast.CommentGroup{
+			List: []*ast.Comment{
+				&ast.Comment{
+					Text: "// " + p.Description,
+				},
+			},
+		}
+	}
+
 	if p.Optional {
 		nField.Tag = &ast.BasicLit{
 			Kind:  token.STRING,
@@ -166,37 +176,6 @@ func parseParameter(p Parameter, domain, structName string, notTypes bool) (*ast
 		} else if notTypes {
 			deps = append(deps, "type")
 		}
-		/*
-			if idx := strings.Index(p.Ref, "."); idx != -1 {
-				nField.Type = &ast.BasicLit{
-					Kind:  token.STRING,
-					Value: toPackageName(p.Ref),
-				}
-				if domain != string(p.Ref[:idx]) {
-					deps = append(deps, string(p.Ref[:idx]))
-				}
-			} else {
-				if p.Ref == structName {
-					nField.Type = &ast.StarExpr{
-						X: &ast.BasicLit{
-							Kind:  token.STRING,
-							Value: p.Ref,
-						},
-					}
-				} else if notTypes {
-					nField.Type = &ast.BasicLit{
-						Kind:  token.STRING,
-						Value: "types." + p.Ref,
-					}
-					deps = append(deps, domain)
-				} else {
-					nField.Type = &ast.BasicLit{
-						Kind:  token.STRING,
-						Value: p.Ref,
-					}
-				}
-			}
-		*/
 	}
 
 	return nField, deps

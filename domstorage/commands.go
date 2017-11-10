@@ -40,9 +40,9 @@ func (obj *DOMStorage) GetDOMStorageItems(request *GetDOMStorageItemsRequest) (r
 }
 
 type SetDOMStorageItemRequest struct {
-	StorageId types.DOMStorage_StorageId `json:"storageId"`
-	Key       string                     `json:"key"`
-	Value     string                     `json:"value"`
+	StorageId	types.DOMStorage_StorageId	`json:"storageId"`
+	Key		string				`json:"key"`
+	Value		string				`json:"value"`
 }
 
 func (obj *DOMStorage) SetDOMStorageItem(request *SetDOMStorageItemRequest) (err error) {
@@ -51,8 +51,8 @@ func (obj *DOMStorage) SetDOMStorageItem(request *SetDOMStorageItemRequest) (err
 }
 
 type RemoveDOMStorageItemRequest struct {
-	StorageId types.DOMStorage_StorageId `json:"storageId"`
-	Key       string                     `json:"key"`
+	StorageId	types.DOMStorage_StorageId	`json:"storageId"`
+	Key		string				`json:"key"`
 }
 
 func (obj *DOMStorage) RemoveDOMStorageItem(request *RemoveDOMStorageItemRequest) (err error) {
