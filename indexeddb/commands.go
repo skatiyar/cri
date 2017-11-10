@@ -10,72 +10,103 @@ type IndexedDB struct {
 func New(conn cri.Connector) *IndexedDB {
 	return &IndexedDB{conn}
 }
+
+// Enables events from backend.
 func (obj *IndexedDB) Enable() (err error) {
 	err = obj.conn.Send("IndexedDB.enable", nil, nil)
 	return
 }
+
+// Disables events from backend.
 func (obj *IndexedDB) Disable() (err error) {
 	err = obj.conn.Send("IndexedDB.disable", nil, nil)
 	return
 }
 
 type RequestDatabaseNamesRequest struct {
-	SecurityOrigin string `json:"securityOrigin"`// Security origin.
+	// Security origin.
+	SecurityOrigin string `json:"securityOrigin"`
+}
+type RequestDatabaseNamesResponse struct {
+	// Database names for origin.
+	DatabaseNames []string `json:"databaseNames"`
 }
 
-func (obj *IndexedDB) RequestDatabaseNames(request *RequestDatabaseNamesRequest) (response struct {
-	DatabaseNames []string `json:"databaseNames"`// Database names for origin.
-}, err error) {
+// Requests database names for given security origin.
+func (obj *IndexedDB) RequestDatabaseNames(request *RequestDatabaseNamesRequest) (response RequestDatabaseNamesResponse, err error) {
 	err = obj.conn.Send("IndexedDB.requestDatabaseNames", request, &response)
 	return
 }
 
 type RequestDatabaseRequest struct {
-	SecurityOrigin	string	`json:"securityOrigin"`// Security origin.
-	DatabaseName	string	`json:"databaseName"`// Database name.
+	// Security origin.
+	SecurityOrigin string `json:"securityOrigin"`
+	// Database name.
+	DatabaseName string `json:"databaseName"`
+}
+type RequestDatabaseResponse struct {
+	// Database with an array of object stores.
+	DatabaseWithObjectStores types.IndexedDB_DatabaseWithObjectStores `json:"databaseWithObjectStores"`
 }
 
-func (obj *IndexedDB) RequestDatabase(request *RequestDatabaseRequest) (response struct {
-	DatabaseWithObjectStores types.IndexedDB_DatabaseWithObjectStores `json:"databaseWithObjectStores"`// Database with an array of object stores.
-}, err error) {
+// Requests database with given name in given frame.
+func (obj *IndexedDB) RequestDatabase(request *RequestDatabaseRequest) (response RequestDatabaseResponse, err error) {
 	err = obj.conn.Send("IndexedDB.requestDatabase", request, &response)
 	return
 }
 
 type RequestDataRequest struct {
-	SecurityOrigin	string				`json:"securityOrigin"`// Security origin.
-	DatabaseName	string				`json:"databaseName"`// Database name.
-	ObjectStoreName	string				`json:"objectStoreName"`// Object store name.
-	IndexName	string				`json:"indexName"`// Index name, empty string for object store data requests.
-	SkipCount	int				`json:"skipCount"`// Number of records to skip.
-	PageSize	int				`json:"pageSize"`// Number of records to fetch.
-	KeyRange	*types.IndexedDB_KeyRange	`json:"keyRange,omitempty"`// Key range.
+	// Security origin.
+	SecurityOrigin string `json:"securityOrigin"`
+	// Database name.
+	DatabaseName string `json:"databaseName"`
+	// Object store name.
+	ObjectStoreName string `json:"objectStoreName"`
+	// Index name, empty string for object store data requests.
+	IndexName string `json:"indexName"`
+	// Number of records to skip.
+	SkipCount int `json:"skipCount"`
+	// Number of records to fetch.
+	PageSize int `json:"pageSize"`
+	// Key range.
+	KeyRange *types.IndexedDB_KeyRange `json:"keyRange,omitempty"`
+}
+type RequestDataResponse struct {
+	// Array of object store data entries.
+	ObjectStoreDataEntries []types.IndexedDB_DataEntry `json:"objectStoreDataEntries"`
+	// If true, there are more entries to fetch in the given range.
+	HasMore bool `json:"hasMore"`
 }
 
-func (obj *IndexedDB) RequestData(request *RequestDataRequest) (response struct {
-	ObjectStoreDataEntries	[]types.IndexedDB_DataEntry	`json:"objectStoreDataEntries"`// Array of object store data entries.
-	HasMore			bool				`json:"hasMore"`// If true, there are more entries to fetch in the given range.
-}, err error) {
+// Requests data from object store or index.
+func (obj *IndexedDB) RequestData(request *RequestDataRequest) (response RequestDataResponse, err error) {
 	err = obj.conn.Send("IndexedDB.requestData", request, &response)
 	return
 }
 
 type ClearObjectStoreRequest struct {
-	SecurityOrigin	string	`json:"securityOrigin"`// Security origin.
-	DatabaseName	string	`json:"databaseName"`// Database name.
-	ObjectStoreName	string	`json:"objectStoreName"`// Object store name.
+	// Security origin.
+	SecurityOrigin string `json:"securityOrigin"`
+	// Database name.
+	DatabaseName string `json:"databaseName"`
+	// Object store name.
+	ObjectStoreName string `json:"objectStoreName"`
 }
 
+// Clears all entries from an object store.
 func (obj *IndexedDB) ClearObjectStore(request *ClearObjectStoreRequest) (err error) {
 	err = obj.conn.Send("IndexedDB.clearObjectStore", request, nil)
 	return
 }
 
 type DeleteDatabaseRequest struct {
-	SecurityOrigin	string	`json:"securityOrigin"`// Security origin.
-	DatabaseName	string	`json:"databaseName"`// Database name.
+	// Security origin.
+	SecurityOrigin string `json:"securityOrigin"`
+	// Database name.
+	DatabaseName string `json:"databaseName"`
 }
 
+// Deletes a database.
 func (obj *IndexedDB) DeleteDatabase(request *DeleteDatabaseRequest) (err error) {
 	err = obj.conn.Send("IndexedDB.deleteDatabase", request, nil)
 	return

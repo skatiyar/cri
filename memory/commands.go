@@ -10,11 +10,14 @@ type Memory struct {
 func New(conn cri.Connector) *Memory {
 	return &Memory{conn}
 }
-func (obj *Memory) GetDOMCounters() (response struct {
-	Documents		int	`json:"documents"`
-	Nodes			int	`json:"nodes"`
-	JsEventListeners	int	`json:"jsEventListeners"`
-}, err error) {
+
+type GetDOMCountersResponse struct {
+	Documents        int `json:"documents"`
+	Nodes            int `json:"nodes"`
+	JsEventListeners int `json:"jsEventListeners"`
+}
+
+func (obj *Memory) GetDOMCounters() (response GetDOMCountersResponse, err error) {
 	err = obj.conn.Send("Memory.getDOMCounters", nil, &response)
 	return
 }
@@ -24,18 +27,22 @@ func (obj *Memory) PrepareForLeakDetection() (err error) {
 }
 
 type SetPressureNotificationsSuppressedRequest struct {
-	Suppressed bool `json:"suppressed"`// If true, memory pressure notifications will be suppressed.
+	// If true, memory pressure notifications will be suppressed.
+	Suppressed bool `json:"suppressed"`
 }
 
+// Enable/disable suppressing memory pressure notifications in all processes.
 func (obj *Memory) SetPressureNotificationsSuppressed(request *SetPressureNotificationsSuppressedRequest) (err error) {
 	err = obj.conn.Send("Memory.setPressureNotificationsSuppressed", request, nil)
 	return
 }
 
 type SimulatePressureNotificationRequest struct {
-	Level types.Memory_PressureLevel `json:"level"`// Memory pressure level of the notification.
+	// Memory pressure level of the notification.
+	Level types.Memory_PressureLevel `json:"level"`
 }
 
+// Simulate a memory pressure notification in all processes.
 func (obj *Memory) SimulatePressureNotification(request *SimulatePressureNotificationRequest) (err error) {
 	err = obj.conn.Send("Memory.simulatePressureNotification", request, nil)
 	return

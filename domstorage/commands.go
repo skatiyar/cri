@@ -10,10 +10,14 @@ type DOMStorage struct {
 func New(conn cri.Connector) *DOMStorage {
 	return &DOMStorage{conn}
 }
+
+// Enables storage tracking, storage events will now be delivered to the client.
 func (obj *DOMStorage) Enable() (err error) {
 	err = obj.conn.Send("DOMStorage.enable", nil, nil)
 	return
 }
+
+// Disables storage tracking, prevents storage events from being sent to the client.
 func (obj *DOMStorage) Disable() (err error) {
 	err = obj.conn.Send("DOMStorage.disable", nil, nil)
 	return
@@ -31,18 +35,19 @@ func (obj *DOMStorage) Clear(request *ClearRequest) (err error) {
 type GetDOMStorageItemsRequest struct {
 	StorageId types.DOMStorage_StorageId `json:"storageId"`
 }
-
-func (obj *DOMStorage) GetDOMStorageItems(request *GetDOMStorageItemsRequest) (response struct {
+type GetDOMStorageItemsResponse struct {
 	Entries []types.DOMStorage_Item `json:"entries"`
-}, err error) {
+}
+
+func (obj *DOMStorage) GetDOMStorageItems(request *GetDOMStorageItemsRequest) (response GetDOMStorageItemsResponse, err error) {
 	err = obj.conn.Send("DOMStorage.getDOMStorageItems", request, &response)
 	return
 }
 
 type SetDOMStorageItemRequest struct {
-	StorageId	types.DOMStorage_StorageId	`json:"storageId"`
-	Key		string				`json:"key"`
-	Value		string				`json:"value"`
+	StorageId types.DOMStorage_StorageId `json:"storageId"`
+	Key       string                     `json:"key"`
+	Value     string                     `json:"value"`
 }
 
 func (obj *DOMStorage) SetDOMStorageItem(request *SetDOMStorageItemRequest) (err error) {
@@ -51,8 +56,8 @@ func (obj *DOMStorage) SetDOMStorageItem(request *SetDOMStorageItemRequest) (err
 }
 
 type RemoveDOMStorageItemRequest struct {
-	StorageId	types.DOMStorage_StorageId	`json:"storageId"`
-	Key		string				`json:"key"`
+	StorageId types.DOMStorage_StorageId `json:"storageId"`
+	Key       string                     `json:"key"`
 }
 
 func (obj *DOMStorage) RemoveDOMStorageItem(request *RemoveDOMStorageItemRequest) (err error) {

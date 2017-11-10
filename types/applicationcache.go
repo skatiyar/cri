@@ -1,19 +1,30 @@
 package types
 
 type ApplicationCache_ApplicationCacheResource struct {
-	Url	string	`json:"url"`// Resource url.
-	Size	int	`json:"size"`// Resource size.
-	Type	string	`json:"type"`// Resource type.
+	// Resource url.
+	Url string `json:"url"`
+	// Resource size.
+	Size int `json:"size"`
+	// Resource type.
+	Type string `json:"type"`
 }
 type ApplicationCache_ApplicationCache struct {
-	ManifestURL	string						`json:"manifestURL"`// Manifest URL.
-	Size		float32						`json:"size"`// Application cache size.
-	CreationTime	float32						`json:"creationTime"`// Application cache creation time.
-	UpdateTime	float32						`json:"updateTime"`// Application cache update time.
-	Resources	[]ApplicationCache_ApplicationCacheResource	`json:"resources"`// Application cache resources.
+	// Manifest URL.
+	ManifestURL string `json:"manifestURL"`
+	// Application cache size.
+	Size float32 `json:"size"`
+	// Application cache creation time.
+	CreationTime float32 `json:"creationTime"`
+	// Application cache update time.
+	UpdateTime float32 `json:"updateTime"`
+	// Application cache resources.
+	Resources []ApplicationCache_ApplicationCacheResource `json:"resources"`
 }
 type ApplicationCache_FrameWithManifest struct {
-	FrameId		Page_FrameId	`json:"frameId"`// Frame identifier.
-	ManifestURL	string		`json:"manifestURL"`// Manifest URL.
-	Status		int		`json:"status"`// Application cache status.
+	// Frame identifier.
+	FrameId Page_FrameId `json:"frameId"`
+	// Manifest URL.
+	ManifestURL string `json:"manifestURL"`
+	// Application cache status.
+	Status int `json:"status"`
 }

@@ -12,17 +12,26 @@ func New(conn cri.Connector) *Audits {
 }
 
 type GetEncodedResponseRequest struct {
-	RequestId	types.Network_RequestId	`json:"requestId"`// Identifier of the network request to get content for.
-	Encoding	string			`json:"encoding"`// The encoding to use.
-	Quality		*float32		`json:"quality,omitempty"`// The quality of the encoding (0-1). (defaults to 1)
-	SizeOnly	*bool			`json:"sizeOnly,omitempty"`// Whether to only return the size information (defaults to false).
+	// Identifier of the network request to get content for.
+	RequestId types.Network_RequestId `json:"requestId"`
+	// The encoding to use.
+	Encoding string `json:"encoding"`
+	// The quality of the encoding (0-1). (defaults to 1)
+	Quality *float32 `json:"quality,omitempty"`
+	// Whether to only return the size information (defaults to false).
+	SizeOnly *bool `json:"sizeOnly,omitempty"`
+}
+type GetEncodedResponseResponse struct {
+	// The encoded body as a base64 string. Omitted if sizeOnly is true.
+	Body *string `json:"body,omitempty"`
+	// Size before re-encoding.
+	OriginalSize int `json:"originalSize"`
+	// Size after re-encoding.
+	EncodedSize int `json:"encodedSize"`
 }
 
-func (obj *Audits) GetEncodedResponse(request *GetEncodedResponseRequest) (response struct {
-	Body		*string	`json:"body,omitempty"`// The encoded body as a base64 string. Omitted if sizeOnly is true.
-	OriginalSize	int	`json:"originalSize"`// Size before re-encoding.
-	EncodedSize	int	`json:"encodedSize"`// Size after re-encoding.
-}, err error) {
+// Returns the response body and size if it were re-encoded with the specified settings. Only applies to images.
+func (obj *Audits) GetEncodedResponse(request *GetEncodedResponseRequest) (response GetEncodedResponseResponse, err error) {
 	err = obj.conn.Send("Audits.getEncodedResponse", request, &response)
 	return
 }

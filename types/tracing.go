@@ -3,12 +3,20 @@ package types
 type Tracing_MemoryDumpConfig struct {
 }
 type Tracing_TraceConfig struct {
-	RecordMode		*string				`json:"recordMode,omitempty"`// Controls how the trace buffer stores data.
-	EnableSampling		*bool				`json:"enableSampling,omitempty"`// Turns on JavaScript stack sampling.
-	EnableSystrace		*bool				`json:"enableSystrace,omitempty"`// Turns on system tracing.
-	EnableArgumentFilter	*bool				`json:"enableArgumentFilter,omitempty"`// Turns on argument filter.
-	IncludedCategories	[]string			`json:"includedCategories,omitempty"`// Included category filters.
-	ExcludedCategories	[]string			`json:"excludedCategories,omitempty"`// Excluded category filters.
-	SyntheticDelays		[]string			`json:"syntheticDelays,omitempty"`// Configuration to synthesize the delays in tracing.
-	MemoryDumpConfig	*Tracing_MemoryDumpConfig	`json:"memoryDumpConfig,omitempty"`// Configuration for memory dump triggers. Used only when "memory-infra" category is enabled.
+	// Controls how the trace buffer stores data.
+	RecordMode *string `json:"recordMode,omitempty"`
+	// Turns on JavaScript stack sampling.
+	EnableSampling *bool `json:"enableSampling,omitempty"`
+	// Turns on system tracing.
+	EnableSystrace *bool `json:"enableSystrace,omitempty"`
+	// Turns on argument filter.
+	EnableArgumentFilter *bool `json:"enableArgumentFilter,omitempty"`
+	// Included category filters.
+	IncludedCategories []string `json:"includedCategories,omitempty"`
+	// Excluded category filters.
+	ExcludedCategories []string `json:"excludedCategories,omitempty"`
+	// Configuration to synthesize the delays in tracing.
+	SyntheticDelays []string `json:"syntheticDelays,omitempty"`
+	// Configuration for memory dump triggers. Used only when "memory-infra" category is enabled.
+	MemoryDumpConfig *Tracing_MemoryDumpConfig `json:"memoryDumpConfig,omitempty"`
 }

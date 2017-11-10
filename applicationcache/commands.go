@@ -10,35 +10,50 @@ type ApplicationCache struct {
 func New(conn cri.Connector) *ApplicationCache {
 	return &ApplicationCache{conn}
 }
-func (obj *ApplicationCache) GetFramesWithManifests() (response struct {
-	FrameIds []types.ApplicationCache_FrameWithManifest `json:"frameIds"`// Array of frame identifiers with manifest urls for each frame containing a document associated with some application cache.
-}, err error) {
+
+type GetFramesWithManifestsResponse struct {
+	// Array of frame identifiers with manifest urls for each frame containing a document associated with some application cache.
+	FrameIds []types.ApplicationCache_FrameWithManifest `json:"frameIds"`
+}
+
+// Returns array of frame identifiers with manifest urls for each frame containing a document associated with some application cache.
+func (obj *ApplicationCache) GetFramesWithManifests() (response GetFramesWithManifestsResponse, err error) {
 	err = obj.conn.Send("ApplicationCache.getFramesWithManifests", nil, &response)
 	return
 }
+
+// Enables application cache domain notifications.
 func (obj *ApplicationCache) Enable() (err error) {
 	err = obj.conn.Send("ApplicationCache.enable", nil, nil)
 	return
 }
 
 type GetManifestForFrameRequest struct {
-	FrameId types.Page_FrameId `json:"frameId"`// Identifier of the frame containing document whose manifest is retrieved.
+	// Identifier of the frame containing document whose manifest is retrieved.
+	FrameId types.Page_FrameId `json:"frameId"`
+}
+type GetManifestForFrameResponse struct {
+	// Manifest URL for document in the given frame.
+	ManifestURL string `json:"manifestURL"`
 }
 
-func (obj *ApplicationCache) GetManifestForFrame(request *GetManifestForFrameRequest) (response struct {
-	ManifestURL string `json:"manifestURL"`// Manifest URL for document in the given frame.
-}, err error) {
+// Returns manifest URL for document in the given frame.
+func (obj *ApplicationCache) GetManifestForFrame(request *GetManifestForFrameRequest) (response GetManifestForFrameResponse, err error) {
 	err = obj.conn.Send("ApplicationCache.getManifestForFrame", request, &response)
 	return
 }
 
 type GetApplicationCacheForFrameRequest struct {
-	FrameId types.Page_FrameId `json:"frameId"`// Identifier of the frame containing document whose application cache is retrieved.
+	// Identifier of the frame containing document whose application cache is retrieved.
+	FrameId types.Page_FrameId `json:"frameId"`
+}
+type GetApplicationCacheForFrameResponse struct {
+	// Relevant application cache data for the document in given frame.
+	ApplicationCache types.ApplicationCache_ApplicationCache `json:"applicationCache"`
 }
 
-func (obj *ApplicationCache) GetApplicationCacheForFrame(request *GetApplicationCacheForFrameRequest) (response struct {
-	ApplicationCache types.ApplicationCache_ApplicationCache `json:"applicationCache"`// Relevant application cache data for the document in given frame.
-}, err error) {
+// Returns relevant application cache data for the document in given frame.
+func (obj *ApplicationCache) GetApplicationCacheForFrame(request *GetApplicationCacheForFrameRequest) (response GetApplicationCacheForFrameResponse, err error) {
 	err = obj.conn.Send("ApplicationCache.getApplicationCacheForFrame", request, &response)
 	return
 }

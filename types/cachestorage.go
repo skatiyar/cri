@@ -2,23 +2,34 @@ package types
 
 type CacheStorage_CacheId string
 type CacheStorage_DataEntry struct {
-	RequestURL		string			`json:"requestURL"`// Request URL.
-	RequestMethod		string			`json:"requestMethod"`// Request method.
-	RequestHeaders		[]CacheStorage_Header	`json:"requestHeaders"`// Request headers
-	ResponseTime		float32			`json:"responseTime"`// Number of seconds since epoch.
-	ResponseStatus		int			`json:"responseStatus"`// HTTP response status code.
-	ResponseStatusText	string			`json:"responseStatusText"`// HTTP response status text.
-	ResponseHeaders		[]CacheStorage_Header	`json:"responseHeaders"`// Response headers
+	// Request URL.
+	RequestURL string `json:"requestURL"`
+	// Request method.
+	RequestMethod string `json:"requestMethod"`
+	// Request headers
+	RequestHeaders []CacheStorage_Header `json:"requestHeaders"`
+	// Number of seconds since epoch.
+	ResponseTime float32 `json:"responseTime"`
+	// HTTP response status code.
+	ResponseStatus int `json:"responseStatus"`
+	// HTTP response status text.
+	ResponseStatusText string `json:"responseStatusText"`
+	// Response headers
+	ResponseHeaders []CacheStorage_Header `json:"responseHeaders"`
 }
 type CacheStorage_Cache struct {
-	CacheId		CacheStorage_CacheId	`json:"cacheId"`// An opaque unique id of the cache.
-	SecurityOrigin	string			`json:"securityOrigin"`// Security origin of the cache.
-	CacheName	string			`json:"cacheName"`// The name of the cache.
+	// An opaque unique id of the cache.
+	CacheId CacheStorage_CacheId `json:"cacheId"`
+	// Security origin of the cache.
+	SecurityOrigin string `json:"securityOrigin"`
+	// The name of the cache.
+	CacheName string `json:"cacheName"`
 }
 type CacheStorage_Header struct {
-	Name	string	`json:"name"`
-	Value	string	`json:"value"`
+	Name  string `json:"name"`
+	Value string `json:"value"`
 }
 type CacheStorage_CachedResponse struct {
-	Body string `json:"body"`// Entry content, base64-encoded.
+	// Entry content, base64-encoded.
+	Body string `json:"body"`
 }

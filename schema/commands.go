@@ -10,9 +10,14 @@ type Schema struct {
 func New(conn cri.Connector) *Schema {
 	return &Schema{conn}
 }
-func (obj *Schema) GetDomains() (response struct {
-	Domains []types.Schema_Domain `json:"domains"`// List of supported domains.
-}, err error) {
+
+type GetDomainsResponse struct {
+	// List of supported domains.
+	Domains []types.Schema_Domain `json:"domains"`
+}
+
+// Returns supported domains.
+func (obj *Schema) GetDomains() (response GetDomainsResponse, err error) {
 	err = obj.conn.Send("Schema.getDomains", nil, &response)
 	return
 }

@@ -100,16 +100,20 @@ func parseParameter(p Parameter, domain, structName string, notTypes bool) (*ast
 		Names: []*ast.Ident{
 			ast.NewIdent(strings.Title(p.Name)),
 		},
+		Doc: &ast.CommentGroup{
+			List: []*ast.Comment{},
+		},
 	}
 
 	if len(p.Description) > 0 {
-		nField.Comment = &ast.CommentGroup{
-			List: []*ast.Comment{
-				&ast.Comment{
-					Text: "// " + p.Description,
-				},
-			},
-		}
+		nField.Doc.List = append(nField.Doc.List, &ast.Comment{
+			Text: "\n// " + p.Description,
+		})
+	}
+	if p.Experimental {
+		nField.Doc.List = append(nField.Doc.List, &ast.Comment{
+			Text: "// NOTE Experimental",
+		})
 	}
 
 	if p.Optional {
@@ -296,13 +300,21 @@ func parseCommand(c Command, d Domain) (*ast.FuncDecl, []string) {
 				Names: []*ast.Ident{
 					ast.NewIdent("response"),
 				},
-				Type: &ast.StructType{
-					Fields: &ast.FieldList{
-						List: resultsFieldList,
-					},
+				Type: &ast.BasicLit{
+					Kind:  token.STRING,
+					Value: strings.Title(c.Name) + "Response",
 				},
 			},
 		}, nFunc.Type.Results.List...)
+	}
+	if len(c.Description) > 0 {
+		nFunc.Doc = &ast.CommentGroup{
+			List: []*ast.Comment{
+				&ast.Comment{
+					Text: "// " + c.Description,
+				},
+			},
+		}
 	}
 
 	return nFunc, deps
@@ -533,8 +545,29 @@ func createCommandsFile(d Domain) *ast.File {
 			}
 			decls = append(decls, responseDecl)
 		}
+		if len(d.Commands[i].Returns) > 0 {
+			paramsDecls := make([]*ast.Field, 0)
+			for j := 0; j < len(d.Commands[i].Returns); j++ {
+				param, ldeps := parseParameter(d.Commands[i].Returns[j], d.Domain, strings.Title(d.Commands[i].Name)+"Response", true)
+				paramsDecls = append(paramsDecls, param)
+				imports = append(imports, ldeps...)
+			}
+			responseDecl := &ast.GenDecl{
+				Tok: token.TYPE,
+				Specs: []ast.Spec{
+					&ast.TypeSpec{
+						Name: ast.NewIdent(strings.Title(d.Commands[i].Name) + "Response"),
+						Type: &ast.StructType{
+							Fields: &ast.FieldList{
+								List: paramsDecls,
+							},
+						},
+					},
+				},
+			}
+			decls = append(decls, responseDecl)
+		}
 		cmdDecls, cmdDeps := parseCommand(d.Commands[i], d)
-		strings.ToLower(d.Domain)
 		decls = append(decls, cmdDecls)
 		imports = append(imports, cmdDeps...)
 	}

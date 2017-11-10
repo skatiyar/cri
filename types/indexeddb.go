@@ -1,42 +1,68 @@
 package types
 
 type IndexedDB_DatabaseWithObjectStores struct {
-	Name		string			`json:"name"`// Database name.
-	Version		int			`json:"version"`// Database version.
-	ObjectStores	[]IndexedDB_ObjectStore	`json:"objectStores"`// Object stores in this database.
+	// Database name.
+	Name string `json:"name"`
+	// Database version.
+	Version int `json:"version"`
+	// Object stores in this database.
+	ObjectStores []IndexedDB_ObjectStore `json:"objectStores"`
 }
 type IndexedDB_ObjectStore struct {
-	Name		string				`json:"name"`// Object store name.
-	KeyPath		IndexedDB_KeyPath		`json:"keyPath"`// Object store key path.
-	AutoIncrement	bool				`json:"autoIncrement"`// If true, object store has auto increment flag set.
-	Indexes		[]IndexedDB_ObjectStoreIndex	`json:"indexes"`// Indexes in this object store.
+	// Object store name.
+	Name string `json:"name"`
+	// Object store key path.
+	KeyPath IndexedDB_KeyPath `json:"keyPath"`
+	// If true, object store has auto increment flag set.
+	AutoIncrement bool `json:"autoIncrement"`
+	// Indexes in this object store.
+	Indexes []IndexedDB_ObjectStoreIndex `json:"indexes"`
 }
 type IndexedDB_ObjectStoreIndex struct {
-	Name		string			`json:"name"`// Index name.
-	KeyPath		IndexedDB_KeyPath	`json:"keyPath"`// Index key path.
-	Unique		bool			`json:"unique"`// If true, index is unique.
-	MultiEntry	bool			`json:"multiEntry"`// If true, index allows multiple entries for a key.
+	// Index name.
+	Name string `json:"name"`
+	// Index key path.
+	KeyPath IndexedDB_KeyPath `json:"keyPath"`
+	// If true, index is unique.
+	Unique bool `json:"unique"`
+	// If true, index allows multiple entries for a key.
+	MultiEntry bool `json:"multiEntry"`
 }
 type IndexedDB_Key struct {
-	Type	string			`json:"type"`// Key type.
-	Number	*float32		`json:"number,omitempty"`// Number value.
-	String	*string			`json:"string,omitempty"`// String value.
-	Date	*float32		`json:"date,omitempty"`// Date value.
-	Array	[]*IndexedDB_Key	`json:"array,omitempty"`// Array value.
+	// Key type.
+	Type string `json:"type"`
+	// Number value.
+	Number *float32 `json:"number,omitempty"`
+	// String value.
+	String *string `json:"string,omitempty"`
+	// Date value.
+	Date *float32 `json:"date,omitempty"`
+	// Array value.
+	Array []*IndexedDB_Key `json:"array,omitempty"`
 }
 type IndexedDB_KeyRange struct {
-	Lower		*IndexedDB_Key	`json:"lower,omitempty"`// Lower bound.
-	Upper		*IndexedDB_Key	`json:"upper,omitempty"`// Upper bound.
-	LowerOpen	bool		`json:"lowerOpen"`// If true lower bound is open.
-	UpperOpen	bool		`json:"upperOpen"`// If true upper bound is open.
+	// Lower bound.
+	Lower *IndexedDB_Key `json:"lower,omitempty"`
+	// Upper bound.
+	Upper *IndexedDB_Key `json:"upper,omitempty"`
+	// If true lower bound is open.
+	LowerOpen bool `json:"lowerOpen"`
+	// If true upper bound is open.
+	UpperOpen bool `json:"upperOpen"`
 }
 type IndexedDB_DataEntry struct {
-	Key		Runtime_RemoteObject	`json:"key"`// Key object.
-	PrimaryKey	Runtime_RemoteObject	`json:"primaryKey"`// Primary key object.
-	Value		Runtime_RemoteObject	`json:"value"`// Value object.
+	// Key object.
+	Key Runtime_RemoteObject `json:"key"`
+	// Primary key object.
+	PrimaryKey Runtime_RemoteObject `json:"primaryKey"`
+	// Value object.
+	Value Runtime_RemoteObject `json:"value"`
 }
 type IndexedDB_KeyPath struct {
-	Type	string		`json:"type"`// Key path type.
-	String	*string		`json:"string,omitempty"`// String value.
-	Array	[]string	`json:"array,omitempty"`// Array value.
+	// Key path type.
+	Type string `json:"type"`
+	// String value.
+	String *string `json:"string,omitempty"`
+	// Array value.
+	Array []string `json:"array,omitempty"`
 }

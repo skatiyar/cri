@@ -12,13 +12,18 @@ func New(conn cri.Connector) *Accessibility {
 }
 
 type GetPartialAXTreeRequest struct {
-	NodeId		types.DOM_NodeId	`json:"nodeId"`// ID of node to get the partial accessibility tree for.
-	FetchRelatives	*bool			`json:"fetchRelatives,omitempty"`// Whether to fetch this nodes ancestors, siblings and children. Defaults to true.
+	// ID of node to get the partial accessibility tree for.
+	NodeId types.DOM_NodeId `json:"nodeId"`
+	// Whether to fetch this nodes ancestors, siblings and children. Defaults to true.
+	FetchRelatives *bool `json:"fetchRelatives,omitempty"`
+}
+type GetPartialAXTreeResponse struct {
+	// The <code>Accessibility.AXNode</code> for this DOM node, if it exists, plus its ancestors, siblings and children, if requested.
+	Nodes []types.Accessibility_AXNode `json:"nodes"`
 }
 
-func (obj *Accessibility) GetPartialAXTree(request *GetPartialAXTreeRequest) (response struct {
-	Nodes []types.Accessibility_AXNode `json:"nodes"`// The <code>Accessibility.AXNode</code> for this DOM node, if it exists, plus its ancestors, siblings and children, if requested.
-}, err error) {
+// Fetches the accessibility node and partial accessibility tree for this DOM node, if it exists.
+func (obj *Accessibility) GetPartialAXTree(request *GetPartialAXTreeRequest) (response GetPartialAXTreeResponse, err error) {
 	err = obj.conn.Send("Accessibility.getPartialAXTree", request, &response)
 	return
 }

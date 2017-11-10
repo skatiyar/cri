@@ -1,6 +1,8 @@
 package types
 
 type HeadlessExperimental_ScreenshotParams struct {
-	Format	*string	`json:"format,omitempty"`// Image compression format (defaults to png).
-	Quality	*int	`json:"quality,omitempty"`// Compression quality from range [0..100] (jpeg only).
+	// Image compression format (defaults to png).
+	Format *string `json:"format,omitempty"`
+	// Compression quality from range [0..100] (jpeg only).
+	Quality *int `json:"quality,omitempty"`
 }
