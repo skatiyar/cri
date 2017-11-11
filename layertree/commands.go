@@ -10,92 +10,127 @@ type LayerTree struct {
 func New(conn cri.Connector) *LayerTree {
 	return &LayerTree{conn}
 }
+
+// Enables compositing tree inspection.
 func (obj *LayerTree) Enable() (err error) {
 	err = obj.conn.Send("LayerTree.enable", nil, nil)
 	return
 }
+
+// Disables compositing tree inspection.
 func (obj *LayerTree) Disable() (err error) {
 	err = obj.conn.Send("LayerTree.disable", nil, nil)
 	return
 }
 
 type CompositingReasonsRequest struct {
+	// The id of the layer for which we want to get the reasons it was composited.
 	LayerId types.LayerTree_LayerId `json:"layerId"`
 }
-
-func (obj *LayerTree) CompositingReasons(request *CompositingReasonsRequest) (response struct {
+type CompositingReasonsResponse struct {
+	// A list of strings specifying reasons for the given layer to become composited.
 	CompositingReasons []string `json:"compositingReasons"`
-}, err error) {
+}
+
+// Provides the reasons why the given layer was composited.
+func (obj *LayerTree) CompositingReasons(request *CompositingReasonsRequest) (response CompositingReasonsResponse, err error) {
 	err = obj.conn.Send("LayerTree.compositingReasons", request, &response)
 	return
 }
 
 type MakeSnapshotRequest struct {
+	// The id of the layer.
 	LayerId types.LayerTree_LayerId `json:"layerId"`
 }
-
-func (obj *LayerTree) MakeSnapshot(request *MakeSnapshotRequest) (response struct {
+type MakeSnapshotResponse struct {
+	// The id of the layer snapshot.
 	SnapshotId types.LayerTree_SnapshotId `json:"snapshotId"`
-}, err error) {
+}
+
+// Returns the layer snapshot identifier.
+func (obj *LayerTree) MakeSnapshot(request *MakeSnapshotRequest) (response MakeSnapshotResponse, err error) {
 	err = obj.conn.Send("LayerTree.makeSnapshot", request, &response)
 	return
 }
 
 type LoadSnapshotRequest struct {
+	// An array of tiles composing the snapshot.
 	Tiles []types.LayerTree_PictureTile `json:"tiles"`
 }
-
-func (obj *LayerTree) LoadSnapshot(request *LoadSnapshotRequest) (response struct {
+type LoadSnapshotResponse struct {
+	// The id of the snapshot.
 	SnapshotId types.LayerTree_SnapshotId `json:"snapshotId"`
-}, err error) {
+}
+
+// Returns the snapshot identifier.
+func (obj *LayerTree) LoadSnapshot(request *LoadSnapshotRequest) (response LoadSnapshotResponse, err error) {
 	err = obj.conn.Send("LayerTree.loadSnapshot", request, &response)
 	return
 }
 
 type ReleaseSnapshotRequest struct {
+	// The id of the layer snapshot.
 	SnapshotId types.LayerTree_SnapshotId `json:"snapshotId"`
 }
 
+// Releases layer snapshot captured by the back-end.
 func (obj *LayerTree) ReleaseSnapshot(request *ReleaseSnapshotRequest) (err error) {
 	err = obj.conn.Send("LayerTree.releaseSnapshot", request, nil)
 	return
 }
 
 type ProfileSnapshotRequest struct {
-	SnapshotId     types.LayerTree_SnapshotId `json:"snapshotId"`
-	MinRepeatCount *int                       `json:"minRepeatCount,omitempty"`
-	MinDuration    *float32                   `json:"minDuration,omitempty"`
-	ClipRect       *types.DOM_Rect            `json:"clipRect,omitempty"`
+	// The id of the layer snapshot.
+	SnapshotId types.LayerTree_SnapshotId `json:"snapshotId"`
+	// The maximum number of times to replay the snapshot (1, if not specified).
+	MinRepeatCount *int `json:"minRepeatCount,omitempty"`
+	// The minimum duration (in seconds) to replay the snapshot.
+	MinDuration *float32 `json:"minDuration,omitempty"`
+	// The clip rectangle to apply when replaying the snapshot.
+	ClipRect *types.DOM_Rect `json:"clipRect,omitempty"`
+}
+type ProfileSnapshotResponse struct {
+	// The array of paint profiles, one per run.
+	Timings []types.LayerTree_PaintProfile `json:"timings"`
 }
 
-func (obj *LayerTree) ProfileSnapshot(request *ProfileSnapshotRequest) (response struct {
-	Timings []types.LayerTree_PaintProfile `json:"timings"`
-}, err error) {
+func (obj *LayerTree) ProfileSnapshot(request *ProfileSnapshotRequest) (response ProfileSnapshotResponse, err error) {
 	err = obj.conn.Send("LayerTree.profileSnapshot", request, &response)
 	return
 }
 
 type ReplaySnapshotRequest struct {
+	// The id of the layer snapshot.
 	SnapshotId types.LayerTree_SnapshotId `json:"snapshotId"`
-	FromStep   *int                       `json:"fromStep,omitempty"`
-	ToStep     *int                       `json:"toStep,omitempty"`
-	Scale      *float32                   `json:"scale,omitempty"`
+	// The first step to replay from (replay from the very start if not specified).
+	FromStep *int `json:"fromStep,omitempty"`
+	// The last step to replay to (replay till the end if not specified).
+	ToStep *int `json:"toStep,omitempty"`
+	// The scale to apply while replaying (defaults to 1).
+	Scale *float32 `json:"scale,omitempty"`
+}
+type ReplaySnapshotResponse struct {
+	// A data: URL for resulting image.
+	DataURL string `json:"dataURL"`
 }
 
-func (obj *LayerTree) ReplaySnapshot(request *ReplaySnapshotRequest) (response struct {
-	DataURL string `json:"dataURL"`
-}, err error) {
+// Replays the layer snapshot and returns the resulting bitmap.
+func (obj *LayerTree) ReplaySnapshot(request *ReplaySnapshotRequest) (response ReplaySnapshotResponse, err error) {
 	err = obj.conn.Send("LayerTree.replaySnapshot", request, &response)
 	return
 }
 
 type SnapshotCommandLogRequest struct {
+	// The id of the layer snapshot.
 	SnapshotId types.LayerTree_SnapshotId `json:"snapshotId"`
 }
-
-func (obj *LayerTree) SnapshotCommandLog(request *SnapshotCommandLogRequest) (response struct {
+type SnapshotCommandLogResponse struct {
+	// The array of canvas function calls.
 	CommandLog []map[string]interface{} `json:"commandLog"`
-}, err error) {
+}
+
+// Replays the layer snapshot and returns canvas log.
+func (obj *LayerTree) SnapshotCommandLog(request *SnapshotCommandLogRequest) (response SnapshotCommandLogResponse, err error) {
 	err = obj.conn.Send("LayerTree.snapshotCommandLog", request, &response)
 	return
 }

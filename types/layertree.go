@@ -3,36 +3,61 @@ package types
 type LayerTree_LayerId string
 type LayerTree_SnapshotId string
 type LayerTree_ScrollRect struct {
+	// Rectangle itself.
 	Rect DOM_Rect `json:"rect"`
-	Type string   `json:"type"`
+	// Reason for rectangle to force scrolling on the main thread
+	Type string `json:"type"`
 }
 type LayerTree_StickyPositionConstraint struct {
-	StickyBoxRect                       DOM_Rect           `json:"stickyBoxRect"`
-	ContainingBlockRect                 DOM_Rect           `json:"containingBlockRect"`
-	NearestLayerShiftingStickyBox       *LayerTree_LayerId `json:"nearestLayerShiftingStickyBox,omitempty"`
+	// Layout rectangle of the sticky element before being shifted
+	StickyBoxRect DOM_Rect `json:"stickyBoxRect"`
+	// Layout rectangle of the containing block of the sticky element
+	ContainingBlockRect DOM_Rect `json:"containingBlockRect"`
+	// The nearest sticky layer that shifts the sticky box
+	NearestLayerShiftingStickyBox *LayerTree_LayerId `json:"nearestLayerShiftingStickyBox,omitempty"`
+	// The nearest sticky layer that shifts the containing block
 	NearestLayerShiftingContainingBlock *LayerTree_LayerId `json:"nearestLayerShiftingContainingBlock,omitempty"`
 }
 type LayerTree_PictureTile struct {
-	X       float32 `json:"x"`
-	Y       float32 `json:"y"`
-	Picture string  `json:"picture"`
+	// Offset from owning layer left boundary
+	X float32 `json:"x"`
+	// Offset from owning layer top boundary
+	Y float32 `json:"y"`
+	// Base64-encoded snapshot data.
+	Picture string `json:"picture"`
 }
 type LayerTree_Layer struct {
-	LayerId                  LayerTree_LayerId                   `json:"layerId"`
-	ParentLayerId            *LayerTree_LayerId                  `json:"parentLayerId,omitempty"`
-	BackendNodeId            *DOM_BackendNodeId                  `json:"backendNodeId,omitempty"`
-	OffsetX                  float32                             `json:"offsetX"`
-	OffsetY                  float32                             `json:"offsetY"`
-	Width                    float32                             `json:"width"`
-	Height                   float32                             `json:"height"`
-	Transform                []float32                           `json:"transform,omitempty"`
-	AnchorX                  *float32                            `json:"anchorX,omitempty"`
-	AnchorY                  *float32                            `json:"anchorY,omitempty"`
-	AnchorZ                  *float32                            `json:"anchorZ,omitempty"`
-	PaintCount               int                                 `json:"paintCount"`
-	DrawsContent             bool                                `json:"drawsContent"`
-	Invisible                *bool                               `json:"invisible,omitempty"`
-	ScrollRects              []LayerTree_ScrollRect              `json:"scrollRects,omitempty"`
+	// The unique id for this layer.
+	LayerId LayerTree_LayerId `json:"layerId"`
+	// The id of parent (not present for root).
+	ParentLayerId *LayerTree_LayerId `json:"parentLayerId,omitempty"`
+	// The backend id for the node associated with this layer.
+	BackendNodeId *DOM_BackendNodeId `json:"backendNodeId,omitempty"`
+	// Offset from parent layer, X coordinate.
+	OffsetX float32 `json:"offsetX"`
+	// Offset from parent layer, Y coordinate.
+	OffsetY float32 `json:"offsetY"`
+	// Layer width.
+	Width float32 `json:"width"`
+	// Layer height.
+	Height float32 `json:"height"`
+	// Transformation matrix for layer, default is identity matrix
+	Transform []float32 `json:"transform,omitempty"`
+	// Transform anchor point X, absent if no transform specified
+	AnchorX *float32 `json:"anchorX,omitempty"`
+	// Transform anchor point Y, absent if no transform specified
+	AnchorY *float32 `json:"anchorY,omitempty"`
+	// Transform anchor point Z, absent if no transform specified
+	AnchorZ *float32 `json:"anchorZ,omitempty"`
+	// Indicates how many time this layer has painted.
+	PaintCount int `json:"paintCount"`
+	// Indicates whether this layer hosts any content, rather than being used for transform/scrolling purposes only.
+	DrawsContent bool `json:"drawsContent"`
+	// Set if layer is not visible.
+	Invisible *bool `json:"invisible,omitempty"`
+	// Rectangles scrolling on main thread only.
+	ScrollRects []LayerTree_ScrollRect `json:"scrollRects,omitempty"`
+	// Sticky position constraint information
 	StickyPositionConstraint *LayerTree_StickyPositionConstraint `json:"stickyPositionConstraint,omitempty"`
 }
 type LayerTree_PaintProfile []float32

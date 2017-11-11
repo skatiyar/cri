@@ -10,9 +10,9 @@ import (
 	"strings"
 
 	"go/ast"
-	"go/format"
 	"go/importer"
 	"go/parser"
+	"go/printer"
 	"go/token"
 	"go/types"
 )
@@ -63,6 +63,7 @@ func createCode(jsProto JSProtocol, browserProto BrowserProtocol) {
 	}
 
 	config := types.Config{Importer: importer.For("source", nil)}
+	pConfig := printer.Config{Mode: printer.UseSpaces | printer.TabIndent, Tabwidth: 8}
 	domains := append(jsProto.Domains, browserProto.Domains...)
 	commandsFileSet := token.NewFileSet()
 	commandsFiles := make([]string, 0)
@@ -93,7 +94,7 @@ func createCode(jsProto JSProtocol, browserProto BrowserProtocol) {
 
 		typesFiles = append(typesFiles, tFilePath)
 		newTypesFile := createTypesFile(domains[i])
-		if writeErr := format.Node(tFile, typesFileSet, newTypesFile); writeErr != nil {
+		if writeErr := pConfig.Fprint(tFile, typesFileSet, newTypesFile); writeErr != nil {
 			panic(writeErr)
 		}
 		if fileCloseErr := tFile.Close(); fileCloseErr != nil {
@@ -108,7 +109,7 @@ func createCode(jsProto JSProtocol, browserProto BrowserProtocol) {
 
 		commandsFiles = append(commandsFiles, cFilePath)
 		newCommandsFile := createCommandsFile(domains[i])
-		if writeErr := format.Node(cFile, commandsFileSet, newCommandsFile); writeErr != nil {
+		if writeErr := pConfig.Fprint(cFile, commandsFileSet, newCommandsFile); writeErr != nil {
 			panic(writeErr)
 		}
 		if fileCloseErr := cFile.Close(); fileCloseErr != nil {
@@ -152,22 +153,22 @@ func createCode(jsProto JSProtocol, browserProto BrowserProtocol) {
 		panic(vFileErr)
 	}
 
-	fileSet := token.NewFileSet()
-	newFile := createVersionFile(jsProto.Version, "cri")
-	if writeErr := format.Node(vFile, fileSet, newFile); writeErr != nil {
+	vFileSet := token.NewFileSet()
+	newVersionFile := createVersionFile(jsProto.Version, "cri")
+	if writeErr := pConfig.Fprint(vFile, vFileSet, newVersionFile); writeErr != nil {
 		panic(writeErr)
 	}
 	if fileCloseErr := vFile.Close(); fileCloseErr != nil {
 		panic(fileCloseErr)
 	}
 
-	pFile, pFileErr := parser.ParseFile(fileSet, vFilePath, nil, 0)
+	pFile, pFileErr := parser.ParseFile(vFileSet, vFilePath, nil, 0)
 	if pFileErr != nil {
 		panic(pFileErr)
 	}
 
 	pkgImportPath := path.Join(ImportPath, "cri")
-	if _, pkgErr := config.Check(pkgImportPath, fileSet, []*ast.File{pFile}, nil); pkgErr != nil {
+	if _, pkgErr := config.Check(pkgImportPath, vFileSet, []*ast.File{pFile}, nil); pkgErr != nil {
 		panic(pkgErr)
 	}
 }

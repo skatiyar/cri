@@ -12,36 +12,50 @@ func New(conn cri.Connector) *IO {
 }
 
 type ReadRequest struct {
+	// Handle of the stream to read.
 	Handle types.IO_StreamHandle `json:"handle"`
-	Offset *int                  `json:"offset,omitempty"`
-	Size   *int                  `json:"size,omitempty"`
+	// Seek to the specified offset before reading (if not specificed, proceed with offset following the last read).
+	Offset *int `json:"offset,omitempty"`
+	// Maximum number of bytes to read (left upon the agent discretion if not specified).
+	Size *int `json:"size,omitempty"`
+}
+type ReadResponse struct {
+	// Set if the data is base64-encoded
+	Base64Encoded *bool `json:"base64Encoded,omitempty"`
+	// Data that were read.
+	Data string `json:"data"`
+	// Set if the end-of-file condition occured while reading.
+	Eof bool `json:"eof"`
 }
 
-func (obj *IO) Read(request *ReadRequest) (response struct {
-	Base64Encoded *bool  `json:"base64Encoded,omitempty"`
-	Data          string `json:"data"`
-	Eof           bool   `json:"eof"`
-}, err error) {
+// Read a chunk of the stream
+func (obj *IO) Read(request *ReadRequest) (response ReadResponse, err error) {
 	err = obj.conn.Send("IO.read", request, &response)
 	return
 }
 
 type CloseRequest struct {
+	// Handle of the stream to close.
 	Handle types.IO_StreamHandle `json:"handle"`
 }
 
+// Close the stream, discard any temporary backing storage.
 func (obj *IO) Close(request *CloseRequest) (err error) {
 	err = obj.conn.Send("IO.close", request, nil)
 	return
 }
 
 type ResolveBlobRequest struct {
+	// Object id of a Blob object wrapper.
 	ObjectId types.Runtime_RemoteObjectId `json:"objectId"`
 }
-
-func (obj *IO) ResolveBlob(request *ResolveBlobRequest) (response struct {
+type ResolveBlobResponse struct {
+	// UUID of the specified Blob.
 	Uuid string `json:"uuid"`
-}, err error) {
+}
+
+// Return UUID of Blob object specified by a remote object id.
+func (obj *IO) ResolveBlob(request *ResolveBlobRequest) (response ResolveBlobResponse, err error) {
 	err = obj.conn.Send("IO.resolveBlob", request, &response)
 	return
 }

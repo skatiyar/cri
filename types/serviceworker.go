@@ -8,15 +8,17 @@ type ServiceWorker_ServiceWorkerRegistration struct {
 type ServiceWorker_ServiceWorkerVersionRunningStatus string
 type ServiceWorker_ServiceWorkerVersionStatus string
 type ServiceWorker_ServiceWorkerVersion struct {
-	VersionId          string                                          `json:"versionId"`
-	RegistrationId     string                                          `json:"registrationId"`
-	ScriptURL          string                                          `json:"scriptURL"`
-	RunningStatus      ServiceWorker_ServiceWorkerVersionRunningStatus `json:"runningStatus"`
-	Status             ServiceWorker_ServiceWorkerVersionStatus        `json:"status"`
-	ScriptLastModified *float32                                        `json:"scriptLastModified,omitempty"`
-	ScriptResponseTime *float32                                        `json:"scriptResponseTime,omitempty"`
-	ControlledClients  []Target_TargetID                               `json:"controlledClients,omitempty"`
-	TargetId           *Target_TargetID                                `json:"targetId,omitempty"`
+	VersionId      string                                          `json:"versionId"`
+	RegistrationId string                                          `json:"registrationId"`
+	ScriptURL      string                                          `json:"scriptURL"`
+	RunningStatus  ServiceWorker_ServiceWorkerVersionRunningStatus `json:"runningStatus"`
+	Status         ServiceWorker_ServiceWorkerVersionStatus        `json:"status"`
+	// The Last-Modified header value of the main script.
+	ScriptLastModified *float32 `json:"scriptLastModified,omitempty"`
+	// The time at which the response headers of the main script were received from the server.  For cached script it is the last time the cache entry was validated.
+	ScriptResponseTime *float32          `json:"scriptResponseTime,omitempty"`
+	ControlledClients  []Target_TargetID `json:"controlledClients,omitempty"`
+	TargetId           *Target_TargetID  `json:"targetId,omitempty"`
 }
 type ServiceWorker_ServiceWorkerErrorMessage struct {
 	ErrorMessage   string `json:"errorMessage"`

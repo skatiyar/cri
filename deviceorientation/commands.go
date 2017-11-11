@@ -11,15 +11,21 @@ func New(conn cri.Connector) *DeviceOrientation {
 }
 
 type SetDeviceOrientationOverrideRequest struct {
+	// Mock alpha
 	Alpha float32 `json:"alpha"`
-	Beta  float32 `json:"beta"`
+	// Mock beta
+	Beta float32 `json:"beta"`
+	// Mock gamma
 	Gamma float32 `json:"gamma"`
 }
 
+// Overrides the Device Orientation.
 func (obj *DeviceOrientation) SetDeviceOrientationOverride(request *SetDeviceOrientationOverrideRequest) (err error) {
 	err = obj.conn.Send("DeviceOrientation.setDeviceOrientationOverride", request, nil)
 	return
 }
+
+// Clears the overridden Device Orientation.
 func (obj *DeviceOrientation) ClearDeviceOrientationOverride() (err error) {
 	err = obj.conn.Send("DeviceOrientation.clearDeviceOrientationOverride", nil, nil)
 	return

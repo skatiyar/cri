@@ -2,12 +2,18 @@ package types
 
 type Database_DatabaseId string
 type Database_Database struct {
-	Id      Database_DatabaseId `json:"id"`
-	Domain  string              `json:"domain"`
-	Name    string              `json:"name"`
-	Version string              `json:"version"`
+	// Database ID.
+	Id Database_DatabaseId `json:"id"`
+	// Database domain.
+	Domain string `json:"domain"`
+	// Database name.
+	Name string `json:"name"`
+	// Database version.
+	Version string `json:"version"`
 }
 type Database_Error struct {
+	// Error message.
 	Message string `json:"message"`
-	Code    int    `json:"code"`
+	// Error code.
+	Code int `json:"code"`
 }

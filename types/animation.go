@@ -1,34 +1,59 @@
 package types
 
 type Animation_Animation struct {
-	Id           string                     `json:"id"`
-	Name         string                     `json:"name"`
-	PausedState  bool                       `json:"pausedState"`
-	PlayState    string                     `json:"playState"`
-	PlaybackRate float32                    `json:"playbackRate"`
-	StartTime    float32                    `json:"startTime"`
-	CurrentTime  float32                    `json:"currentTime"`
-	Type         string                     `json:"type"`
-	Source       *Animation_AnimationEffect `json:"source,omitempty"`
-	CssId        *string                    `json:"cssId,omitempty"`
+	// <code>Animation</code>'s id.
+	Id string `json:"id"`
+	// <code>Animation</code>'s name.
+	Name string `json:"name"`
+	// <code>Animation</code>'s internal paused state.
+	// NOTE Experimental
+	PausedState bool `json:"pausedState"`
+	// <code>Animation</code>'s play state.
+	PlayState string `json:"playState"`
+	// <code>Animation</code>'s playback rate.
+	PlaybackRate float32 `json:"playbackRate"`
+	// <code>Animation</code>'s start time.
+	StartTime float32 `json:"startTime"`
+	// <code>Animation</code>'s current time.
+	CurrentTime float32 `json:"currentTime"`
+	// Animation type of <code>Animation</code>.
+	Type string `json:"type"`
+	// <code>Animation</code>'s source animation node.
+	Source *Animation_AnimationEffect `json:"source,omitempty"`
+	// A unique ID for <code>Animation</code> representing the sources that triggered this CSS animation/transition.
+	CssId *string `json:"cssId,omitempty"`
 }
 type Animation_AnimationEffect struct {
-	Delay          float32                  `json:"delay"`
-	EndDelay       float32                  `json:"endDelay"`
-	IterationStart float32                  `json:"iterationStart"`
-	Iterations     float32                  `json:"iterations"`
-	Duration       float32                  `json:"duration"`
-	Direction      string                   `json:"direction"`
-	Fill           string                   `json:"fill"`
-	BackendNodeId  *DOM_BackendNodeId       `json:"backendNodeId,omitempty"`
-	KeyframesRule  *Animation_KeyframesRule `json:"keyframesRule,omitempty"`
-	Easing         string                   `json:"easing"`
+	// <code>AnimationEffect</code>'s delay.
+	Delay float32 `json:"delay"`
+	// <code>AnimationEffect</code>'s end delay.
+	EndDelay float32 `json:"endDelay"`
+	// <code>AnimationEffect</code>'s iteration start.
+	IterationStart float32 `json:"iterationStart"`
+	// <code>AnimationEffect</code>'s iterations.
+	Iterations float32 `json:"iterations"`
+	// <code>AnimationEffect</code>'s iteration duration.
+	Duration float32 `json:"duration"`
+	// <code>AnimationEffect</code>'s playback direction.
+	Direction string `json:"direction"`
+	// <code>AnimationEffect</code>'s fill mode.
+	Fill string `json:"fill"`
+	// <code>AnimationEffect</code>'s target node.
+	BackendNodeId *DOM_BackendNodeId `json:"backendNodeId,omitempty"`
+	// <code>AnimationEffect</code>'s keyframes.
+	KeyframesRule *Animation_KeyframesRule `json:"keyframesRule,omitempty"`
+	// <code>AnimationEffect</code>'s timing function.
+	Easing string `json:"easing"`
 }
 type Animation_KeyframesRule struct {
-	Name      *string                   `json:"name,omitempty"`
+	// CSS keyframed animation's name.
+	Name *string `json:"name,omitempty"`
+	// List of animation keyframes.
 	Keyframes []Animation_KeyframeStyle `json:"keyframes"`
 }
 type Animation_KeyframeStyle struct {
+	// Keyframe's time offset.
 	Offset string `json:"offset"`
+	// <code>AnimationEffect</code>'s timing function.
 	Easing string `json:"easing"`
 }

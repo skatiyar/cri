@@ -1,48 +1,78 @@
 package types
 
 type Profiler_ProfileNode struct {
-	Id            int                         `json:"id"`
-	CallFrame     Runtime_CallFrame           `json:"callFrame"`
-	HitCount      *int                        `json:"hitCount,omitempty"`
-	Children      []int                       `json:"children,omitempty"`
-	DeoptReason   *string                     `json:"deoptReason,omitempty"`
+	// Unique id of the node.
+	Id int `json:"id"`
+	// Function location.
+	CallFrame Runtime_CallFrame `json:"callFrame"`
+	// Number of samples where this node was on top of the call stack.
+	// NOTE Experimental
+	HitCount *int `json:"hitCount,omitempty"`
+	// Child node ids.
+	Children []int `json:"children,omitempty"`
+	// The reason of being not optimized. The function may be deoptimized or marked as don't optimize.
+	DeoptReason *string `json:"deoptReason,omitempty"`
+	// An array of source position ticks.
+	// NOTE Experimental
 	PositionTicks []Profiler_PositionTickInfo `json:"positionTicks,omitempty"`
 }
 type Profiler_Profile struct {
-	Nodes      []Profiler_ProfileNode `json:"nodes"`
-	StartTime  float32                `json:"startTime"`
-	EndTime    float32                `json:"endTime"`
-	Samples    []int                  `json:"samples,omitempty"`
-	TimeDeltas []int                  `json:"timeDeltas,omitempty"`
+	// The list of profile nodes. First item is the root node.
+	Nodes []Profiler_ProfileNode `json:"nodes"`
+	// Profiling start timestamp in microseconds.
+	StartTime float32 `json:"startTime"`
+	// Profiling end timestamp in microseconds.
+	EndTime float32 `json:"endTime"`
+	// Ids of samples top nodes.
+	Samples []int `json:"samples,omitempty"`
+	// Time intervals between adjacent samples in microseconds. The first delta is relative to the profile startTime.
+	TimeDeltas []int `json:"timeDeltas,omitempty"`
 }
 type Profiler_PositionTickInfo struct {
-	Line  int `json:"line"`
+	// Source line number (1-based).
+	Line int `json:"line"`
+	// Number of samples attributed to the source line.
 	Ticks int `json:"ticks"`
 }
 type Profiler_CoverageRange struct {
+	// JavaScript script source offset for the range start.
 	StartOffset int `json:"startOffset"`
-	EndOffset   int `json:"endOffset"`
-	Count       int `json:"count"`
+	// JavaScript script source offset for the range end.
+	EndOffset int `json:"endOffset"`
+	// Collected execution count of the source range.
+	Count int `json:"count"`
 }
 type Profiler_FunctionCoverage struct {
-	FunctionName    string                   `json:"functionName"`
-	Ranges          []Profiler_CoverageRange `json:"ranges"`
-	IsBlockCoverage bool                     `json:"isBlockCoverage"`
+	// JavaScript function name.
+	FunctionName string `json:"functionName"`
+	// Source ranges inside the function with coverage data.
+	Ranges []Profiler_CoverageRange `json:"ranges"`
+	// Whether coverage data for this function has block granularity.
+	IsBlockCoverage bool `json:"isBlockCoverage"`
 }
 type Profiler_ScriptCoverage struct {
-	ScriptId  Runtime_ScriptId            `json:"scriptId"`
-	Url       string                      `json:"url"`
+	// JavaScript script id.
+	ScriptId Runtime_ScriptId `json:"scriptId"`
+	// JavaScript script name or url.
+	Url string `json:"url"`
+	// Functions contained in the script that has coverage data.
 	Functions []Profiler_FunctionCoverage `json:"functions"`
 }
 type Profiler_TypeObject struct {
+	// Name of a type collected with type profiling.
 	Name string `json:"name"`
 }
 type Profiler_TypeProfileEntry struct {
-	Offset int                   `json:"offset"`
-	Types  []Profiler_TypeObject `json:"types"`
+	// Source offset of the parameter or end of function for return values.
+	Offset int `json:"offset"`
+	// The types for this parameter or return value.
+	Types []Profiler_TypeObject `json:"types"`
 }
 type Profiler_ScriptTypeProfile struct {
-	ScriptId Runtime_ScriptId            `json:"scriptId"`
-	Url      string                      `json:"url"`
-	Entries  []Profiler_TypeProfileEntry `json:"entries"`
+	// JavaScript script id.
+	ScriptId Runtime_ScriptId `json:"scriptId"`
+	// JavaScript script name or url.
+	Url string `json:"url"`
+	// Type profile entries for parameters and return values of the functions in the script.
+	Entries []Profiler_TypeProfileEntry `json:"entries"`
 }

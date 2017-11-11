@@ -2,14 +2,24 @@ package types
 
 type DOMDebugger_DOMBreakpointType string
 type DOMDebugger_EventListener struct {
-	Type            string                `json:"type"`
-	UseCapture      bool                  `json:"useCapture"`
-	Passive         bool                  `json:"passive"`
-	Once            bool                  `json:"once"`
-	ScriptId        Runtime_ScriptId      `json:"scriptId"`
-	LineNumber      int                   `json:"lineNumber"`
-	ColumnNumber    int                   `json:"columnNumber"`
-	Handler         *Runtime_RemoteObject `json:"handler,omitempty"`
+	// <code>EventListener</code>'s type.
+	Type string `json:"type"`
+	// <code>EventListener</code>'s useCapture.
+	UseCapture bool `json:"useCapture"`
+	// <code>EventListener</code>'s passive flag.
+	Passive bool `json:"passive"`
+	// <code>EventListener</code>'s once flag.
+	Once bool `json:"once"`
+	// Script id of the handler code.
+	ScriptId Runtime_ScriptId `json:"scriptId"`
+	// Line number in the script (0-based).
+	LineNumber int `json:"lineNumber"`
+	// Column number in the script (0-based).
+	ColumnNumber int `json:"columnNumber"`
+	// Event handler function value.
+	Handler *Runtime_RemoteObject `json:"handler,omitempty"`
+	// Event original handler function value.
 	OriginalHandler *Runtime_RemoteObject `json:"originalHandler,omitempty"`
-	BackendNodeId   *DOM_BackendNodeId    `json:"backendNodeId,omitempty"`
+	// Node the listener is added to (if any).
+	BackendNodeId *DOM_BackendNodeId `json:"backendNodeId,omitempty"`
 }

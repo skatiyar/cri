@@ -1,6 +1,8 @@
 package types
 
 type Schema_Domain struct {
-	Name    string `json:"name"`
+	// Domain name.
+	Name string `json:"name"`
+	// Domain version.
 	Version string `json:"version"`
 }
