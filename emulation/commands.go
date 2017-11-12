@@ -222,6 +222,7 @@ func (obj *Emulation) SetDefaultBackgroundColorOverride(request *SetDefaultBackg
 }
 
 // Notification sent after the virtual time budget for the current VirtualTimePolicy has run out.
+// NOTE Experimental
 func (obj *Emulation) VirtualTimeBudgetExpired(fn func() bool) {
 
 	closeChn := make(chan struct{})
@@ -242,6 +243,7 @@ type VirtualTimeAdvancedParams struct {
 }
 
 // Notification sent after the virtual time has advanced.
+// NOTE Experimental
 func (obj *Emulation) VirtualTimeAdvanced(fn func(params *VirtualTimeAdvancedParams) bool) {
 	params := VirtualTimeAdvancedParams{}
 	closeChn := make(chan struct{})
@@ -262,6 +264,7 @@ type VirtualTimePausedParams struct {
 }
 
 // Notification sent after the virtual time has paused.
+// NOTE Experimental
 func (obj *Emulation) VirtualTimePaused(fn func(params *VirtualTimePausedParams) bool) {
 	params := VirtualTimePausedParams{}
 	closeChn := make(chan struct{})

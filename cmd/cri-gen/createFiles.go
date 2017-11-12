@@ -289,6 +289,9 @@ func transformCommands(d Domain) CommandsData {
 		if len(d.Events[i].Description) > 0 {
 			eve.Doc = "// " + d.Events[i].Description
 		}
+		if d.Events[i].Experimental {
+			eve.Doc += "\n// NOTE Experimental"
+		}
 		if len(d.Events[i].Parameters) > 0 {
 			paramsName := strings.Title(d.Events[i].Name) + "Params"
 			eve.EventParams = "params *" + paramsName

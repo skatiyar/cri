@@ -685,6 +685,7 @@ type InlineStyleInvalidatedParams struct {
 }
 
 // Fired when <code>Element</code>'s inline style is modified via a CSS property modification.
+// NOTE Experimental
 func (obj *DOM) InlineStyleInvalidated(fn func(params *InlineStyleInvalidatedParams) bool) {
 	params := InlineStyleInvalidatedParams{}
 	closeChn := make(chan struct{})
@@ -797,6 +798,7 @@ type ShadowRootPushedParams struct {
 }
 
 // Called when shadow root is pushed into the element.
+// NOTE Experimental
 func (obj *DOM) ShadowRootPushed(fn func(params *ShadowRootPushedParams) bool) {
 	params := ShadowRootPushedParams{}
 	closeChn := make(chan struct{})
@@ -819,6 +821,7 @@ type ShadowRootPoppedParams struct {
 }
 
 // Called when shadow root is popped from the element.
+// NOTE Experimental
 func (obj *DOM) ShadowRootPopped(fn func(params *ShadowRootPoppedParams) bool) {
 	params := ShadowRootPoppedParams{}
 	closeChn := make(chan struct{})
@@ -841,6 +844,7 @@ type PseudoElementAddedParams struct {
 }
 
 // Called when a pseudo element is added to an element.
+// NOTE Experimental
 func (obj *DOM) PseudoElementAdded(fn func(params *PseudoElementAddedParams) bool) {
 	params := PseudoElementAddedParams{}
 	closeChn := make(chan struct{})
@@ -863,6 +867,7 @@ type PseudoElementRemovedParams struct {
 }
 
 // Called when a pseudo element is removed from an element.
+// NOTE Experimental
 func (obj *DOM) PseudoElementRemoved(fn func(params *PseudoElementRemovedParams) bool) {
 	params := PseudoElementRemovedParams{}
 	closeChn := make(chan struct{})
@@ -885,6 +890,7 @@ type DistributedNodesUpdatedParams struct {
 }
 
 // Called when distrubution is changed.
+// NOTE Experimental
 func (obj *DOM) DistributedNodesUpdated(fn func(params *DistributedNodesUpdatedParams) bool) {
 	params := DistributedNodesUpdatedParams{}
 	closeChn := make(chan struct{})

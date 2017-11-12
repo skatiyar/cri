@@ -349,6 +349,7 @@ type ResourceChangedPriorityParams struct {
 }
 
 // Fired when resource loading priority is changed
+// NOTE Experimental
 func (obj *Network) ResourceChangedPriority(fn func(params *ResourceChangedPriorityParams) bool) {
 	params := ResourceChangedPriorityParams{}
 	closeChn := make(chan struct{})
@@ -549,6 +550,7 @@ type WebSocketWillSendHandshakeRequestParams struct {
 }
 
 // Fired when WebSocket is about to initiate handshake.
+// NOTE Experimental
 func (obj *Network) WebSocketWillSendHandshakeRequest(fn func(params *WebSocketWillSendHandshakeRequestParams) bool) {
 	params := WebSocketWillSendHandshakeRequestParams{}
 	closeChn := make(chan struct{})
@@ -573,6 +575,7 @@ type WebSocketHandshakeResponseReceivedParams struct {
 }
 
 // Fired when WebSocket handshake response becomes available.
+// NOTE Experimental
 func (obj *Network) WebSocketHandshakeResponseReceived(fn func(params *WebSocketHandshakeResponseReceivedParams) bool) {
 	params := WebSocketHandshakeResponseReceivedParams{}
 	closeChn := make(chan struct{})
@@ -597,6 +600,7 @@ type WebSocketCreatedParams struct {
 }
 
 // Fired upon WebSocket creation.
+// NOTE Experimental
 func (obj *Network) WebSocketCreated(fn func(params *WebSocketCreatedParams) bool) {
 	params := WebSocketCreatedParams{}
 	closeChn := make(chan struct{})
@@ -619,6 +623,7 @@ type WebSocketClosedParams struct {
 }
 
 // Fired when WebSocket is closed.
+// NOTE Experimental
 func (obj *Network) WebSocketClosed(fn func(params *WebSocketClosedParams) bool) {
 	params := WebSocketClosedParams{}
 	closeChn := make(chan struct{})
@@ -643,6 +648,7 @@ type WebSocketFrameReceivedParams struct {
 }
 
 // Fired when WebSocket frame is received.
+// NOTE Experimental
 func (obj *Network) WebSocketFrameReceived(fn func(params *WebSocketFrameReceivedParams) bool) {
 	params := WebSocketFrameReceivedParams{}
 	closeChn := make(chan struct{})
@@ -667,6 +673,7 @@ type WebSocketFrameErrorParams struct {
 }
 
 // Fired when WebSocket frame error occurs.
+// NOTE Experimental
 func (obj *Network) WebSocketFrameError(fn func(params *WebSocketFrameErrorParams) bool) {
 	params := WebSocketFrameErrorParams{}
 	closeChn := make(chan struct{})
@@ -691,6 +698,7 @@ type WebSocketFrameSentParams struct {
 }
 
 // Fired when WebSocket frame is sent.
+// NOTE Experimental
 func (obj *Network) WebSocketFrameSent(fn func(params *WebSocketFrameSentParams) bool) {
 	params := WebSocketFrameSentParams{}
 	closeChn := make(chan struct{})
@@ -719,6 +727,7 @@ type EventSourceMessageReceivedParams struct {
 }
 
 // Fired when EventSource message is received.
+// NOTE Experimental
 func (obj *Network) EventSourceMessageReceived(fn func(params *EventSourceMessageReceivedParams) bool) {
 	params := EventSourceMessageReceivedParams{}
 	closeChn := make(chan struct{})
@@ -754,6 +763,7 @@ type RequestInterceptedParams struct {
 }
 
 // Details of an intercepted HTTP request, which must be either allowed, blocked, modified or mocked.
+// NOTE Experimental
 func (obj *Network) RequestIntercepted(fn func(params *RequestInterceptedParams) bool) {
 	params := RequestInterceptedParams{}
 	closeChn := make(chan struct{})

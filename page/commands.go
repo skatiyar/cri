@@ -668,6 +668,7 @@ type FrameStartedLoadingParams struct {
 }
 
 // Fired when frame has started loading.
+// NOTE Experimental
 func (obj *Page) FrameStartedLoading(fn func(params *FrameStartedLoadingParams) bool) {
 	params := FrameStartedLoadingParams{}
 	closeChn := make(chan struct{})
@@ -688,6 +689,7 @@ type FrameStoppedLoadingParams struct {
 }
 
 // Fired when frame has stopped loading.
+// NOTE Experimental
 func (obj *Page) FrameStoppedLoading(fn func(params *FrameStoppedLoadingParams) bool) {
 	params := FrameStoppedLoadingParams{}
 	closeChn := make(chan struct{})
@@ -716,6 +718,7 @@ type FrameScheduledNavigationParams struct {
 }
 
 // Fired when frame schedules a potential navigation.
+// NOTE Experimental
 func (obj *Page) FrameScheduledNavigation(fn func(params *FrameScheduledNavigationParams) bool) {
 	params := FrameScheduledNavigationParams{}
 	closeChn := make(chan struct{})
@@ -736,6 +739,7 @@ type FrameClearedScheduledNavigationParams struct {
 }
 
 // Fired when frame no longer has a scheduled navigation.
+// NOTE Experimental
 func (obj *Page) FrameClearedScheduledNavigation(fn func(params *FrameClearedScheduledNavigationParams) bool) {
 	params := FrameClearedScheduledNavigationParams{}
 	closeChn := make(chan struct{})
@@ -750,6 +754,7 @@ func (obj *Page) FrameClearedScheduledNavigation(fn func(params *FrameClearedSch
 	}()
 }
 
+// NOTE Experimental
 func (obj *Page) FrameResized(fn func() bool) {
 
 	closeChn := make(chan struct{})
@@ -822,6 +827,7 @@ type ScreencastFrameParams struct {
 }
 
 // Compressed image data requested by the <code>startScreencast</code>.
+// NOTE Experimental
 func (obj *Page) ScreencastFrame(fn func(params *ScreencastFrameParams) bool) {
 	params := ScreencastFrameParams{}
 	closeChn := make(chan struct{})
@@ -842,6 +848,7 @@ type ScreencastVisibilityChangedParams struct {
 }
 
 // Fired when the page with currently enabled screencast was shown or hidden </code>.
+// NOTE Experimental
 func (obj *Page) ScreencastVisibilityChanged(fn func(params *ScreencastVisibilityChangedParams) bool) {
 	params := ScreencastVisibilityChangedParams{}
 	closeChn := make(chan struct{})
@@ -898,6 +905,7 @@ type WindowOpenParams struct {
 }
 
 // Fired when window.open() was called
+// NOTE Experimental
 func (obj *Page) WindowOpen(fn func(params *WindowOpenParams) bool) {
 	params := WindowOpenParams{}
 	closeChn := make(chan struct{})
