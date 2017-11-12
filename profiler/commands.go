@@ -1,14 +1,13 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
-
+ */
 
 package profiler
 
 import (
-    "github.com/SKatiyar/cri"
-    types "github.com/SKatiyar/cri/types"
+	"github.com/SKatiyar/cri"
+	types "github.com/SKatiyar/cri/types"
 )
 
 type Profiler struct {
@@ -25,12 +24,10 @@ func (obj *Profiler) Enable() (err error) {
 	return
 }
 
-
 func (obj *Profiler) Disable() (err error) {
 	err = obj.conn.Send("Profiler.disable", nil, nil)
 	return
 }
-
 
 type SetSamplingIntervalRequest struct {
 	// New sampling interval in microseconds.
@@ -43,24 +40,20 @@ func (obj *Profiler) SetSamplingInterval(request *SetSamplingIntervalRequest) (e
 	return
 }
 
-
 func (obj *Profiler) Start() (err error) {
 	err = obj.conn.Send("Profiler.start", nil, nil)
 	return
 }
-
 
 type StopResponse struct {
 	// Recorded profile.
 	Profile types.Profiler_Profile `json:"profile"`
 }
 
-
 func (obj *Profiler) Stop() (response StopResponse, err error) {
 	err = obj.conn.Send("Profiler.stop", nil, &response)
 	return
 }
-
 
 type StartPreciseCoverageRequest struct {
 	// Collect accurate call counts beyond simple 'covered' or 'not covered'.
@@ -81,7 +74,6 @@ func (obj *Profiler) StopPreciseCoverage() (err error) {
 	return
 }
 
-
 type TakePreciseCoverageResponse struct {
 	// Coverage data for the current isolate.
 	Result []types.Profiler_ScriptCoverage `json:"result"`
@@ -92,7 +84,6 @@ func (obj *Profiler) TakePreciseCoverage() (response TakePreciseCoverageResponse
 	err = obj.conn.Send("Profiler.takePreciseCoverage", nil, &response)
 	return
 }
-
 
 type GetBestEffortCoverageResponse struct {
 	// Coverage data for the current isolate.
@@ -117,7 +108,6 @@ func (obj *Profiler) StopTypeProfile() (err error) {
 	return
 }
 
-
 type TakeTypeProfileResponse struct {
 	// Type profile for all scripts since startTypeProfile() was turned on.
 	Result []types.Profiler_ScriptTypeProfile `json:"result"`
@@ -127,4 +117,50 @@ type TakeTypeProfileResponse struct {
 func (obj *Profiler) TakeTypeProfile() (response TakeTypeProfileResponse, err error) {
 	err = obj.conn.Send("Profiler.takeTypeProfile", nil, &response)
 	return
+}
+
+type ConsoleProfileStartedParams struct {
+	Id string `json:"id"`
+	// Location of console.profile().
+	Location types.Debugger_Location `json:"location"`
+	// Profile title passed as an argument to console.profile().
+	Title *string `json:"title,omitempty"`
+}
+
+// Sent when new profile recording is started using console.profile() call.
+func (obj *Profiler) ConsoleProfileStarted(fn func(params *ConsoleProfileStartedParams) bool) {
+	params := ConsoleProfileStartedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Profiler.consoleProfileStarted", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type ConsoleProfileFinishedParams struct {
+	Id string `json:"id"`
+	// Location of console.profileEnd().
+	Location types.Debugger_Location `json:"location"`
+	Profile  types.Profiler_Profile  `json:"profile"`
+	// Profile title passed as an argument to console.profile().
+	Title *string `json:"title,omitempty"`
+}
+
+func (obj *Profiler) ConsoleProfileFinished(fn func(params *ConsoleProfileFinishedParams) bool) {
+	params := ConsoleProfileFinishedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Profiler.consoleProfileFinished", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
 }

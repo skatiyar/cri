@@ -33,3 +33,24 @@ func (obj *{{.Domain}}) {{.Name}}({{.RequestName}}) ({{.ResponseName}}) {
 	return
 }
 {{end -}}
+
+{{range .Events}}
+{{- range .Types}}
+{{.Doc}}
+type {{.ID}} {{.Type}}
+{{end}}
+{{.Doc}}
+func (obj *{{.Domain}}) {{.Name}}(fn func({{.EventParams}}) bool) {
+    {{.ParamsDecl}}
+    closeChn := make(chan struct{})
+    go func() {
+        for closeChn != nil {
+            obj.conn.On({{printf "%q" .Command}}, closeChn, {{.ParamsValue}})
+            if !fn({{.CallParams}}) {
+                closeChn <- struct{}{}
+                close(closeChn)
+            }
+        }
+    }()
+}
+{{end -}}

@@ -1,14 +1,14 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 // Supports additional targets discovery and allows to attach to them.
 package target
 
 import (
-    "github.com/SKatiyar/cri"
-    types "github.com/SKatiyar/cri/types"
+	"github.com/SKatiyar/cri"
+	types "github.com/SKatiyar/cri/types"
 )
 
 type Target struct {
@@ -31,7 +31,6 @@ func (obj *Target) SetDiscoverTargets(request *SetDiscoverTargetsRequest) (err e
 	return
 }
 
-
 type SetAutoAttachRequest struct {
 	// Whether to auto-attach to related targets.
 	AutoAttach bool `json:"autoAttach"`
@@ -45,18 +44,15 @@ func (obj *Target) SetAutoAttach(request *SetAutoAttachRequest) (err error) {
 	return
 }
 
-
 type SetAttachToFramesRequest struct {
 	// Whether to attach to frames.
 	Value bool `json:"value"`
 }
 
-
 func (obj *Target) SetAttachToFrames(request *SetAttachToFramesRequest) (err error) {
 	err = obj.conn.Send("Target.setAttachToFrames", request, nil)
 	return
 }
-
 
 type SetRemoteLocationsRequest struct {
 	// List of remote locations.
@@ -68,7 +64,6 @@ func (obj *Target) SetRemoteLocations(request *SetRemoteLocationsRequest) (err e
 	err = obj.conn.Send("Target.setRemoteLocations", request, nil)
 	return
 }
-
 
 type SendMessageToTargetRequest struct {
 	Message string `json:"message"`
@@ -84,11 +79,9 @@ func (obj *Target) SendMessageToTarget(request *SendMessageToTargetRequest) (err
 	return
 }
 
-
 type GetTargetInfoRequest struct {
 	TargetId types.Target_TargetID `json:"targetId"`
 }
-
 
 type GetTargetInfoResponse struct {
 	TargetInfo types.Target_TargetInfo `json:"targetInfo"`
@@ -100,7 +93,6 @@ func (obj *Target) GetTargetInfo(request *GetTargetInfoRequest) (response GetTar
 	return
 }
 
-
 type ActivateTargetRequest struct {
 	TargetId types.Target_TargetID `json:"targetId"`
 }
@@ -111,11 +103,9 @@ func (obj *Target) ActivateTarget(request *ActivateTargetRequest) (err error) {
 	return
 }
 
-
 type CloseTargetRequest struct {
 	TargetId types.Target_TargetID `json:"targetId"`
 }
-
 
 type CloseTargetResponse struct {
 	Success bool `json:"success"`
@@ -127,11 +117,9 @@ func (obj *Target) CloseTarget(request *CloseTargetRequest) (response CloseTarge
 	return
 }
 
-
 type AttachToTargetRequest struct {
 	TargetId types.Target_TargetID `json:"targetId"`
 }
-
 
 type AttachToTargetResponse struct {
 	// Id assigned to the session.
@@ -143,7 +131,6 @@ func (obj *Target) AttachToTarget(request *AttachToTargetRequest) (response Atta
 	err = obj.conn.Send("Target.attachToTarget", request, &response)
 	return
 }
-
 
 type DetachFromTargetRequest struct {
 	// Session to detach.
@@ -158,7 +145,6 @@ func (obj *Target) DetachFromTarget(request *DetachFromTargetRequest) (err error
 	return
 }
 
-
 type CreateBrowserContextResponse struct {
 	// The id of the context created.
 	BrowserContextId types.Target_BrowserContextID `json:"browserContextId"`
@@ -170,11 +156,9 @@ func (obj *Target) CreateBrowserContext() (response CreateBrowserContextResponse
 	return
 }
 
-
 type DisposeBrowserContextRequest struct {
 	BrowserContextId types.Target_BrowserContextID `json:"browserContextId"`
 }
-
 
 type DisposeBrowserContextResponse struct {
 	Success bool `json:"success"`
@@ -185,7 +169,6 @@ func (obj *Target) DisposeBrowserContext(request *DisposeBrowserContextRequest) 
 	err = obj.conn.Send("Target.disposeBrowserContext", request, &response)
 	return
 }
-
 
 type CreateTargetRequest struct {
 	// The initial URL the page will be navigated to.
@@ -201,7 +184,6 @@ type CreateTargetRequest struct {
 	EnableBeginFrameControl *bool `json:"enableBeginFrameControl,omitempty"`
 }
 
-
 type CreateTargetResponse struct {
 	// The id of the page opened.
 	TargetId types.Target_TargetID `json:"targetId"`
@@ -213,7 +195,6 @@ func (obj *Target) CreateTarget(request *CreateTargetRequest) (response CreateTa
 	return
 }
 
-
 type GetTargetsResponse struct {
 	// The list of targets.
 	TargetInfos []types.Target_TargetInfo `json:"targetInfos"`
@@ -223,4 +204,128 @@ type GetTargetsResponse struct {
 func (obj *Target) GetTargets() (response GetTargetsResponse, err error) {
 	err = obj.conn.Send("Target.getTargets", nil, &response)
 	return
+}
+
+type TargetCreatedParams struct {
+	TargetInfo types.Target_TargetInfo `json:"targetInfo"`
+}
+
+// Issued when a possible inspection target is created.
+func (obj *Target) TargetCreated(fn func(params *TargetCreatedParams) bool) {
+	params := TargetCreatedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Target.targetCreated", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type TargetInfoChangedParams struct {
+	TargetInfo types.Target_TargetInfo `json:"targetInfo"`
+}
+
+// Issued when some information about a target has changed. This only happens between <code>targetCreated</code> and <code>targetDestroyed</code>.
+func (obj *Target) TargetInfoChanged(fn func(params *TargetInfoChangedParams) bool) {
+	params := TargetInfoChangedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Target.targetInfoChanged", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type TargetDestroyedParams struct {
+	TargetId types.Target_TargetID `json:"targetId"`
+}
+
+// Issued when a target is destroyed.
+func (obj *Target) TargetDestroyed(fn func(params *TargetDestroyedParams) bool) {
+	params := TargetDestroyedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Target.targetDestroyed", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type AttachedToTargetParams struct {
+	// Identifier assigned to the session used to send/receive messages.
+	SessionId          types.Target_SessionID  `json:"sessionId"`
+	TargetInfo         types.Target_TargetInfo `json:"targetInfo"`
+	WaitingForDebugger bool                    `json:"waitingForDebugger"`
+}
+
+// Issued when attached to target because of auto-attach or <code>attachToTarget</code> command.
+func (obj *Target) AttachedToTarget(fn func(params *AttachedToTargetParams) bool) {
+	params := AttachedToTargetParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Target.attachedToTarget", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type DetachedFromTargetParams struct {
+	// Detached session identifier.
+	SessionId types.Target_SessionID `json:"sessionId"`
+	// Deprecated.
+	TargetId *types.Target_TargetID `json:"targetId,omitempty"`
+}
+
+// Issued when detached from target for any reason (including <code>detachFromTarget</code> command). Can be issued multiple times per target if multiple sessions have been attached to it.
+func (obj *Target) DetachedFromTarget(fn func(params *DetachedFromTargetParams) bool) {
+	params := DetachedFromTargetParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Target.detachedFromTarget", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type ReceivedMessageFromTargetParams struct {
+	// Identifier of a session which sends a message.
+	SessionId types.Target_SessionID `json:"sessionId"`
+	Message   string                 `json:"message"`
+	// Deprecated.
+	TargetId *types.Target_TargetID `json:"targetId,omitempty"`
+}
+
+// Notifies about a new protocol message received from the session (as reported in <code>attachedToTarget</code> event).
+func (obj *Target) ReceivedMessageFromTarget(fn func(params *ReceivedMessageFromTargetParams) bool) {
+	params := ReceivedMessageFromTargetParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Target.receivedMessageFromTarget", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
 }

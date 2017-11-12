@@ -60,6 +60,12 @@ type CommandRequest struct {
 	errChn chan error
 }
 
+type EventRequest struct {
+	Method string
+
+	eventChn chan CommandResponse
+}
+
 type Connection struct {
 	addr, wsAddr string
 	conn         *websocket.Conn
@@ -68,6 +74,7 @@ type Connection struct {
 	counterLock sync.RWMutex
 	reqChn      chan CommandRequest
 	responseMap sync.Map
+	eventMap    sync.Map
 }
 
 func NewConnection(opts ...ConnectionOption) (*Connection, error) {
@@ -124,6 +131,16 @@ func (c *Connection) Send(command string, request, response interface{}) error {
 	return c.cmd(cmd, response)
 }
 
+func (c *Connection) On(event string, closeChn chan struct{}, params interface{}) error {
+	event := EventRequest{
+		Method: event,
+		resChn: make(chan CommandResponse),
+	}
+
+	<-closeChn
+	return c.linstener(event, params)
+}
+
 func (c *Connection) Close() error {
 	return nil
 }
@@ -177,6 +194,13 @@ func (c *Connection) reader() {
 
 			c.responseMap.Delete(data.ID)
 		} else if len(data.Method) > 0 {
+			if val, vok := c.eventMap.Load(data.Method); vok {
+				if eve, eok := val.([]EventRequest); eok {
+					for i := 0; i < len(eve); i++ {
+						eve[i].eventChn <- data
+					}
+				}
+			}
 		}
 	}
 }

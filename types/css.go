@@ -1,11 +1,9 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 package types
-
-
 
 type CSS_StyleSheetId string
 
@@ -121,7 +119,6 @@ type CSS_SourceRange struct {
 	EndColumn int `json:"endColumn"`
 }
 
-
 type CSS_ShorthandEntry struct {
 	// Shorthand name.
 	Name string `json:"name"`
@@ -130,7 +127,6 @@ type CSS_ShorthandEntry struct {
 	// Whether the property has "!important" annotation (implies <code>false</code> if absent).
 	Important *bool `json:"important,omitempty"`
 }
-
 
 type CSS_CSSComputedStyleProperty struct {
 	// Computed style property name.
@@ -261,4 +257,3 @@ type CSS_InlineTextBox struct {
 	// The number of characters in this post layout textbox substring.
 	NumCharacters int `json:"numCharacters"`
 }
-

@@ -1,10 +1,9 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 package types
-
 
 //Unique accessibility node identifier.
 type Accessibility_AXNodeId string
@@ -40,7 +39,6 @@ type Accessibility_AXValueSource struct {
 	InvalidReason *string `json:"invalidReason,omitempty"`
 }
 
-
 type Accessibility_AXRelatedNode struct {
 	// The BackendNodeId of the related DOM node.
 	BackendDOMNodeId DOM_BackendNodeId `json:"backendDOMNodeId"`
@@ -49,7 +47,6 @@ type Accessibility_AXRelatedNode struct {
 	// The text alternative of this node in the current context.
 	Text *string `json:"text,omitempty"`
 }
-
 
 type Accessibility_AXProperty struct {
 	// The name of this property.
@@ -108,4 +105,3 @@ type Accessibility_AXNode struct {
 	// The backend ID for the associated DOM node, if any.
 	BackendDOMNodeId *DOM_BackendNodeId `json:"backendDOMNodeId,omitempty"`
 }
-

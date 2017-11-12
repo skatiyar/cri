@@ -1,10 +1,9 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 package types
-
 
 //Resource type as it was perceived by the rendering engine.
 type Page_ResourceType string
@@ -167,4 +166,3 @@ type Page_Viewport struct {
 	// Page scale factor.
 	Scale float32 `json:"scale"`
 }
-

@@ -1,10 +1,9 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 package types
-
 
 //Console message.
 type Console_ConsoleMessage struct {
@@ -21,4 +20,3 @@ type Console_ConsoleMessage struct {
 	// Column number in the resource that generated this message (1-based).
 	Column *int `json:"column,omitempty"`
 }
-

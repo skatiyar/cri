@@ -1,10 +1,9 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 package types
-
 
 //Detailed application cache resource information.
 type ApplicationCache_ApplicationCacheResource struct {
@@ -39,4 +38,3 @@ type ApplicationCache_FrameWithManifest struct {
 	// Application cache status.
 	Status int `json:"status"`
 }
-

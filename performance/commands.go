@@ -1,14 +1,13 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
-
+ */
 
 package performance
 
 import (
-    "github.com/SKatiyar/cri"
-    types "github.com/SKatiyar/cri/types"
+	"github.com/SKatiyar/cri"
+	types "github.com/SKatiyar/cri/types"
 )
 
 type Performance struct {
@@ -19,6 +18,7 @@ type Performance struct {
 func New(conn cri.Connector) *Performance {
 	return &Performance{conn}
 }
+
 // Enable collecting and reporting metrics.
 func (obj *Performance) Enable() (err error) {
 	err = obj.conn.Send("Performance.enable", nil, nil)
@@ -31,7 +31,6 @@ func (obj *Performance) Disable() (err error) {
 	return
 }
 
-
 type GetMetricsResponse struct {
 	// Current values for run-time metrics.
 	Metrics []types.Performance_Metric `json:"metrics"`
@@ -41,4 +40,26 @@ type GetMetricsResponse struct {
 func (obj *Performance) GetMetrics() (response GetMetricsResponse, err error) {
 	err = obj.conn.Send("Performance.getMetrics", nil, &response)
 	return
+}
+
+type MetricsParams struct {
+	// Current values of the metrics.
+	Metrics []types.Performance_Metric `json:"metrics"`
+	// Timestamp title.
+	Title string `json:"title"`
+}
+
+// Current values of the metrics.
+func (obj *Performance) Metrics(fn func(params *MetricsParams) bool) {
+	params := MetricsParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Performance.metrics", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
 }

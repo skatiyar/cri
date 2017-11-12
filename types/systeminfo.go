@@ -1,10 +1,9 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 package types
-
 
 //Describes a single graphics processor (GPU).
 type SystemInfo_GPUDevice struct {
@@ -29,4 +28,3 @@ type SystemInfo_GPUInfo struct {
 	// An optional array of GPU driver bug workarounds.
 	DriverBugWorkarounds []string `json:"driverBugWorkarounds"`
 }
-

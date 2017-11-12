@@ -1,14 +1,14 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 // Actions and events related to the inspected page belong to the page domain.
 package page
 
 import (
-    "github.com/SKatiyar/cri"
-    types "github.com/SKatiyar/cri/types"
+	"github.com/SKatiyar/cri"
+	types "github.com/SKatiyar/cri/types"
 )
 
 type Page struct {
@@ -19,6 +19,7 @@ type Page struct {
 func New(conn cri.Connector) *Page {
 	return &Page{conn}
 }
+
 // Enables page domain notifications.
 func (obj *Page) Enable() (err error) {
 	err = obj.conn.Send("Page.enable", nil, nil)
@@ -31,11 +32,9 @@ func (obj *Page) Disable() (err error) {
 	return
 }
 
-
 type AddScriptToEvaluateOnLoadRequest struct {
 	ScriptSource string `json:"scriptSource"`
 }
-
 
 type AddScriptToEvaluateOnLoadResponse struct {
 	// Identifier of the added script.
@@ -48,7 +47,6 @@ func (obj *Page) AddScriptToEvaluateOnLoad(request *AddScriptToEvaluateOnLoadReq
 	return
 }
 
-
 type RemoveScriptToEvaluateOnLoadRequest struct {
 	Identifier types.Page_ScriptIdentifier `json:"identifier"`
 }
@@ -59,11 +57,9 @@ func (obj *Page) RemoveScriptToEvaluateOnLoad(request *RemoveScriptToEvaluateOnL
 	return
 }
 
-
 type AddScriptToEvaluateOnNewDocumentRequest struct {
 	Source string `json:"source"`
 }
-
 
 type AddScriptToEvaluateOnNewDocumentResponse struct {
 	// Identifier of the added script.
@@ -76,7 +72,6 @@ func (obj *Page) AddScriptToEvaluateOnNewDocument(request *AddScriptToEvaluateOn
 	return
 }
 
-
 type RemoveScriptToEvaluateOnNewDocumentRequest struct {
 	Identifier types.Page_ScriptIdentifier `json:"identifier"`
 }
@@ -86,7 +81,6 @@ func (obj *Page) RemoveScriptToEvaluateOnNewDocument(request *RemoveScriptToEval
 	err = obj.conn.Send("Page.removeScriptToEvaluateOnNewDocument", request, nil)
 	return
 }
-
 
 type SetAutoAttachToCreatedPagesRequest struct {
 	// If true, browser will open a new inspector window for every page created from this one.
@@ -98,7 +92,6 @@ func (obj *Page) SetAutoAttachToCreatedPages(request *SetAutoAttachToCreatedPage
 	err = obj.conn.Send("Page.setAutoAttachToCreatedPages", request, nil)
 	return
 }
-
 
 type ReloadRequest struct {
 	// If true, browser cache is ignored (as if the user pressed Shift+refresh).
@@ -113,7 +106,6 @@ func (obj *Page) Reload(request *ReloadRequest) (err error) {
 	return
 }
 
-
 type SetAdBlockingEnabledRequest struct {
 	// Whether to block ads.
 	Enabled bool `json:"enabled"`
@@ -125,7 +117,6 @@ func (obj *Page) SetAdBlockingEnabled(request *SetAdBlockingEnabledRequest) (err
 	return
 }
 
-
 type NavigateRequest struct {
 	// URL to navigate the page to.
 	Url string `json:"url"`
@@ -136,7 +127,6 @@ type NavigateRequest struct {
 	// NOTE Experimental
 	TransitionType *types.Page_TransitionType `json:"transitionType,omitempty"`
 }
-
 
 type NavigateResponse struct {
 	// Frame id that will be navigated.
@@ -156,7 +146,6 @@ func (obj *Page) StopLoading() (err error) {
 	return
 }
 
-
 type GetNavigationHistoryResponse struct {
 	// Index of the current navigation history entry.
 	CurrentIndex int `json:"currentIndex"`
@@ -170,7 +159,6 @@ func (obj *Page) GetNavigationHistory() (response GetNavigationHistoryResponse, 
 	return
 }
 
-
 type NavigateToHistoryEntryRequest struct {
 	// Unique id of the entry to navigate to.
 	EntryId int `json:"entryId"`
@@ -182,7 +170,6 @@ func (obj *Page) NavigateToHistoryEntry(request *NavigateToHistoryEntryRequest) 
 	return
 }
 
-
 type GetCookiesResponse struct {
 	// Array of cookie objects.
 	Cookies []types.Network_Cookie `json:"cookies"`
@@ -193,7 +180,6 @@ func (obj *Page) GetCookies() (response GetCookiesResponse, err error) {
 	err = obj.conn.Send("Page.getCookies", nil, &response)
 	return
 }
-
 
 type DeleteCookieRequest struct {
 	// Name of the cookie to remove.
@@ -208,7 +194,6 @@ func (obj *Page) DeleteCookie(request *DeleteCookieRequest) (err error) {
 	return
 }
 
-
 type GetResourceTreeResponse struct {
 	// Present frame / resource tree structure.
 	FrameTree types.Page_FrameResourceTree `json:"frameTree"`
@@ -220,14 +205,12 @@ func (obj *Page) GetResourceTree() (response GetResourceTreeResponse, err error)
 	return
 }
 
-
 type GetResourceContentRequest struct {
 	// Frame id to get resource for.
 	FrameId types.Page_FrameId `json:"frameId"`
 	// URL of the resource to get content for.
 	Url string `json:"url"`
 }
-
 
 type GetResourceContentResponse struct {
 	// Resource content.
@@ -242,7 +225,6 @@ func (obj *Page) GetResourceContent(request *GetResourceContentRequest) (respons
 	return
 }
 
-
 type SearchInResourceRequest struct {
 	// Frame id for resource to search in.
 	FrameId types.Page_FrameId `json:"frameId"`
@@ -256,7 +238,6 @@ type SearchInResourceRequest struct {
 	IsRegex *bool `json:"isRegex,omitempty"`
 }
 
-
 type SearchInResourceResponse struct {
 	// List of search matches.
 	Result []types.Debugger_SearchMatch `json:"result"`
@@ -267,7 +248,6 @@ func (obj *Page) SearchInResource(request *SearchInResourceRequest) (response Se
 	err = obj.conn.Send("Page.searchInResource", request, &response)
 	return
 }
-
 
 type SetDocumentContentRequest struct {
 	// Frame id to set HTML for.
@@ -281,7 +261,6 @@ func (obj *Page) SetDocumentContent(request *SetDocumentContentRequest) (err err
 	err = obj.conn.Send("Page.setDocumentContent", request, nil)
 	return
 }
-
 
 type SetDeviceMetricsOverrideRequest struct {
 	// Overriding width value in pixels (minimum 0, maximum 10000000). 0 disables the override.
@@ -322,7 +301,6 @@ func (obj *Page) ClearDeviceMetricsOverride() (err error) {
 	return
 }
 
-
 type SetGeolocationOverrideRequest struct {
 	// Mock latitude
 	Latitude *float32 `json:"latitude,omitempty"`
@@ -343,7 +321,6 @@ func (obj *Page) ClearGeolocationOverride() (err error) {
 	err = obj.conn.Send("Page.clearGeolocationOverride", nil, nil)
 	return
 }
-
 
 type SetDeviceOrientationOverrideRequest struct {
 	// Mock alpha
@@ -366,7 +343,6 @@ func (obj *Page) ClearDeviceOrientationOverride() (err error) {
 	return
 }
 
-
 type SetTouchEmulationEnabledRequest struct {
 	// Whether the touch event emulation should be enabled.
 	Enabled bool `json:"enabled"`
@@ -379,7 +355,6 @@ func (obj *Page) SetTouchEmulationEnabled(request *SetTouchEmulationEnabledReque
 	err = obj.conn.Send("Page.setTouchEmulationEnabled", request, nil)
 	return
 }
-
 
 type CaptureScreenshotRequest struct {
 	// Image compression format (defaults to png).
@@ -394,7 +369,6 @@ type CaptureScreenshotRequest struct {
 	FromSurface *bool `json:"fromSurface,omitempty"`
 }
 
-
 type CaptureScreenshotResponse struct {
 	// Base64-encoded image data.
 	Data string `json:"data"`
@@ -405,7 +379,6 @@ func (obj *Page) CaptureScreenshot(request *CaptureScreenshotRequest) (response 
 	err = obj.conn.Send("Page.captureScreenshot", request, &response)
 	return
 }
-
 
 type PrintToPDFRequest struct {
 	// Paper orientation. Defaults to false.
@@ -434,7 +407,6 @@ type PrintToPDFRequest struct {
 	IgnoreInvalidPageRanges *bool `json:"ignoreInvalidPageRanges,omitempty"`
 }
 
-
 type PrintToPDFResponse struct {
 	// Base64-encoded pdf data.
 	Data string `json:"data"`
@@ -445,7 +417,6 @@ func (obj *Page) PrintToPDF(request *PrintToPDFRequest) (response PrintToPDFResp
 	err = obj.conn.Send("Page.printToPDF", request, &response)
 	return
 }
-
 
 type StartScreencastRequest struct {
 	// Image compression format.
@@ -472,7 +443,6 @@ func (obj *Page) StopScreencast() (err error) {
 	return
 }
 
-
 type ScreencastFrameAckRequest struct {
 	// Frame number.
 	SessionId int `json:"sessionId"`
@@ -483,7 +453,6 @@ func (obj *Page) ScreencastFrameAck(request *ScreencastFrameAckRequest) (err err
 	err = obj.conn.Send("Page.screencastFrameAck", request, nil)
 	return
 }
-
 
 type HandleJavaScriptDialogRequest struct {
 	// Whether to accept or dismiss the dialog.
@@ -498,27 +467,23 @@ func (obj *Page) HandleJavaScriptDialog(request *HandleJavaScriptDialogRequest) 
 	return
 }
 
-
 type GetAppManifestResponse struct {
 	// Manifest location.
-	Url string `json:"url"`
+	Url    string                        `json:"url"`
 	Errors []types.Page_AppManifestError `json:"errors"`
 	// Manifest content.
 	Data *string `json:"data,omitempty"`
 }
-
 
 func (obj *Page) GetAppManifest() (response GetAppManifestResponse, err error) {
 	err = obj.conn.Send("Page.getAppManifest", nil, &response)
 	return
 }
 
-
 func (obj *Page) RequestAppBanner() (err error) {
 	err = obj.conn.Send("Page.requestAppBanner", nil, nil)
 	return
 }
-
 
 type GetLayoutMetricsResponse struct {
 	// Metrics relating to the layout viewport.
@@ -535,7 +500,6 @@ func (obj *Page) GetLayoutMetrics() (response GetLayoutMetricsResponse, err erro
 	return
 }
 
-
 type CreateIsolatedWorldRequest struct {
 	// Id of the frame in which the isolated world should be created.
 	FrameId types.Page_FrameId `json:"frameId"`
@@ -544,7 +508,6 @@ type CreateIsolatedWorldRequest struct {
 	// Whether or not universal access should be granted to the isolated world. This is a powerful option, use with caution.
 	GrantUniveralAccess *bool `json:"grantUniveralAccess,omitempty"`
 }
-
 
 type CreateIsolatedWorldResponse struct {
 	// Execution context of the isolated world.
@@ -563,7 +526,6 @@ func (obj *Page) BringToFront() (err error) {
 	return
 }
 
-
 type SetDownloadBehaviorRequest struct {
 	// Whether to allow all or deny all download requests, or use default Chrome behavior if available (otherwise deny).
 	Behavior string `json:"behavior"`
@@ -575,4 +537,385 @@ type SetDownloadBehaviorRequest struct {
 func (obj *Page) SetDownloadBehavior(request *SetDownloadBehaviorRequest) (err error) {
 	err = obj.conn.Send("Page.setDownloadBehavior", request, nil)
 	return
+}
+
+type DomContentEventFiredParams struct {
+	Timestamp types.Network_MonotonicTime `json:"timestamp"`
+}
+
+func (obj *Page) DomContentEventFired(fn func(params *DomContentEventFiredParams) bool) {
+	params := DomContentEventFiredParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Page.domContentEventFired", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type LoadEventFiredParams struct {
+	Timestamp types.Network_MonotonicTime `json:"timestamp"`
+}
+
+func (obj *Page) LoadEventFired(fn func(params *LoadEventFiredParams) bool) {
+	params := LoadEventFiredParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Page.loadEventFired", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type LifecycleEventParams struct {
+	// Id of the frame.
+	FrameId   types.Page_FrameId          `json:"frameId"`
+	Name      string                      `json:"name"`
+	Timestamp types.Network_MonotonicTime `json:"timestamp"`
+}
+
+// Fired for top level page lifecycle events such as navigation, load, paint, etc.
+func (obj *Page) LifecycleEvent(fn func(params *LifecycleEventParams) bool) {
+	params := LifecycleEventParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Page.lifecycleEvent", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type FrameAttachedParams struct {
+	// Id of the frame that has been attached.
+	FrameId types.Page_FrameId `json:"frameId"`
+	// Parent frame identifier.
+	ParentFrameId types.Page_FrameId `json:"parentFrameId"`
+	// JavaScript stack trace of when frame was attached, only set if frame initiated from script.
+	// NOTE Experimental
+	Stack *types.Runtime_StackTrace `json:"stack,omitempty"`
+}
+
+// Fired when frame has been attached to its parent.
+func (obj *Page) FrameAttached(fn func(params *FrameAttachedParams) bool) {
+	params := FrameAttachedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Page.frameAttached", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type FrameNavigatedParams struct {
+	// Frame object.
+	Frame types.Page_Frame `json:"frame"`
+}
+
+// Fired once navigation of the frame has completed. Frame is now associated with the new loader.
+func (obj *Page) FrameNavigated(fn func(params *FrameNavigatedParams) bool) {
+	params := FrameNavigatedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Page.frameNavigated", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type FrameDetachedParams struct {
+	// Id of the frame that has been detached.
+	FrameId types.Page_FrameId `json:"frameId"`
+}
+
+// Fired when frame has been detached from its parent.
+func (obj *Page) FrameDetached(fn func(params *FrameDetachedParams) bool) {
+	params := FrameDetachedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Page.frameDetached", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type FrameStartedLoadingParams struct {
+	// Id of the frame that has started loading.
+	FrameId types.Page_FrameId `json:"frameId"`
+}
+
+// Fired when frame has started loading.
+// NOTE Experimental
+func (obj *Page) FrameStartedLoading(fn func(params *FrameStartedLoadingParams) bool) {
+	params := FrameStartedLoadingParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Page.frameStartedLoading", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type FrameStoppedLoadingParams struct {
+	// Id of the frame that has stopped loading.
+	FrameId types.Page_FrameId `json:"frameId"`
+}
+
+// Fired when frame has stopped loading.
+// NOTE Experimental
+func (obj *Page) FrameStoppedLoading(fn func(params *FrameStoppedLoadingParams) bool) {
+	params := FrameStoppedLoadingParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Page.frameStoppedLoading", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type FrameScheduledNavigationParams struct {
+	// Id of the frame that has scheduled a navigation.
+	FrameId types.Page_FrameId `json:"frameId"`
+	// Delay (in seconds) until the navigation is scheduled to begin. The navigation is not guaranteed to start.
+	Delay float32 `json:"delay"`
+	// The reason for the navigation.
+	// NOTE Experimental
+	Reason string `json:"reason"`
+	// The destination URL for the scheduled navigation.
+	// NOTE Experimental
+	Url string `json:"url"`
+}
+
+// Fired when frame schedules a potential navigation.
+// NOTE Experimental
+func (obj *Page) FrameScheduledNavigation(fn func(params *FrameScheduledNavigationParams) bool) {
+	params := FrameScheduledNavigationParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Page.frameScheduledNavigation", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type FrameClearedScheduledNavigationParams struct {
+	// Id of the frame that has cleared its scheduled navigation.
+	FrameId types.Page_FrameId `json:"frameId"`
+}
+
+// Fired when frame no longer has a scheduled navigation.
+// NOTE Experimental
+func (obj *Page) FrameClearedScheduledNavigation(fn func(params *FrameClearedScheduledNavigationParams) bool) {
+	params := FrameClearedScheduledNavigationParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Page.frameClearedScheduledNavigation", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+// NOTE Experimental
+func (obj *Page) FrameResized(fn func() bool) {
+
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Page.frameResized", closeChn, nil)
+			if !fn() {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type JavascriptDialogOpeningParams struct {
+	// Frame url.
+	Url string `json:"url"`
+	// Message that will be displayed by the dialog.
+	Message string `json:"message"`
+	// Dialog type.
+	Type types.Page_DialogType `json:"type"`
+	// Default dialog prompt.
+	DefaultPrompt *string `json:"defaultPrompt,omitempty"`
+}
+
+// Fired when a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload) is about to open.
+func (obj *Page) JavascriptDialogOpening(fn func(params *JavascriptDialogOpeningParams) bool) {
+	params := JavascriptDialogOpeningParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Page.javascriptDialogOpening", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type JavascriptDialogClosedParams struct {
+	// Whether dialog was confirmed.
+	Result bool `json:"result"`
+	// User input in case of prompt.
+	UserInput string `json:"userInput"`
+}
+
+// Fired when a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload) has been closed.
+func (obj *Page) JavascriptDialogClosed(fn func(params *JavascriptDialogClosedParams) bool) {
+	params := JavascriptDialogClosedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Page.javascriptDialogClosed", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type ScreencastFrameParams struct {
+	// Base64-encoded compressed image.
+	Data string `json:"data"`
+	// Screencast frame metadata.
+	Metadata types.Page_ScreencastFrameMetadata `json:"metadata"`
+	// Frame number.
+	SessionId int `json:"sessionId"`
+}
+
+// Compressed image data requested by the <code>startScreencast</code>.
+// NOTE Experimental
+func (obj *Page) ScreencastFrame(fn func(params *ScreencastFrameParams) bool) {
+	params := ScreencastFrameParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Page.screencastFrame", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type ScreencastVisibilityChangedParams struct {
+	// True if the page is visible.
+	Visible bool `json:"visible"`
+}
+
+// Fired when the page with currently enabled screencast was shown or hidden </code>.
+// NOTE Experimental
+func (obj *Page) ScreencastVisibilityChanged(fn func(params *ScreencastVisibilityChangedParams) bool) {
+	params := ScreencastVisibilityChangedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Page.screencastVisibilityChanged", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+// Fired when interstitial page was shown
+func (obj *Page) InterstitialShown(fn func() bool) {
+
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Page.interstitialShown", closeChn, nil)
+			if !fn() {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+// Fired when interstitial page was hidden
+func (obj *Page) InterstitialHidden(fn func() bool) {
+
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Page.interstitialHidden", closeChn, nil)
+			if !fn() {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type WindowOpenParams struct {
+	// The URL for the new window.
+	Url string `json:"url"`
+	// Window name passed to window.open().
+	WindowName string `json:"windowName"`
+	// Window features passed to window.open().
+	WindowFeatures string `json:"windowFeatures"`
+	// Whether or not window.open() was triggered by user gesture.
+	UserGesture bool `json:"userGesture"`
+}
+
+// Fired when window.open() was called
+// NOTE Experimental
+func (obj *Page) WindowOpen(fn func(params *WindowOpenParams) bool) {
+	params := WindowOpenParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Page.windowOpen", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
 }

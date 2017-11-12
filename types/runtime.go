@@ -1,10 +1,9 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 package types
-
 
 //Unique script identifier.
 type Runtime_ScriptId string
@@ -38,13 +37,12 @@ type Runtime_RemoteObject struct {
 	CustomPreview *Runtime_CustomPreview `json:"customPreview,omitempty"`
 }
 
-
 type Runtime_CustomPreview struct {
-	Header string `json:"header"`
-	HasBody bool `json:"hasBody"`
-	FormatterObjectId Runtime_RemoteObjectId `json:"formatterObjectId"`
-	BindRemoteObjectFunctionId Runtime_RemoteObjectId `json:"bindRemoteObjectFunctionId"`
-	ConfigObjectId *Runtime_RemoteObjectId `json:"configObjectId,omitempty"`
+	Header                     string                  `json:"header"`
+	HasBody                    bool                    `json:"hasBody"`
+	FormatterObjectId          Runtime_RemoteObjectId  `json:"formatterObjectId"`
+	BindRemoteObjectFunctionId Runtime_RemoteObjectId  `json:"bindRemoteObjectFunctionId"`
+	ConfigObjectId             *Runtime_RemoteObjectId `json:"configObjectId,omitempty"`
 }
 
 //Object containing abbreviated remote object value.
@@ -63,7 +61,6 @@ type Runtime_ObjectPreview struct {
 	Entries []Runtime_EntryPreview `json:"entries,omitempty"`
 }
 
-
 type Runtime_PropertyPreview struct {
 	// Property name.
 	Name string `json:"name"`
@@ -76,7 +73,6 @@ type Runtime_PropertyPreview struct {
 	// Object subtype hint. Specified for <code>object</code> type values only.
 	Subtype *string `json:"subtype,omitempty"`
 }
-
 
 type Runtime_EntryPreview struct {
 	// Preview of the key. Specified for map-like collection entries.
@@ -193,4 +189,3 @@ type Runtime_StackTrace struct {
 	// NOTE Experimental
 	PromiseCreationFrame *Runtime_CallFrame `json:"promiseCreationFrame,omitempty"`
 }
-

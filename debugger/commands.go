@@ -1,14 +1,14 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 // Debugger domain exposes JavaScript debugging capabilities. It allows setting and removing breakpoints, stepping through execution, exploring stack traces, etc.
 package debugger
 
 import (
-    "github.com/SKatiyar/cri"
-    types "github.com/SKatiyar/cri/types"
+	"github.com/SKatiyar/cri"
+	types "github.com/SKatiyar/cri/types"
 )
 
 type Debugger struct {
@@ -19,6 +19,7 @@ type Debugger struct {
 func New(conn cri.Connector) *Debugger {
 	return &Debugger{conn}
 }
+
 // Enables debugger for the given page. Clients should not assume that the debugging has been enabled until the result for this command is received.
 func (obj *Debugger) Enable() (err error) {
 	err = obj.conn.Send("Debugger.enable", nil, nil)
@@ -31,7 +32,6 @@ func (obj *Debugger) Disable() (err error) {
 	return
 }
 
-
 type SetBreakpointsActiveRequest struct {
 	// New value for breakpoints active state.
 	Active bool `json:"active"`
@@ -43,7 +43,6 @@ func (obj *Debugger) SetBreakpointsActive(request *SetBreakpointsActiveRequest) 
 	return
 }
 
-
 type SetSkipAllPausesRequest struct {
 	// New value for skip pauses state.
 	Skip bool `json:"skip"`
@@ -54,7 +53,6 @@ func (obj *Debugger) SetSkipAllPauses(request *SetSkipAllPausesRequest) (err err
 	err = obj.conn.Send("Debugger.setSkipAllPauses", request, nil)
 	return
 }
-
 
 type SetBreakpointByUrlRequest struct {
 	// Line number to set breakpoint at.
@@ -72,7 +70,6 @@ type SetBreakpointByUrlRequest struct {
 	Condition *string `json:"condition,omitempty"`
 }
 
-
 type SetBreakpointByUrlResponse struct {
 	// Id of the created breakpoint for further reference.
 	BreakpointId types.Debugger_BreakpointId `json:"breakpointId"`
@@ -86,14 +83,12 @@ func (obj *Debugger) SetBreakpointByUrl(request *SetBreakpointByUrlRequest) (res
 	return
 }
 
-
 type SetBreakpointRequest struct {
 	// Location to set breakpoint in.
 	Location types.Debugger_Location `json:"location"`
 	// Expression to use as a breakpoint condition. When specified, debugger will only stop on the breakpoint if this expression evaluates to true.
 	Condition *string `json:"condition,omitempty"`
 }
-
 
 type SetBreakpointResponse struct {
 	// Id of the created breakpoint for further reference.
@@ -108,7 +103,6 @@ func (obj *Debugger) SetBreakpoint(request *SetBreakpointRequest) (response SetB
 	return
 }
 
-
 type RemoveBreakpointRequest struct {
 	BreakpointId types.Debugger_BreakpointId `json:"breakpointId"`
 }
@@ -119,7 +113,6 @@ func (obj *Debugger) RemoveBreakpoint(request *RemoveBreakpointRequest) (err err
 	return
 }
 
-
 type GetPossibleBreakpointsRequest struct {
 	// Start of range to search possible breakpoint locations in.
 	Start types.Debugger_Location `json:"start"`
@@ -128,7 +121,6 @@ type GetPossibleBreakpointsRequest struct {
 	// Only consider locations which are in the same (non-nested) function as start.
 	RestrictToFunction *bool `json:"restrictToFunction,omitempty"`
 }
-
 
 type GetPossibleBreakpointsResponse struct {
 	// List of the possible breakpoint locations.
@@ -140,7 +132,6 @@ func (obj *Debugger) GetPossibleBreakpoints(request *GetPossibleBreakpointsReque
 	err = obj.conn.Send("Debugger.getPossibleBreakpoints", request, &response)
 	return
 }
-
 
 type ContinueToLocationRequest struct {
 	// Location to continue to.
@@ -191,7 +182,6 @@ func (obj *Debugger) Resume() (err error) {
 	return
 }
 
-
 type SearchInContentRequest struct {
 	// Id of the script to search in.
 	ScriptId types.Runtime_ScriptId `json:"scriptId"`
@@ -202,7 +192,6 @@ type SearchInContentRequest struct {
 	// If true, treats string parameter as regex.
 	IsRegex *bool `json:"isRegex,omitempty"`
 }
-
 
 type SearchInContentResponse struct {
 	// List of search matches.
@@ -215,7 +204,6 @@ func (obj *Debugger) SearchInContent(request *SearchInContentRequest) (response 
 	return
 }
 
-
 type SetScriptSourceRequest struct {
 	// Id of the script to edit.
 	ScriptId types.Runtime_ScriptId `json:"scriptId"`
@@ -224,7 +212,6 @@ type SetScriptSourceRequest struct {
 	//  If true the change will not actually be applied. Dry run may be used to get result description without actually modifying the code.
 	DryRun *bool `json:"dryRun,omitempty"`
 }
-
 
 type SetScriptSourceResponse struct {
 	// New stack trace in case editing has happened while VM was stopped.
@@ -243,12 +230,10 @@ func (obj *Debugger) SetScriptSource(request *SetScriptSourceRequest) (response 
 	return
 }
 
-
 type RestartFrameRequest struct {
 	// Call frame identifier to evaluate on.
 	CallFrameId types.Debugger_CallFrameId `json:"callFrameId"`
 }
-
 
 type RestartFrameResponse struct {
 	// New stack trace.
@@ -263,12 +248,10 @@ func (obj *Debugger) RestartFrame(request *RestartFrameRequest) (response Restar
 	return
 }
 
-
 type GetScriptSourceRequest struct {
 	// Id of the script to get source for.
 	ScriptId types.Runtime_ScriptId `json:"scriptId"`
 }
-
 
 type GetScriptSourceResponse struct {
 	// Script source.
@@ -281,7 +264,6 @@ func (obj *Debugger) GetScriptSource(request *GetScriptSourceRequest) (response 
 	return
 }
 
-
 type SetPauseOnExceptionsRequest struct {
 	// Pause on exceptions mode.
 	State string `json:"state"`
@@ -292,7 +274,6 @@ func (obj *Debugger) SetPauseOnExceptions(request *SetPauseOnExceptionsRequest) 
 	err = obj.conn.Send("Debugger.setPauseOnExceptions", request, nil)
 	return
 }
-
 
 type EvaluateOnCallFrameRequest struct {
 	// Call frame identifier to evaluate on.
@@ -315,7 +296,6 @@ type EvaluateOnCallFrameRequest struct {
 	ThrowOnSideEffect *bool `json:"throwOnSideEffect,omitempty"`
 }
 
-
 type EvaluateOnCallFrameResponse struct {
 	// Object wrapper for the evaluation result.
 	Result types.Runtime_RemoteObject `json:"result"`
@@ -328,7 +308,6 @@ func (obj *Debugger) EvaluateOnCallFrame(request *EvaluateOnCallFrameRequest) (r
 	err = obj.conn.Send("Debugger.evaluateOnCallFrame", request, &response)
 	return
 }
-
 
 type SetVariableValueRequest struct {
 	// 0-based number of scope as was listed in scope chain. Only 'local', 'closure' and 'catch' scope types are allowed. Other scopes could be manipulated manually.
@@ -347,7 +326,6 @@ func (obj *Debugger) SetVariableValue(request *SetVariableValueRequest) (err err
 	return
 }
 
-
 type SetAsyncCallStackDepthRequest struct {
 	// Maximum depth of async call stacks. Setting to <code>0</code> will effectively disable collecting async call stacks (default).
 	MaxDepth int `json:"maxDepth"`
@@ -358,7 +336,6 @@ func (obj *Debugger) SetAsyncCallStackDepth(request *SetAsyncCallStackDepthReque
 	err = obj.conn.Send("Debugger.setAsyncCallStackDepth", request, nil)
 	return
 }
-
 
 type SetBlackboxPatternsRequest struct {
 	// Array of regexps that will be used to check script url for blackbox state.
@@ -371,10 +348,9 @@ func (obj *Debugger) SetBlackboxPatterns(request *SetBlackboxPatternsRequest) (e
 	return
 }
 
-
 type SetBlackboxedRangesRequest struct {
 	// Id of the script.
-	ScriptId types.Runtime_ScriptId `json:"scriptId"`
+	ScriptId  types.Runtime_ScriptId          `json:"scriptId"`
 	Positions []types.Debugger_ScriptPosition `json:"positions"`
 }
 
@@ -382,4 +358,172 @@ type SetBlackboxedRangesRequest struct {
 func (obj *Debugger) SetBlackboxedRanges(request *SetBlackboxedRangesRequest) (err error) {
 	err = obj.conn.Send("Debugger.setBlackboxedRanges", request, nil)
 	return
+}
+
+type ScriptParsedParams struct {
+	// Identifier of the script parsed.
+	ScriptId types.Runtime_ScriptId `json:"scriptId"`
+	// URL or name of the script parsed (if any).
+	Url string `json:"url"`
+	// Line offset of the script within the resource with given URL (for script tags).
+	StartLine int `json:"startLine"`
+	// Column offset of the script within the resource with given URL.
+	StartColumn int `json:"startColumn"`
+	// Last line of the script.
+	EndLine int `json:"endLine"`
+	// Length of the last line of the script.
+	EndColumn int `json:"endColumn"`
+	// Specifies script creation context.
+	ExecutionContextId types.Runtime_ExecutionContextId `json:"executionContextId"`
+	// Content hash of the script.
+	Hash string `json:"hash"`
+	// Embedder-specific auxiliary data.
+	ExecutionContextAuxData map[string]interface{} `json:"executionContextAuxData,omitempty"`
+	// True, if this script is generated as a result of the live edit operation.
+	// NOTE Experimental
+	IsLiveEdit *bool `json:"isLiveEdit,omitempty"`
+	// URL of source map associated with script (if any).
+	SourceMapURL *string `json:"sourceMapURL,omitempty"`
+	// True, if this script has sourceURL.
+	// NOTE Experimental
+	HasSourceURL *bool `json:"hasSourceURL,omitempty"`
+	// True, if this script is ES6 module.
+	// NOTE Experimental
+	IsModule *bool `json:"isModule,omitempty"`
+	// This script length.
+	// NOTE Experimental
+	Length *int `json:"length,omitempty"`
+	// JavaScript top stack frame of where the script parsed event was triggered if available.
+	// NOTE Experimental
+	StackTrace *types.Runtime_StackTrace `json:"stackTrace,omitempty"`
+}
+
+// Fired when virtual machine parses script. This event is also fired for all known and uncollected scripts upon enabling debugger.
+func (obj *Debugger) ScriptParsed(fn func(params *ScriptParsedParams) bool) {
+	params := ScriptParsedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Debugger.scriptParsed", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type ScriptFailedToParseParams struct {
+	// Identifier of the script parsed.
+	ScriptId types.Runtime_ScriptId `json:"scriptId"`
+	// URL or name of the script parsed (if any).
+	Url string `json:"url"`
+	// Line offset of the script within the resource with given URL (for script tags).
+	StartLine int `json:"startLine"`
+	// Column offset of the script within the resource with given URL.
+	StartColumn int `json:"startColumn"`
+	// Last line of the script.
+	EndLine int `json:"endLine"`
+	// Length of the last line of the script.
+	EndColumn int `json:"endColumn"`
+	// Specifies script creation context.
+	ExecutionContextId types.Runtime_ExecutionContextId `json:"executionContextId"`
+	// Content hash of the script.
+	Hash string `json:"hash"`
+	// Embedder-specific auxiliary data.
+	ExecutionContextAuxData map[string]interface{} `json:"executionContextAuxData,omitempty"`
+	// URL of source map associated with script (if any).
+	SourceMapURL *string `json:"sourceMapURL,omitempty"`
+	// True, if this script has sourceURL.
+	// NOTE Experimental
+	HasSourceURL *bool `json:"hasSourceURL,omitempty"`
+	// True, if this script is ES6 module.
+	// NOTE Experimental
+	IsModule *bool `json:"isModule,omitempty"`
+	// This script length.
+	// NOTE Experimental
+	Length *int `json:"length,omitempty"`
+	// JavaScript top stack frame of where the script parsed event was triggered if available.
+	// NOTE Experimental
+	StackTrace *types.Runtime_StackTrace `json:"stackTrace,omitempty"`
+}
+
+// Fired when virtual machine fails to parse the script.
+func (obj *Debugger) ScriptFailedToParse(fn func(params *ScriptFailedToParseParams) bool) {
+	params := ScriptFailedToParseParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Debugger.scriptFailedToParse", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type BreakpointResolvedParams struct {
+	// Breakpoint unique identifier.
+	BreakpointId types.Debugger_BreakpointId `json:"breakpointId"`
+	// Actual breakpoint location.
+	Location types.Debugger_Location `json:"location"`
+}
+
+// Fired when breakpoint is resolved to an actual script and location.
+func (obj *Debugger) BreakpointResolved(fn func(params *BreakpointResolvedParams) bool) {
+	params := BreakpointResolvedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Debugger.breakpointResolved", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type PausedParams struct {
+	// Call stack the virtual machine stopped on.
+	CallFrames []types.Debugger_CallFrame `json:"callFrames"`
+	// Pause reason.
+	Reason string `json:"reason"`
+	// Object containing break-specific auxiliary properties.
+	Data map[string]interface{} `json:"data,omitempty"`
+	// Hit breakpoints IDs
+	HitBreakpoints []string `json:"hitBreakpoints,omitempty"`
+	// Async stack trace, if any.
+	AsyncStackTrace *types.Runtime_StackTrace `json:"asyncStackTrace,omitempty"`
+}
+
+// Fired when the virtual machine stopped on breakpoint or exception or any other stop criteria.
+func (obj *Debugger) Paused(fn func(params *PausedParams) bool) {
+	params := PausedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Debugger.paused", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+// Fired when the virtual machine resumed execution.
+func (obj *Debugger) Resumed(fn func() bool) {
+
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Debugger.resumed", closeChn, nil)
+			if !fn() {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
 }

@@ -1,14 +1,14 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 // Network domain allows tracking network activities of the page. It exposes information about http, file, data and other requests and responses, their headers, bodies, timing, etc.
 package network
 
 import (
-    "github.com/SKatiyar/cri"
-    types "github.com/SKatiyar/cri/types"
+	"github.com/SKatiyar/cri"
+	types "github.com/SKatiyar/cri/types"
 )
 
 type Network struct {
@@ -41,7 +41,6 @@ func (obj *Network) Disable() (err error) {
 	return
 }
 
-
 type SetUserAgentOverrideRequest struct {
 	// User agent to use.
 	UserAgent string `json:"userAgent"`
@@ -52,7 +51,6 @@ func (obj *Network) SetUserAgentOverride(request *SetUserAgentOverrideRequest) (
 	err = obj.conn.Send("Network.setUserAgentOverride", request, nil)
 	return
 }
-
 
 type SetExtraHTTPHeadersRequest struct {
 	// Map with extra HTTP headers.
@@ -65,12 +63,10 @@ func (obj *Network) SetExtraHTTPHeaders(request *SetExtraHTTPHeadersRequest) (er
 	return
 }
 
-
 type GetResponseBodyRequest struct {
 	// Identifier of the network request to get content for.
 	RequestId types.Network_RequestId `json:"requestId"`
 }
-
 
 type GetResponseBodyResponse struct {
 	// Response body.
@@ -85,7 +81,6 @@ func (obj *Network) GetResponseBody(request *GetResponseBodyRequest) (response G
 	return
 }
 
-
 type SetBlockedURLsRequest struct {
 	// URL patterns to block. Wildcards ('*') are allowed.
 	Urls []string `json:"urls"`
@@ -97,7 +92,6 @@ func (obj *Network) SetBlockedURLs(request *SetBlockedURLsRequest) (err error) {
 	return
 }
 
-
 type ReplayXHRRequest struct {
 	// Identifier of XHR to replay.
 	RequestId types.Network_RequestId `json:"requestId"`
@@ -108,7 +102,6 @@ func (obj *Network) ReplayXHR(request *ReplayXHRRequest) (err error) {
 	err = obj.conn.Send("Network.replayXHR", request, nil)
 	return
 }
-
 
 type CanClearBrowserCacheResponse struct {
 	// True if browser cache can be cleared.
@@ -127,7 +120,6 @@ func (obj *Network) ClearBrowserCache() (err error) {
 	return
 }
 
-
 type CanClearBrowserCookiesResponse struct {
 	// True if browser cookies can be cleared.
 	Result bool `json:"result"`
@@ -145,12 +137,10 @@ func (obj *Network) ClearBrowserCookies() (err error) {
 	return
 }
 
-
 type GetCookiesRequest struct {
 	// The list of URLs for which applicable cookies will be fetched
 	Urls []string `json:"urls,omitempty"`
 }
-
 
 type GetCookiesResponse struct {
 	// Array of cookie objects.
@@ -163,7 +153,6 @@ func (obj *Network) GetCookies(request *GetCookiesRequest) (response GetCookiesR
 	return
 }
 
-
 type GetAllCookiesResponse struct {
 	// Array of cookie objects.
 	Cookies []types.Network_Cookie `json:"cookies"`
@@ -174,7 +163,6 @@ func (obj *Network) GetAllCookies() (response GetAllCookiesResponse, err error) 
 	err = obj.conn.Send("Network.getAllCookies", nil, &response)
 	return
 }
-
 
 type DeleteCookiesRequest struct {
 	// Name of the cookies to remove.
@@ -192,7 +180,6 @@ func (obj *Network) DeleteCookies(request *DeleteCookiesRequest) (err error) {
 	err = obj.conn.Send("Network.deleteCookies", request, nil)
 	return
 }
-
 
 type SetCookieRequest struct {
 	// Cookie name.
@@ -215,7 +202,6 @@ type SetCookieRequest struct {
 	Expires *types.Network_TimeSinceEpoch `json:"expires,omitempty"`
 }
 
-
 type SetCookieResponse struct {
 	// True if successfully set cookie.
 	Success bool `json:"success"`
@@ -226,7 +212,6 @@ func (obj *Network) SetCookie(request *SetCookieRequest) (response SetCookieResp
 	err = obj.conn.Send("Network.setCookie", request, &response)
 	return
 }
-
 
 type SetCookiesRequest struct {
 	// Cookies to be set.
@@ -239,7 +224,6 @@ func (obj *Network) SetCookies(request *SetCookiesRequest) (err error) {
 	return
 }
 
-
 type CanEmulateNetworkConditionsResponse struct {
 	// True if emulation of network conditions is supported.
 	Result bool `json:"result"`
@@ -250,7 +234,6 @@ func (obj *Network) CanEmulateNetworkConditions() (response CanEmulateNetworkCon
 	err = obj.conn.Send("Network.canEmulateNetworkConditions", nil, &response)
 	return
 }
-
 
 type EmulateNetworkConditionsRequest struct {
 	// True to emulate internet disconnection.
@@ -271,7 +254,6 @@ func (obj *Network) EmulateNetworkConditions(request *EmulateNetworkConditionsRe
 	return
 }
 
-
 type SetCacheDisabledRequest struct {
 	// Cache disabled state.
 	CacheDisabled bool `json:"cacheDisabled"`
@@ -283,7 +265,6 @@ func (obj *Network) SetCacheDisabled(request *SetCacheDisabledRequest) (err erro
 	return
 }
 
-
 type SetBypassServiceWorkerRequest struct {
 	// Bypass service worker and load from network.
 	Bypass bool `json:"bypass"`
@@ -294,7 +275,6 @@ func (obj *Network) SetBypassServiceWorker(request *SetBypassServiceWorkerReques
 	err = obj.conn.Send("Network.setBypassServiceWorker", request, nil)
 	return
 }
-
 
 type SetDataSizeLimitsForTestRequest struct {
 	// Maximum total buffer size.
@@ -309,12 +289,10 @@ func (obj *Network) SetDataSizeLimitsForTest(request *SetDataSizeLimitsForTestRe
 	return
 }
 
-
 type GetCertificateRequest struct {
 	// Origin to get certificate for.
 	Origin string `json:"origin"`
 }
-
 
 type GetCertificateResponse struct {
 	TableNames []string `json:"tableNames"`
@@ -326,7 +304,6 @@ func (obj *Network) GetCertificate(request *GetCertificateRequest) (response Get
 	return
 }
 
-
 type SetRequestInterceptionRequest struct {
 	// Requests matching any of these patterns will be forwarded and wait for the corresponding continueInterceptedRequest call.
 	Patterns []types.Network_RequestPattern `json:"patterns"`
@@ -337,7 +314,6 @@ func (obj *Network) SetRequestInterception(request *SetRequestInterceptionReques
 	err = obj.conn.Send("Network.setRequestInterception", request, nil)
 	return
 }
-
 
 type ContinueInterceptedRequestRequest struct {
 	InterceptionId types.Network_InterceptionId `json:"interceptionId"`
@@ -361,4 +337,443 @@ type ContinueInterceptedRequestRequest struct {
 func (obj *Network) ContinueInterceptedRequest(request *ContinueInterceptedRequestRequest) (err error) {
 	err = obj.conn.Send("Network.continueInterceptedRequest", request, nil)
 	return
+}
+
+type ResourceChangedPriorityParams struct {
+	// Request identifier.
+	RequestId types.Network_RequestId `json:"requestId"`
+	// New priority
+	NewPriority types.Network_ResourcePriority `json:"newPriority"`
+	// Timestamp.
+	Timestamp types.Network_MonotonicTime `json:"timestamp"`
+}
+
+// Fired when resource loading priority is changed
+// NOTE Experimental
+func (obj *Network) ResourceChangedPriority(fn func(params *ResourceChangedPriorityParams) bool) {
+	params := ResourceChangedPriorityParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Network.resourceChangedPriority", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type RequestWillBeSentParams struct {
+	// Request identifier.
+	RequestId types.Network_RequestId `json:"requestId"`
+	// Loader identifier. Empty string if the request is fetched form worker.
+	LoaderId types.Network_LoaderId `json:"loaderId"`
+	// URL of the document this request is loaded for.
+	DocumentURL string `json:"documentURL"`
+	// Request data.
+	Request types.Network_Request `json:"request"`
+	// Timestamp.
+	Timestamp types.Network_MonotonicTime `json:"timestamp"`
+	// Timestamp.
+	// NOTE Experimental
+	WallTime types.Network_TimeSinceEpoch `json:"wallTime"`
+	// Request initiator.
+	Initiator types.Network_Initiator `json:"initiator"`
+	// Redirect response data.
+	RedirectResponse *types.Network_Response `json:"redirectResponse,omitempty"`
+	// Type of this resource.
+	// NOTE Experimental
+	Type *types.Page_ResourceType `json:"type,omitempty"`
+	// Frame identifier.
+	// NOTE Experimental
+	FrameId *types.Page_FrameId `json:"frameId,omitempty"`
+}
+
+// Fired when page is about to send HTTP request.
+func (obj *Network) RequestWillBeSent(fn func(params *RequestWillBeSentParams) bool) {
+	params := RequestWillBeSentParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Network.requestWillBeSent", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type RequestServedFromCacheParams struct {
+	// Request identifier.
+	RequestId types.Network_RequestId `json:"requestId"`
+}
+
+// Fired if request ended up loading from cache.
+func (obj *Network) RequestServedFromCache(fn func(params *RequestServedFromCacheParams) bool) {
+	params := RequestServedFromCacheParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Network.requestServedFromCache", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type ResponseReceivedParams struct {
+	// Request identifier.
+	RequestId types.Network_RequestId `json:"requestId"`
+	// Loader identifier. Empty string if the request is fetched form worker.
+	LoaderId types.Network_LoaderId `json:"loaderId"`
+	// Timestamp.
+	Timestamp types.Network_MonotonicTime `json:"timestamp"`
+	// Resource type.
+	Type types.Page_ResourceType `json:"type"`
+	// Response data.
+	Response types.Network_Response `json:"response"`
+	// Frame identifier.
+	// NOTE Experimental
+	FrameId *types.Page_FrameId `json:"frameId,omitempty"`
+}
+
+// Fired when HTTP response is available.
+func (obj *Network) ResponseReceived(fn func(params *ResponseReceivedParams) bool) {
+	params := ResponseReceivedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Network.responseReceived", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type DataReceivedParams struct {
+	// Request identifier.
+	RequestId types.Network_RequestId `json:"requestId"`
+	// Timestamp.
+	Timestamp types.Network_MonotonicTime `json:"timestamp"`
+	// Data chunk length.
+	DataLength int `json:"dataLength"`
+	// Actual bytes received (might be less than dataLength for compressed encodings).
+	EncodedDataLength int `json:"encodedDataLength"`
+}
+
+// Fired when data chunk was received over the network.
+func (obj *Network) DataReceived(fn func(params *DataReceivedParams) bool) {
+	params := DataReceivedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Network.dataReceived", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type LoadingFinishedParams struct {
+	// Request identifier.
+	RequestId types.Network_RequestId `json:"requestId"`
+	// Timestamp.
+	Timestamp types.Network_MonotonicTime `json:"timestamp"`
+	// Total number of bytes received for this request.
+	EncodedDataLength float32 `json:"encodedDataLength"`
+}
+
+// Fired when HTTP request has finished loading.
+func (obj *Network) LoadingFinished(fn func(params *LoadingFinishedParams) bool) {
+	params := LoadingFinishedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Network.loadingFinished", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type LoadingFailedParams struct {
+	// Request identifier.
+	RequestId types.Network_RequestId `json:"requestId"`
+	// Timestamp.
+	Timestamp types.Network_MonotonicTime `json:"timestamp"`
+	// Resource type.
+	Type types.Page_ResourceType `json:"type"`
+	// User friendly error message.
+	ErrorText string `json:"errorText"`
+	// True if loading was canceled.
+	Canceled *bool `json:"canceled,omitempty"`
+	// The reason why loading was blocked, if any.
+	// NOTE Experimental
+	BlockedReason *types.Network_BlockedReason `json:"blockedReason,omitempty"`
+}
+
+// Fired when HTTP request has failed to load.
+func (obj *Network) LoadingFailed(fn func(params *LoadingFailedParams) bool) {
+	params := LoadingFailedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Network.loadingFailed", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type WebSocketWillSendHandshakeRequestParams struct {
+	// Request identifier.
+	RequestId types.Network_RequestId `json:"requestId"`
+	// Timestamp.
+	Timestamp types.Network_MonotonicTime `json:"timestamp"`
+	// UTC Timestamp.
+	// NOTE Experimental
+	WallTime types.Network_TimeSinceEpoch `json:"wallTime"`
+	// WebSocket request data.
+	Request types.Network_WebSocketRequest `json:"request"`
+}
+
+// Fired when WebSocket is about to initiate handshake.
+// NOTE Experimental
+func (obj *Network) WebSocketWillSendHandshakeRequest(fn func(params *WebSocketWillSendHandshakeRequestParams) bool) {
+	params := WebSocketWillSendHandshakeRequestParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Network.webSocketWillSendHandshakeRequest", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type WebSocketHandshakeResponseReceivedParams struct {
+	// Request identifier.
+	RequestId types.Network_RequestId `json:"requestId"`
+	// Timestamp.
+	Timestamp types.Network_MonotonicTime `json:"timestamp"`
+	// WebSocket response data.
+	Response types.Network_WebSocketResponse `json:"response"`
+}
+
+// Fired when WebSocket handshake response becomes available.
+// NOTE Experimental
+func (obj *Network) WebSocketHandshakeResponseReceived(fn func(params *WebSocketHandshakeResponseReceivedParams) bool) {
+	params := WebSocketHandshakeResponseReceivedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Network.webSocketHandshakeResponseReceived", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type WebSocketCreatedParams struct {
+	// Request identifier.
+	RequestId types.Network_RequestId `json:"requestId"`
+	// WebSocket request URL.
+	Url string `json:"url"`
+	// Request initiator.
+	Initiator *types.Network_Initiator `json:"initiator,omitempty"`
+}
+
+// Fired upon WebSocket creation.
+// NOTE Experimental
+func (obj *Network) WebSocketCreated(fn func(params *WebSocketCreatedParams) bool) {
+	params := WebSocketCreatedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Network.webSocketCreated", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type WebSocketClosedParams struct {
+	// Request identifier.
+	RequestId types.Network_RequestId `json:"requestId"`
+	// Timestamp.
+	Timestamp types.Network_MonotonicTime `json:"timestamp"`
+}
+
+// Fired when WebSocket is closed.
+// NOTE Experimental
+func (obj *Network) WebSocketClosed(fn func(params *WebSocketClosedParams) bool) {
+	params := WebSocketClosedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Network.webSocketClosed", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type WebSocketFrameReceivedParams struct {
+	// Request identifier.
+	RequestId types.Network_RequestId `json:"requestId"`
+	// Timestamp.
+	Timestamp types.Network_MonotonicTime `json:"timestamp"`
+	// WebSocket response data.
+	Response types.Network_WebSocketFrame `json:"response"`
+}
+
+// Fired when WebSocket frame is received.
+// NOTE Experimental
+func (obj *Network) WebSocketFrameReceived(fn func(params *WebSocketFrameReceivedParams) bool) {
+	params := WebSocketFrameReceivedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Network.webSocketFrameReceived", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type WebSocketFrameErrorParams struct {
+	// Request identifier.
+	RequestId types.Network_RequestId `json:"requestId"`
+	// Timestamp.
+	Timestamp types.Network_MonotonicTime `json:"timestamp"`
+	// WebSocket frame error message.
+	ErrorMessage string `json:"errorMessage"`
+}
+
+// Fired when WebSocket frame error occurs.
+// NOTE Experimental
+func (obj *Network) WebSocketFrameError(fn func(params *WebSocketFrameErrorParams) bool) {
+	params := WebSocketFrameErrorParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Network.webSocketFrameError", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type WebSocketFrameSentParams struct {
+	// Request identifier.
+	RequestId types.Network_RequestId `json:"requestId"`
+	// Timestamp.
+	Timestamp types.Network_MonotonicTime `json:"timestamp"`
+	// WebSocket response data.
+	Response types.Network_WebSocketFrame `json:"response"`
+}
+
+// Fired when WebSocket frame is sent.
+// NOTE Experimental
+func (obj *Network) WebSocketFrameSent(fn func(params *WebSocketFrameSentParams) bool) {
+	params := WebSocketFrameSentParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Network.webSocketFrameSent", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type EventSourceMessageReceivedParams struct {
+	// Request identifier.
+	RequestId types.Network_RequestId `json:"requestId"`
+	// Timestamp.
+	Timestamp types.Network_MonotonicTime `json:"timestamp"`
+	// Message type.
+	EventName string `json:"eventName"`
+	// Message identifier.
+	EventId string `json:"eventId"`
+	// Message content.
+	Data string `json:"data"`
+}
+
+// Fired when EventSource message is received.
+// NOTE Experimental
+func (obj *Network) EventSourceMessageReceived(fn func(params *EventSourceMessageReceivedParams) bool) {
+	params := EventSourceMessageReceivedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Network.eventSourceMessageReceived", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type RequestInterceptedParams struct {
+	// Each request the page makes will have a unique id, however if any redirects are encountered while processing that fetch, they will be reported with the same id as the original fetch. Likewise if HTTP authentication is needed then the same fetch id will be used.
+	InterceptionId types.Network_InterceptionId `json:"interceptionId"`
+	Request        types.Network_Request        `json:"request"`
+	// The id of the frame that initiated the request.
+	FrameId types.Page_FrameId `json:"frameId"`
+	// How the requested resource will be used.
+	ResourceType types.Page_ResourceType `json:"resourceType"`
+	// Whether this is a navigation request, which can abort the navigation completely.
+	IsNavigationRequest bool `json:"isNavigationRequest"`
+	// HTTP response headers, only sent if a redirect was intercepted.
+	RedirectHeaders *types.Network_Headers `json:"redirectHeaders,omitempty"`
+	// HTTP response code, only sent if a redirect was intercepted.
+	RedirectStatusCode *int `json:"redirectStatusCode,omitempty"`
+	// Redirect location, only sent if a redirect was intercepted.
+	RedirectUrl *string `json:"redirectUrl,omitempty"`
+	// Details of the Authorization Challenge encountered. If this is set then continueInterceptedRequest must contain an authChallengeResponse.
+	AuthChallenge *types.Network_AuthChallenge `json:"authChallenge,omitempty"`
+}
+
+// Details of an intercepted HTTP request, which must be either allowed, blocked, modified or mocked.
+// NOTE Experimental
+func (obj *Network) RequestIntercepted(fn func(params *RequestInterceptedParams) bool) {
+	params := RequestInterceptedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Network.requestIntercepted", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
 }

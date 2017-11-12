@@ -1,10 +1,9 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 package types
-
 
 //Database with an array of object stores.
 type IndexedDB_DatabaseWithObjectStores struct {
@@ -85,4 +84,3 @@ type IndexedDB_KeyPath struct {
 	// Array value.
 	Array []string `json:"array,omitempty"`
 }
-

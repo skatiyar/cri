@@ -1,10 +1,9 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 package types
-
 
 //An internal certificate ID value.
 type Security_CertificateId int
@@ -49,4 +48,3 @@ type Security_InsecureContentStatus struct {
 
 //The action to take when a certificate error occurs. continue will continue processing the request and cancel will cancel the request.
 type Security_CertificateErrorAction string
-

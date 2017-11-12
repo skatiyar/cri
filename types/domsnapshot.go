@@ -1,10 +1,9 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 package types
-
 
 //A Node in the DOM tree.
 type DOMSnapshot_DOMNode struct {
@@ -85,4 +84,3 @@ type DOMSnapshot_NameValue struct {
 	// Attribute/property value.
 	Value string `json:"value"`
 }
-

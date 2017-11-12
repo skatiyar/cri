@@ -4,191 +4,9 @@ import (
 	"path"
 	"strings"
 	"text/template"
-
-	"go/ast"
-	"go/token"
 )
 
 const ImportPath = "github.com/SKatiyar/cri"
-
-func parseBasicType(typ string) ast.Expr {
-	if typ == "integer" {
-		return &ast.BasicLit{
-			Kind:  token.STRING,
-			Value: "int",
-		}
-	} else if typ == "number" {
-		return &ast.BasicLit{
-			Kind:  token.STRING,
-			Value: "float32",
-		}
-	} else if typ == "string" {
-		return &ast.BasicLit{
-			Kind:  token.STRING,
-			Value: "string",
-		}
-	} else if typ == "boolean" {
-		return &ast.BasicLit{
-			Kind:  token.STRING,
-			Value: "bool",
-		}
-	} else if typ == "object" {
-		return &ast.MapType{
-			Key: &ast.BasicLit{
-				Kind:  token.STRING,
-				Value: "string",
-			},
-			Value: &ast.BasicLit{
-				Kind:  token.STRING,
-				Value: "interface{}",
-			},
-		}
-	} else if typ == "any" {
-		return &ast.BasicLit{
-			Kind:  token.STRING,
-			Value: "interface{}",
-		}
-	} else {
-		panic("Unhandled type " + typ)
-	}
-}
-
-func parseRef(ref, domain, structName string, notTypes bool) ast.Expr {
-	if idx := strings.Index(ref, "."); idx != -1 {
-		if notTypes {
-			return &ast.BasicLit{
-				Kind:  token.STRING,
-				Value: "types." + strings.Replace(ref, ".", "_", -1),
-			}
-		} else {
-			return &ast.BasicLit{
-				Kind:  token.STRING,
-				Value: strings.Replace(ref, ".", "_", -1),
-			}
-		}
-	} else {
-		if ref == structName {
-			return &ast.StarExpr{
-				X: &ast.BasicLit{
-					Kind:  token.STRING,
-					Value: domain + "_" + ref,
-				},
-			}
-		} else if notTypes {
-			return &ast.BasicLit{
-				Kind:  token.STRING,
-				Value: "types." + domain + "_" + ref,
-			}
-		} else {
-			return &ast.BasicLit{
-				Kind:  token.STRING,
-				Value: domain + "_" + ref,
-			}
-		}
-	}
-}
-
-func parseParameter(p Parameter, domain, structName string, notTypes bool) (*ast.Field, []string) {
-	deps := make([]string, 0)
-	nField := &ast.Field{
-		Names: []*ast.Ident{
-			ast.NewIdent(strings.Title(p.Name)),
-		},
-		Doc: &ast.CommentGroup{
-			List: []*ast.Comment{},
-		},
-	}
-
-	if len(p.Description) > 0 {
-		nField.Doc.List = append(nField.Doc.List, &ast.Comment{
-			Text: "\n// " + p.Description,
-		})
-	}
-	if p.Experimental {
-		nField.Doc.List = append(nField.Doc.List, &ast.Comment{
-			Text: "// NOTE Experimental",
-		})
-	}
-
-	if p.Optional {
-		nField.Tag = &ast.BasicLit{
-			Kind:  token.STRING,
-			Value: "`json:\"" + p.Name + ",omitempty\"`",
-		}
-	} else {
-		nField.Tag = &ast.BasicLit{
-			Kind:  token.STRING,
-			Value: "`json:\"" + p.Name + "\"`",
-		}
-	}
-
-	if len(p.Type) != 0 {
-		if p.Type == "array" {
-			if len(p.Items.Type) > 0 {
-				nField.Type = &ast.ArrayType{
-					Elt: parseBasicType(p.Items.Type),
-				}
-			} else if len(p.Items.Ref) > 0 {
-				nField.Type = &ast.ArrayType{
-					Elt: parseRef(p.Items.Ref, domain, structName, notTypes),
-				}
-				if idx := strings.Index(p.Items.Ref, "."); idx != -1 {
-					deps = append(deps, string(p.Items.Ref[:idx]))
-				} else if notTypes {
-					deps = append(deps, "types")
-				}
-			} else {
-				nField.Type = &ast.ArrayType{
-					Elt: &ast.BasicLit{
-						Kind:  token.STRING,
-						Value: "interface{}",
-					},
-				}
-			}
-		} else if p.Type == "integer" ||
-			p.Type == "number" ||
-			p.Type == "any" ||
-			p.Type == "object" ||
-			p.Type == "boolean" ||
-			p.Type == "string" {
-			if p.Optional && p.Type != "any" {
-				nField.Type = &ast.StarExpr{
-					X: parseBasicType(p.Type),
-				}
-			} else {
-				nField.Type = parseBasicType(p.Type)
-			}
-		} else {
-			panic("Unhandled type " + p.Type)
-		}
-	} else if len(p.Ref) != 0 {
-		if p.Optional && p.Ref != structName {
-			nField.Type = &ast.StarExpr{
-				X: parseRef(p.Ref, domain, structName, notTypes),
-			}
-		} else {
-			nField.Type = parseRef(p.Ref, domain, structName, notTypes)
-		}
-		if idx := strings.Index(p.Ref, "."); idx != -1 {
-			deps = append(deps, string(p.Ref[:idx]))
-		} else if notTypes {
-			deps = append(deps, "type")
-		}
-	}
-
-	return nField, deps
-}
-
-type TypeData struct {
-	ID   string
-	Doc  string
-	Type string
-}
-
-type TypesData struct {
-	Package string
-	Types   []TypeData
-}
 
 func transformBasicTypes(typ string) string {
 	if typ == "integer" {
@@ -286,6 +104,17 @@ func transformRef(ref, domain, structName string, notTypes bool) (string, []stri
 	}
 }
 
+type TypeData struct {
+	ID   string
+	Doc  string
+	Type string
+}
+
+type TypesData struct {
+	Package string
+	Types   []TypeData
+}
+
 func transformTypes(d Domain) TypesData {
 	data := TypesData{
 		Package: "types",
@@ -363,12 +192,25 @@ type CommandData struct {
 	Types         []TypeData
 }
 
+type EventData struct {
+	Doc         string
+	Domain      string
+	Command     string
+	Name        string
+	EventParams string
+	ParamsDecl  string
+	ParamsValue string
+	CallParams  string
+	Types       []TypeData
+}
+
 type CommandsData struct {
 	Doc      string
 	Domain   string
 	Package  string
 	Imports  []CommandImport
 	Commands []CommandData
+	Events   []EventData
 }
 
 func transformCommands(d Domain) CommandsData {
@@ -377,6 +219,7 @@ func transformCommands(d Domain) CommandsData {
 		Package:  strings.ToLower(d.Domain),
 		Imports:  make([]CommandImport, 0),
 		Commands: make([]CommandData, 0),
+		Events:   make([]EventData, 0),
 	}
 
 	if len(d.Description) > 0 {
@@ -436,6 +279,42 @@ func transformCommands(d Domain) CommandsData {
 		}
 
 		data.Commands = append(data.Commands, cmd)
+	}
+	for i := 0; i < len(d.Events); i++ {
+		eve := EventData{
+			Name:    strings.Title(d.Events[i].Name),
+			Domain:  d.Domain,
+			Command: d.Domain + "." + d.Events[i].Name,
+		}
+		if len(d.Events[i].Description) > 0 {
+			eve.Doc = "// " + d.Events[i].Description
+		}
+		if d.Events[i].Experimental {
+			eve.Doc += "\n// NOTE Experimental"
+		}
+		if len(d.Events[i].Parameters) > 0 {
+			paramsName := strings.Title(d.Events[i].Name) + "Params"
+			eve.EventParams = "params *" + paramsName
+			eve.ParamsDecl = "params := " + paramsName + "{}"
+			eve.CallParams = "&params"
+			properties := make([]string, 0)
+			for j := 0; j < len(d.Events[i].Parameters); j++ {
+				param, paramDeps := transformParameter(d.Events[i].Parameters[j], d.Domain, paramsName, true)
+				properties = append(properties, param)
+				for _, dep := range paramDeps {
+					imports[dep] = true
+				}
+			}
+			eve.Types = append(eve.Types, TypeData{
+				ID:   paramsName,
+				Type: "struct {\n" + strings.Join(properties, "\n") + "\n}",
+			})
+			eve.ParamsValue = "&params"
+		} else {
+			eve.ParamsValue = "nil"
+		}
+
+		data.Events = append(data.Events, eve)
 	}
 	if len(imports) > 0 {
 		data.Imports = append(data.Imports, CommandImport{

@@ -1,14 +1,13 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
-
+ */
 
 package accessibility
 
 import (
-    "github.com/SKatiyar/cri"
-    types "github.com/SKatiyar/cri/types"
+	"github.com/SKatiyar/cri"
+	types "github.com/SKatiyar/cri/types"
 )
 
 type Accessibility struct {
@@ -26,7 +25,6 @@ type GetPartialAXTreeRequest struct {
 	// Whether to fetch this nodes ancestors, siblings and children. Defaults to true.
 	FetchRelatives *bool `json:"fetchRelatives,omitempty"`
 }
-
 
 type GetPartialAXTreeResponse struct {
 	// The <code>Accessibility.AXNode</code> for this DOM node, if it exists, plus its ancestors, siblings and children, if requested.
