@@ -1,12 +1,21 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
+// Runtime domain exposes JavaScript runtime by means of remote evaluation and mirror objects. Evaluation results are returned as mirror object that expose object type, string representation and unique identifier that can be used for further object reference. Original objects are maintained in memory unless they are either explicitly released or are released along with the other objects in their object group.
 package runtime
 
-import types "github.com/SKatiyar/cri/types"
-import "github.com/SKatiyar/cri"
+import (
+    "github.com/SKatiyar/cri"
+    types "github.com/SKatiyar/cri/types"
+)
 
 type Runtime struct {
 	conn cri.Connector
 }
 
+// New creates a Runtime instance
 func New(conn cri.Connector) *Runtime {
 	return &Runtime{conn}
 }
@@ -33,6 +42,8 @@ type EvaluateRequest struct {
 	// Whether execution should <code>await</code> for resulting value and return once awaited promise is resolved.
 	AwaitPromise *bool `json:"awaitPromise,omitempty"`
 }
+
+
 type EvaluateResponse struct {
 	// Evaluation result.
 	Result types.Runtime_RemoteObject `json:"result"`
@@ -46,6 +57,7 @@ func (obj *Runtime) Evaluate(request *EvaluateRequest) (response EvaluateRespons
 	return
 }
 
+
 type AwaitPromiseRequest struct {
 	// Identifier of the promise.
 	PromiseObjectId types.Runtime_RemoteObjectId `json:"promiseObjectId"`
@@ -54,6 +66,8 @@ type AwaitPromiseRequest struct {
 	// Whether preview should be generated for the result.
 	GeneratePreview *bool `json:"generatePreview,omitempty"`
 }
+
+
 type AwaitPromiseResponse struct {
 	// Promise result. Will contain rejected value if promise was rejected.
 	Result types.Runtime_RemoteObject `json:"result"`
@@ -66,6 +80,7 @@ func (obj *Runtime) AwaitPromise(request *AwaitPromiseRequest) (response AwaitPr
 	err = obj.conn.Send("Runtime.awaitPromise", request, &response)
 	return
 }
+
 
 type CallFunctionOnRequest struct {
 	// Declaration of the function to call.
@@ -91,6 +106,8 @@ type CallFunctionOnRequest struct {
 	// Symbolic group name that can be used to release multiple objects. If objectGroup is not specified and objectId is, objectGroup will be inherited from object.
 	ObjectGroup *string `json:"objectGroup,omitempty"`
 }
+
+
 type CallFunctionOnResponse struct {
 	// Call result.
 	Result types.Runtime_RemoteObject `json:"result"`
@@ -104,6 +121,7 @@ func (obj *Runtime) CallFunctionOn(request *CallFunctionOnRequest) (response Cal
 	return
 }
 
+
 type GetPropertiesRequest struct {
 	// Identifier of the object to return properties for.
 	ObjectId types.Runtime_RemoteObjectId `json:"objectId"`
@@ -116,6 +134,8 @@ type GetPropertiesRequest struct {
 	// NOTE Experimental
 	GeneratePreview *bool `json:"generatePreview,omitempty"`
 }
+
+
 type GetPropertiesResponse struct {
 	// Object properties.
 	Result []types.Runtime_PropertyDescriptor `json:"result"`
@@ -131,6 +151,7 @@ func (obj *Runtime) GetProperties(request *GetPropertiesRequest) (response GetPr
 	return
 }
 
+
 type ReleaseObjectRequest struct {
 	// Identifier of the object to release.
 	ObjectId types.Runtime_RemoteObjectId `json:"objectId"`
@@ -141,6 +162,7 @@ func (obj *Runtime) ReleaseObject(request *ReleaseObjectRequest) (err error) {
 	err = obj.conn.Send("Runtime.releaseObject", request, nil)
 	return
 }
+
 
 type ReleaseObjectGroupRequest struct {
 	// Symbolic object group name.
@@ -177,14 +199,17 @@ func (obj *Runtime) DiscardConsoleEntries() (err error) {
 	return
 }
 
+
 type SetCustomObjectFormatterEnabledRequest struct {
 	Enabled bool `json:"enabled"`
 }
+
 
 func (obj *Runtime) SetCustomObjectFormatterEnabled(request *SetCustomObjectFormatterEnabledRequest) (err error) {
 	err = obj.conn.Send("Runtime.setCustomObjectFormatterEnabled", request, nil)
 	return
 }
+
 
 type CompileScriptRequest struct {
 	// Expression to compile.
@@ -196,6 +221,8 @@ type CompileScriptRequest struct {
 	// Specifies in which execution context to perform script run. If the parameter is omitted the evaluation will be performed in the context of the inspected page.
 	ExecutionContextId *types.Runtime_ExecutionContextId `json:"executionContextId,omitempty"`
 }
+
+
 type CompileScriptResponse struct {
 	// Id of the script.
 	ScriptId *types.Runtime_ScriptId `json:"scriptId,omitempty"`
@@ -208,6 +235,7 @@ func (obj *Runtime) CompileScript(request *CompileScriptRequest) (response Compi
 	err = obj.conn.Send("Runtime.compileScript", request, &response)
 	return
 }
+
 
 type RunScriptRequest struct {
 	// Id of the script to run.
@@ -227,6 +255,8 @@ type RunScriptRequest struct {
 	// Whether execution should <code>await</code> for resulting value and return once awaited promise is resolved.
 	AwaitPromise *bool `json:"awaitPromise,omitempty"`
 }
+
+
 type RunScriptResponse struct {
 	// Run result.
 	Result types.Runtime_RemoteObject `json:"result"`
@@ -240,24 +270,31 @@ func (obj *Runtime) RunScript(request *RunScriptRequest) (response RunScriptResp
 	return
 }
 
+
 type QueryObjectsRequest struct {
 	// Identifier of the prototype to return objects for.
 	PrototypeObjectId types.Runtime_RemoteObjectId `json:"prototypeObjectId"`
 }
+
+
 type QueryObjectsResponse struct {
 	// Array with objects.
 	Objects types.Runtime_RemoteObject `json:"objects"`
 }
+
 
 func (obj *Runtime) QueryObjects(request *QueryObjectsRequest) (response QueryObjectsResponse, err error) {
 	err = obj.conn.Send("Runtime.queryObjects", request, &response)
 	return
 }
 
+
 type GlobalLexicalScopeNamesRequest struct {
 	// Specifies in which execution context to lookup global scope variables.
 	ExecutionContextId *types.Runtime_ExecutionContextId `json:"executionContextId,omitempty"`
 }
+
+
 type GlobalLexicalScopeNamesResponse struct {
 	Names []string `json:"names"`
 }

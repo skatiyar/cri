@@ -1,16 +1,24 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
+// Actions and events related to the inspected page belong to the page domain.
 package page
 
-import types "github.com/SKatiyar/cri/types"
-import "github.com/SKatiyar/cri"
+import (
+    "github.com/SKatiyar/cri"
+    types "github.com/SKatiyar/cri/types"
+)
 
 type Page struct {
 	conn cri.Connector
 }
 
+// New creates a Page instance
 func New(conn cri.Connector) *Page {
 	return &Page{conn}
 }
-
 // Enables page domain notifications.
 func (obj *Page) Enable() (err error) {
 	err = obj.conn.Send("Page.enable", nil, nil)
@@ -23,9 +31,12 @@ func (obj *Page) Disable() (err error) {
 	return
 }
 
+
 type AddScriptToEvaluateOnLoadRequest struct {
 	ScriptSource string `json:"scriptSource"`
 }
+
+
 type AddScriptToEvaluateOnLoadResponse struct {
 	// Identifier of the added script.
 	Identifier types.Page_ScriptIdentifier `json:"identifier"`
@@ -37,6 +48,7 @@ func (obj *Page) AddScriptToEvaluateOnLoad(request *AddScriptToEvaluateOnLoadReq
 	return
 }
 
+
 type RemoveScriptToEvaluateOnLoadRequest struct {
 	Identifier types.Page_ScriptIdentifier `json:"identifier"`
 }
@@ -47,9 +59,12 @@ func (obj *Page) RemoveScriptToEvaluateOnLoad(request *RemoveScriptToEvaluateOnL
 	return
 }
 
+
 type AddScriptToEvaluateOnNewDocumentRequest struct {
 	Source string `json:"source"`
 }
+
+
 type AddScriptToEvaluateOnNewDocumentResponse struct {
 	// Identifier of the added script.
 	Identifier types.Page_ScriptIdentifier `json:"identifier"`
@@ -61,6 +76,7 @@ func (obj *Page) AddScriptToEvaluateOnNewDocument(request *AddScriptToEvaluateOn
 	return
 }
 
+
 type RemoveScriptToEvaluateOnNewDocumentRequest struct {
 	Identifier types.Page_ScriptIdentifier `json:"identifier"`
 }
@@ -70,6 +86,7 @@ func (obj *Page) RemoveScriptToEvaluateOnNewDocument(request *RemoveScriptToEval
 	err = obj.conn.Send("Page.removeScriptToEvaluateOnNewDocument", request, nil)
 	return
 }
+
 
 type SetAutoAttachToCreatedPagesRequest struct {
 	// If true, browser will open a new inspector window for every page created from this one.
@@ -81,6 +98,7 @@ func (obj *Page) SetAutoAttachToCreatedPages(request *SetAutoAttachToCreatedPage
 	err = obj.conn.Send("Page.setAutoAttachToCreatedPages", request, nil)
 	return
 }
+
 
 type ReloadRequest struct {
 	// If true, browser cache is ignored (as if the user pressed Shift+refresh).
@@ -95,6 +113,7 @@ func (obj *Page) Reload(request *ReloadRequest) (err error) {
 	return
 }
 
+
 type SetAdBlockingEnabledRequest struct {
 	// Whether to block ads.
 	Enabled bool `json:"enabled"`
@@ -106,6 +125,7 @@ func (obj *Page) SetAdBlockingEnabled(request *SetAdBlockingEnabledRequest) (err
 	return
 }
 
+
 type NavigateRequest struct {
 	// URL to navigate the page to.
 	Url string `json:"url"`
@@ -116,6 +136,8 @@ type NavigateRequest struct {
 	// NOTE Experimental
 	TransitionType *types.Page_TransitionType `json:"transitionType,omitempty"`
 }
+
+
 type NavigateResponse struct {
 	// Frame id that will be navigated.
 	// NOTE Experimental
@@ -134,6 +156,7 @@ func (obj *Page) StopLoading() (err error) {
 	return
 }
 
+
 type GetNavigationHistoryResponse struct {
 	// Index of the current navigation history entry.
 	CurrentIndex int `json:"currentIndex"`
@@ -147,6 +170,7 @@ func (obj *Page) GetNavigationHistory() (response GetNavigationHistoryResponse, 
 	return
 }
 
+
 type NavigateToHistoryEntryRequest struct {
 	// Unique id of the entry to navigate to.
 	EntryId int `json:"entryId"`
@@ -158,6 +182,7 @@ func (obj *Page) NavigateToHistoryEntry(request *NavigateToHistoryEntryRequest) 
 	return
 }
 
+
 type GetCookiesResponse struct {
 	// Array of cookie objects.
 	Cookies []types.Network_Cookie `json:"cookies"`
@@ -168,6 +193,7 @@ func (obj *Page) GetCookies() (response GetCookiesResponse, err error) {
 	err = obj.conn.Send("Page.getCookies", nil, &response)
 	return
 }
+
 
 type DeleteCookieRequest struct {
 	// Name of the cookie to remove.
@@ -182,6 +208,7 @@ func (obj *Page) DeleteCookie(request *DeleteCookieRequest) (err error) {
 	return
 }
 
+
 type GetResourceTreeResponse struct {
 	// Present frame / resource tree structure.
 	FrameTree types.Page_FrameResourceTree `json:"frameTree"`
@@ -193,12 +220,15 @@ func (obj *Page) GetResourceTree() (response GetResourceTreeResponse, err error)
 	return
 }
 
+
 type GetResourceContentRequest struct {
 	// Frame id to get resource for.
 	FrameId types.Page_FrameId `json:"frameId"`
 	// URL of the resource to get content for.
 	Url string `json:"url"`
 }
+
+
 type GetResourceContentResponse struct {
 	// Resource content.
 	Content string `json:"content"`
@@ -212,6 +242,7 @@ func (obj *Page) GetResourceContent(request *GetResourceContentRequest) (respons
 	return
 }
 
+
 type SearchInResourceRequest struct {
 	// Frame id for resource to search in.
 	FrameId types.Page_FrameId `json:"frameId"`
@@ -224,6 +255,8 @@ type SearchInResourceRequest struct {
 	// If true, treats string parameter as regex.
 	IsRegex *bool `json:"isRegex,omitempty"`
 }
+
+
 type SearchInResourceResponse struct {
 	// List of search matches.
 	Result []types.Debugger_SearchMatch `json:"result"`
@@ -234,6 +267,7 @@ func (obj *Page) SearchInResource(request *SearchInResourceRequest) (response Se
 	err = obj.conn.Send("Page.searchInResource", request, &response)
 	return
 }
+
 
 type SetDocumentContentRequest struct {
 	// Frame id to set HTML for.
@@ -247,6 +281,7 @@ func (obj *Page) SetDocumentContent(request *SetDocumentContentRequest) (err err
 	err = obj.conn.Send("Page.setDocumentContent", request, nil)
 	return
 }
+
 
 type SetDeviceMetricsOverrideRequest struct {
 	// Overriding width value in pixels (minimum 0, maximum 10000000). 0 disables the override.
@@ -287,6 +322,7 @@ func (obj *Page) ClearDeviceMetricsOverride() (err error) {
 	return
 }
 
+
 type SetGeolocationOverrideRequest struct {
 	// Mock latitude
 	Latitude *float32 `json:"latitude,omitempty"`
@@ -307,6 +343,7 @@ func (obj *Page) ClearGeolocationOverride() (err error) {
 	err = obj.conn.Send("Page.clearGeolocationOverride", nil, nil)
 	return
 }
+
 
 type SetDeviceOrientationOverrideRequest struct {
 	// Mock alpha
@@ -329,6 +366,7 @@ func (obj *Page) ClearDeviceOrientationOverride() (err error) {
 	return
 }
 
+
 type SetTouchEmulationEnabledRequest struct {
 	// Whether the touch event emulation should be enabled.
 	Enabled bool `json:"enabled"`
@@ -342,6 +380,7 @@ func (obj *Page) SetTouchEmulationEnabled(request *SetTouchEmulationEnabledReque
 	return
 }
 
+
 type CaptureScreenshotRequest struct {
 	// Image compression format (defaults to png).
 	Format *string `json:"format,omitempty"`
@@ -354,6 +393,8 @@ type CaptureScreenshotRequest struct {
 	// NOTE Experimental
 	FromSurface *bool `json:"fromSurface,omitempty"`
 }
+
+
 type CaptureScreenshotResponse struct {
 	// Base64-encoded image data.
 	Data string `json:"data"`
@@ -364,6 +405,7 @@ func (obj *Page) CaptureScreenshot(request *CaptureScreenshotRequest) (response 
 	err = obj.conn.Send("Page.captureScreenshot", request, &response)
 	return
 }
+
 
 type PrintToPDFRequest struct {
 	// Paper orientation. Defaults to false.
@@ -391,6 +433,8 @@ type PrintToPDFRequest struct {
 	// Whether to silently ignore invalid but successfully parsed page ranges, such as '3-2'. Defaults to false.
 	IgnoreInvalidPageRanges *bool `json:"ignoreInvalidPageRanges,omitempty"`
 }
+
+
 type PrintToPDFResponse struct {
 	// Base64-encoded pdf data.
 	Data string `json:"data"`
@@ -401,6 +445,7 @@ func (obj *Page) PrintToPDF(request *PrintToPDFRequest) (response PrintToPDFResp
 	err = obj.conn.Send("Page.printToPDF", request, &response)
 	return
 }
+
 
 type StartScreencastRequest struct {
 	// Image compression format.
@@ -427,6 +472,7 @@ func (obj *Page) StopScreencast() (err error) {
 	return
 }
 
+
 type ScreencastFrameAckRequest struct {
 	// Frame number.
 	SessionId int `json:"sessionId"`
@@ -437,6 +483,7 @@ func (obj *Page) ScreencastFrameAck(request *ScreencastFrameAckRequest) (err err
 	err = obj.conn.Send("Page.screencastFrameAck", request, nil)
 	return
 }
+
 
 type HandleJavaScriptDialogRequest struct {
 	// Whether to accept or dismiss the dialog.
@@ -451,22 +498,27 @@ func (obj *Page) HandleJavaScriptDialog(request *HandleJavaScriptDialogRequest) 
 	return
 }
 
+
 type GetAppManifestResponse struct {
 	// Manifest location.
-	Url    string                        `json:"url"`
+	Url string `json:"url"`
 	Errors []types.Page_AppManifestError `json:"errors"`
 	// Manifest content.
 	Data *string `json:"data,omitempty"`
 }
 
+
 func (obj *Page) GetAppManifest() (response GetAppManifestResponse, err error) {
 	err = obj.conn.Send("Page.getAppManifest", nil, &response)
 	return
 }
+
+
 func (obj *Page) RequestAppBanner() (err error) {
 	err = obj.conn.Send("Page.requestAppBanner", nil, nil)
 	return
 }
+
 
 type GetLayoutMetricsResponse struct {
 	// Metrics relating to the layout viewport.
@@ -483,6 +535,7 @@ func (obj *Page) GetLayoutMetrics() (response GetLayoutMetricsResponse, err erro
 	return
 }
 
+
 type CreateIsolatedWorldRequest struct {
 	// Id of the frame in which the isolated world should be created.
 	FrameId types.Page_FrameId `json:"frameId"`
@@ -491,6 +544,8 @@ type CreateIsolatedWorldRequest struct {
 	// Whether or not universal access should be granted to the isolated world. This is a powerful option, use with caution.
 	GrantUniveralAccess *bool `json:"grantUniveralAccess,omitempty"`
 }
+
+
 type CreateIsolatedWorldResponse struct {
 	// Execution context of the isolated world.
 	ExecutionContextId types.Runtime_ExecutionContextId `json:"executionContextId"`
@@ -507,6 +562,7 @@ func (obj *Page) BringToFront() (err error) {
 	err = obj.conn.Send("Page.bringToFront", nil, nil)
 	return
 }
+
 
 type SetDownloadBehaviorRequest struct {
 	// Whether to allow all or deny all download requests, or use default Chrome behavior if available (otherwise deny).

@@ -3,9 +3,9 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
 */
 
-package types
+package {{.Package}}
 
-
-//Memory pressure level.
-type Memory_PressureLevel string
-
+{{range .Types}}
+{{.Doc}}
+type {{.ID}} {{.Type}}
+{{end}}

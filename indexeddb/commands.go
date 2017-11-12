@@ -1,16 +1,24 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
+
 package indexeddb
 
-import types "github.com/SKatiyar/cri/types"
-import "github.com/SKatiyar/cri"
+import (
+    "github.com/SKatiyar/cri"
+    types "github.com/SKatiyar/cri/types"
+)
 
 type IndexedDB struct {
 	conn cri.Connector
 }
 
+// New creates a IndexedDB instance
 func New(conn cri.Connector) *IndexedDB {
 	return &IndexedDB{conn}
 }
-
 // Enables events from backend.
 func (obj *IndexedDB) Enable() (err error) {
 	err = obj.conn.Send("IndexedDB.enable", nil, nil)
@@ -23,10 +31,13 @@ func (obj *IndexedDB) Disable() (err error) {
 	return
 }
 
+
 type RequestDatabaseNamesRequest struct {
 	// Security origin.
 	SecurityOrigin string `json:"securityOrigin"`
 }
+
+
 type RequestDatabaseNamesResponse struct {
 	// Database names for origin.
 	DatabaseNames []string `json:"databaseNames"`
@@ -38,12 +49,15 @@ func (obj *IndexedDB) RequestDatabaseNames(request *RequestDatabaseNamesRequest)
 	return
 }
 
+
 type RequestDatabaseRequest struct {
 	// Security origin.
 	SecurityOrigin string `json:"securityOrigin"`
 	// Database name.
 	DatabaseName string `json:"databaseName"`
 }
+
+
 type RequestDatabaseResponse struct {
 	// Database with an array of object stores.
 	DatabaseWithObjectStores types.IndexedDB_DatabaseWithObjectStores `json:"databaseWithObjectStores"`
@@ -54,6 +68,7 @@ func (obj *IndexedDB) RequestDatabase(request *RequestDatabaseRequest) (response
 	err = obj.conn.Send("IndexedDB.requestDatabase", request, &response)
 	return
 }
+
 
 type RequestDataRequest struct {
 	// Security origin.
@@ -71,6 +86,8 @@ type RequestDataRequest struct {
 	// Key range.
 	KeyRange *types.IndexedDB_KeyRange `json:"keyRange,omitempty"`
 }
+
+
 type RequestDataResponse struct {
 	// Array of object store data entries.
 	ObjectStoreDataEntries []types.IndexedDB_DataEntry `json:"objectStoreDataEntries"`
@@ -83,6 +100,7 @@ func (obj *IndexedDB) RequestData(request *RequestDataRequest) (response Request
 	err = obj.conn.Send("IndexedDB.requestData", request, &response)
 	return
 }
+
 
 type ClearObjectStoreRequest struct {
 	// Security origin.
@@ -98,6 +116,7 @@ func (obj *IndexedDB) ClearObjectStore(request *ClearObjectStoreRequest) (err er
 	err = obj.conn.Send("IndexedDB.clearObjectStore", request, nil)
 	return
 }
+
 
 type DeleteDatabaseRequest struct {
 	// Security origin.

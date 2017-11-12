@@ -1,16 +1,24 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
+// This domain provides experimental commands only supported in headless mode.
 package headlessexperimental
 
-import types "github.com/SKatiyar/cri/types"
-import "github.com/SKatiyar/cri"
+import (
+    "github.com/SKatiyar/cri"
+    types "github.com/SKatiyar/cri/types"
+)
 
 type HeadlessExperimental struct {
 	conn cri.Connector
 }
 
+// New creates a HeadlessExperimental instance
 func New(conn cri.Connector) *HeadlessExperimental {
 	return &HeadlessExperimental{conn}
 }
-
 // Enables headless events for the target.
 func (obj *HeadlessExperimental) Enable() (err error) {
 	err = obj.conn.Send("HeadlessExperimental.enable", nil, nil)
@@ -23,6 +31,7 @@ func (obj *HeadlessExperimental) Disable() (err error) {
 	return
 }
 
+
 type BeginFrameRequest struct {
 	// Timestamp of this BeginFrame (milliseconds since epoch). If not set, the current time will be used.
 	FrameTime *types.Runtime_Timestamp `json:"frameTime,omitempty"`
@@ -33,6 +42,8 @@ type BeginFrameRequest struct {
 	// If set, a screenshot of the frame will be captured and returned in the response. Otherwise, no screenshot will be captured.
 	Screenshot *types.HeadlessExperimental_ScreenshotParams `json:"screenshot,omitempty"`
 }
+
+
 type BeginFrameResponse struct {
 	// Whether the BeginFrame resulted in damage and, thus, a new frame was committed to the display.
 	HasDamage bool `json:"hasDamage"`

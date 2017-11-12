@@ -1,7 +1,17 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
 package types
 
+
+//Configuration for memory dump. Used only when "memory-infra" category is enabled.
 type Tracing_MemoryDumpConfig struct {
+
 }
+
+
 type Tracing_TraceConfig struct {
 	// Controls how the trace buffer stores data.
 	RecordMode *string `json:"recordMode,omitempty"`
@@ -20,3 +30,4 @@ type Tracing_TraceConfig struct {
 	// Configuration for memory dump triggers. Used only when "memory-infra" category is enabled.
 	MemoryDumpConfig *Tracing_MemoryDumpConfig `json:"memoryDumpConfig,omitempty"`
 }
+

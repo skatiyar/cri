@@ -1,12 +1,21 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
+
 package cachestorage
 
-import types "github.com/SKatiyar/cri/types"
-import "github.com/SKatiyar/cri"
+import (
+    "github.com/SKatiyar/cri"
+    types "github.com/SKatiyar/cri/types"
+)
 
 type CacheStorage struct {
 	conn cri.Connector
 }
 
+// New creates a CacheStorage instance
 func New(conn cri.Connector) *CacheStorage {
 	return &CacheStorage{conn}
 }
@@ -15,6 +24,8 @@ type RequestCacheNamesRequest struct {
 	// Security origin.
 	SecurityOrigin string `json:"securityOrigin"`
 }
+
+
 type RequestCacheNamesResponse struct {
 	// Caches for the security origin.
 	Caches []types.CacheStorage_Cache `json:"caches"`
@@ -26,6 +37,7 @@ func (obj *CacheStorage) RequestCacheNames(request *RequestCacheNamesRequest) (r
 	return
 }
 
+
 type RequestEntriesRequest struct {
 	// ID of cache to get entries from.
 	CacheId types.CacheStorage_CacheId `json:"cacheId"`
@@ -34,6 +46,8 @@ type RequestEntriesRequest struct {
 	// Number of records to fetch.
 	PageSize int `json:"pageSize"`
 }
+
+
 type RequestEntriesResponse struct {
 	// Array of object store data entries.
 	CacheDataEntries []types.CacheStorage_DataEntry `json:"cacheDataEntries"`
@@ -47,6 +61,7 @@ func (obj *CacheStorage) RequestEntries(request *RequestEntriesRequest) (respons
 	return
 }
 
+
 type DeleteCacheRequest struct {
 	// Id of cache for deletion.
 	CacheId types.CacheStorage_CacheId `json:"cacheId"`
@@ -57,6 +72,7 @@ func (obj *CacheStorage) DeleteCache(request *DeleteCacheRequest) (err error) {
 	err = obj.conn.Send("CacheStorage.deleteCache", request, nil)
 	return
 }
+
 
 type DeleteEntryRequest struct {
 	// Id of cache where the entry will be deleted.
@@ -71,12 +87,15 @@ func (obj *CacheStorage) DeleteEntry(request *DeleteEntryRequest) (err error) {
 	return
 }
 
+
 type RequestCachedResponseRequest struct {
 	// Id of cache that contains the enty.
 	CacheId types.CacheStorage_CacheId `json:"cacheId"`
 	// URL spec of the request.
 	RequestURL string `json:"requestURL"`
 }
+
+
 type RequestCachedResponseResponse struct {
 	// Response read from the cache.
 	Response types.CacheStorage_CachedResponse `json:"response"`

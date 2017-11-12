@@ -12,7 +12,7 @@ import (
 	"go/ast"
 	"go/importer"
 	"go/parser"
-	"go/printer"
+	// "go/printer"
 	"go/token"
 	"go/types"
 )
@@ -21,8 +21,12 @@ const (
 	ProtocolOutputPath = "../../"
 	FilePerm           = 0700
 
-	JSProtocolFile      = "../../json-proto/js_protocol.json"
-	BrowserProtocolFile = "../../json-proto/browser_protocol.json"
+	JSProtocolFile      = "json-proto/js_protocol.json"
+	BrowserProtocolFile = "json-proto/browser_protocol.json"
+
+	VersionTplFile  = "templates/version.go.tpl"
+	CommandsTplFile = "templates/commands.go.tpl"
+	TypesTplFile    = "templates/types.go.tpl"
 )
 
 var (
@@ -62,21 +66,21 @@ func createCode(jsProto JSProtocol, browserProto BrowserProtocol) {
 		panic(ErrMinorVersionMismatch)
 	}
 
+	typesPath := path.Join(ProtocolOutputPath, "types")
+	if dirErr := os.Mkdir(typesPath, FilePerm); dirErr != nil {
+		if !os.IsExist(dirErr) {
+			panic(dirErr)
+		}
+	}
+
 	config := types.Config{Importer: importer.For("source", nil)}
-	pConfig := printer.Config{Mode: printer.UseSpaces | printer.TabIndent, Tabwidth: 8}
+	// pConfig := printer.Config{Mode: printer.UseSpaces | printer.TabIndent, Tabwidth: 8}
 	domains := append(jsProto.Domains, browserProto.Domains...)
 	commandsFileSet := token.NewFileSet()
 	commandsFiles := make([]string, 0)
 	typesFileSet := token.NewFileSet()
 	typesFiles := make([]string, 0)
 	for i := 0; i < len(domains); i++ {
-		typesPath := path.Join(ProtocolOutputPath, "types")
-		if dirErr := os.Mkdir(typesPath, FilePerm); dirErr != nil {
-			if !os.IsExist(dirErr) {
-				panic(dirErr)
-			}
-		}
-
 		commandsPath := path.Join(ProtocolOutputPath, strings.ToLower(domains[i].Domain))
 		if dirErr := os.Mkdir(commandsPath, FilePerm); dirErr != nil {
 			if !os.IsExist(dirErr) {
@@ -93,8 +97,11 @@ func createCode(jsProto JSProtocol, browserProto BrowserProtocol) {
 		}
 
 		typesFiles = append(typesFiles, tFilePath)
-		newTypesFile := createTypesFile(domains[i])
-		if writeErr := pConfig.Fprint(tFile, typesFileSet, newTypesFile); writeErr != nil {
+		newTypesFile, newTypesFileErr := createTypesFile()
+		if newTypesFileErr != nil {
+			panic(newTypesFileErr)
+		}
+		if writeErr := newTypesFile.Execute(tFile, transformTypes(domains[i])); writeErr != nil {
 			panic(writeErr)
 		}
 		if fileCloseErr := tFile.Close(); fileCloseErr != nil {
@@ -108,8 +115,11 @@ func createCode(jsProto JSProtocol, browserProto BrowserProtocol) {
 		}
 
 		commandsFiles = append(commandsFiles, cFilePath)
-		newCommandsFile := createCommandsFile(domains[i])
-		if writeErr := pConfig.Fprint(cFile, commandsFileSet, newCommandsFile); writeErr != nil {
+		newCommandsFile, newCommandsFileErr := createCommandsFile()
+		if newCommandsFileErr != nil {
+			panic(newCommandsFileErr)
+		}
+		if writeErr := newCommandsFile.Execute(cFile, transformCommands(domains[i])); writeErr != nil {
 			panic(writeErr)
 		}
 		if fileCloseErr := cFile.Close(); fileCloseErr != nil {
@@ -153,15 +163,19 @@ func createCode(jsProto JSProtocol, browserProto BrowserProtocol) {
 		panic(vFileErr)
 	}
 
-	vFileSet := token.NewFileSet()
-	newVersionFile := createVersionFile(jsProto.Version, "cri")
-	if writeErr := pConfig.Fprint(vFile, vFileSet, newVersionFile); writeErr != nil {
+	newVersionFile, newVersionFileErr := createVersionFile()
+	if newVersionFileErr != nil {
+		panic(newVersionFileErr)
+	}
+
+	if writeErr := newVersionFile.Execute(vFile, jsProto.Version); writeErr != nil {
 		panic(writeErr)
 	}
 	if fileCloseErr := vFile.Close(); fileCloseErr != nil {
 		panic(fileCloseErr)
 	}
 
+	vFileSet := token.NewFileSet()
 	pFile, pFileErr := parser.ParseFile(vFileSet, vFilePath, nil, 0)
 	if pFileErr != nil {
 		panic(pFileErr)

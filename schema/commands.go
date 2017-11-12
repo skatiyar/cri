@@ -1,12 +1,21 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+ */
+
+// Provides information about the protocol schema.
 package schema
 
-import types "github.com/SKatiyar/cri/types"
-import "github.com/SKatiyar/cri"
+import (
+	"github.com/SKatiyar/cri"
+	types "github.com/SKatiyar/cri/types"
+)
 
 type Schema struct {
 	conn cri.Connector
 }
 
+// New creates a Schema instance
 func New(conn cri.Connector) *Schema {
 	return &Schema{conn}
 }

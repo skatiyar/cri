@@ -1,12 +1,21 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
+// Input/Output operations for streams produced by DevTools.
 package io
 
-import types "github.com/SKatiyar/cri/types"
-import "github.com/SKatiyar/cri"
+import (
+    "github.com/SKatiyar/cri"
+    types "github.com/SKatiyar/cri/types"
+)
 
 type IO struct {
 	conn cri.Connector
 }
 
+// New creates a IO instance
 func New(conn cri.Connector) *IO {
 	return &IO{conn}
 }
@@ -19,6 +28,8 @@ type ReadRequest struct {
 	// Maximum number of bytes to read (left upon the agent discretion if not specified).
 	Size *int `json:"size,omitempty"`
 }
+
+
 type ReadResponse struct {
 	// Set if the data is base64-encoded
 	Base64Encoded *bool `json:"base64Encoded,omitempty"`
@@ -34,6 +45,7 @@ func (obj *IO) Read(request *ReadRequest) (response ReadResponse, err error) {
 	return
 }
 
+
 type CloseRequest struct {
 	// Handle of the stream to close.
 	Handle types.IO_StreamHandle `json:"handle"`
@@ -45,10 +57,13 @@ func (obj *IO) Close(request *CloseRequest) (err error) {
 	return
 }
 
+
 type ResolveBlobRequest struct {
 	// Object id of a Blob object wrapper.
 	ObjectId types.Runtime_RemoteObjectId `json:"objectId"`
 }
+
+
 type ResolveBlobResponse struct {
 	// UUID of the specified Blob.
 	Uuid string `json:"uuid"`

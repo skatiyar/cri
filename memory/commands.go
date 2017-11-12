@@ -1,30 +1,43 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
+
 package memory
 
-import types "github.com/SKatiyar/cri/types"
-import "github.com/SKatiyar/cri"
+import (
+    "github.com/SKatiyar/cri"
+    types "github.com/SKatiyar/cri/types"
+)
 
 type Memory struct {
 	conn cri.Connector
 }
 
+// New creates a Memory instance
 func New(conn cri.Connector) *Memory {
 	return &Memory{conn}
 }
 
 type GetDOMCountersResponse struct {
-	Documents        int `json:"documents"`
-	Nodes            int `json:"nodes"`
+	Documents int `json:"documents"`
+	Nodes int `json:"nodes"`
 	JsEventListeners int `json:"jsEventListeners"`
 }
+
 
 func (obj *Memory) GetDOMCounters() (response GetDOMCountersResponse, err error) {
 	err = obj.conn.Send("Memory.getDOMCounters", nil, &response)
 	return
 }
+
+
 func (obj *Memory) PrepareForLeakDetection() (err error) {
 	err = obj.conn.Send("Memory.prepareForLeakDetection", nil, nil)
 	return
 }
+
 
 type SetPressureNotificationsSuppressedRequest struct {
 	// If true, memory pressure notifications will be suppressed.
@@ -36,6 +49,7 @@ func (obj *Memory) SetPressureNotificationsSuppressed(request *SetPressureNotifi
 	err = obj.conn.Send("Memory.setPressureNotificationsSuppressed", request, nil)
 	return
 }
+
 
 type SimulatePressureNotificationRequest struct {
 	// Memory pressure level of the notification.

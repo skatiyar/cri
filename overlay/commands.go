@@ -1,16 +1,24 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
+// This domain provides various functionality related to drawing atop the inspected page.
 package overlay
 
-import types "github.com/SKatiyar/cri/types"
-import "github.com/SKatiyar/cri"
+import (
+    "github.com/SKatiyar/cri"
+    types "github.com/SKatiyar/cri/types"
+)
 
 type Overlay struct {
 	conn cri.Connector
 }
 
+// New creates a Overlay instance
 func New(conn cri.Connector) *Overlay {
 	return &Overlay{conn}
 }
-
 // Enables domain notifications.
 func (obj *Overlay) Enable() (err error) {
 	err = obj.conn.Send("Overlay.enable", nil, nil)
@@ -23,6 +31,7 @@ func (obj *Overlay) Disable() (err error) {
 	return
 }
 
+
 type SetShowPaintRectsRequest struct {
 	// True for showing paint rectangles
 	Result bool `json:"result"`
@@ -33,6 +42,7 @@ func (obj *Overlay) SetShowPaintRects(request *SetShowPaintRectsRequest) (err er
 	err = obj.conn.Send("Overlay.setShowPaintRects", request, nil)
 	return
 }
+
 
 type SetShowDebugBordersRequest struct {
 	// True for showing debug borders
@@ -45,6 +55,7 @@ func (obj *Overlay) SetShowDebugBorders(request *SetShowDebugBordersRequest) (er
 	return
 }
 
+
 type SetShowFPSCounterRequest struct {
 	// True for showing the FPS counter
 	Show bool `json:"show"`
@@ -55,6 +66,7 @@ func (obj *Overlay) SetShowFPSCounter(request *SetShowFPSCounterRequest) (err er
 	err = obj.conn.Send("Overlay.setShowFPSCounter", request, nil)
 	return
 }
+
 
 type SetShowScrollBottleneckRectsRequest struct {
 	// True for showing scroll bottleneck rects
@@ -67,6 +79,7 @@ func (obj *Overlay) SetShowScrollBottleneckRects(request *SetShowScrollBottlenec
 	return
 }
 
+
 type SetShowViewportSizeOnResizeRequest struct {
 	// Whether to paint size or not.
 	Show bool `json:"show"`
@@ -78,25 +91,30 @@ func (obj *Overlay) SetShowViewportSizeOnResize(request *SetShowViewportSizeOnRe
 	return
 }
 
+
 type SetPausedInDebuggerMessageRequest struct {
 	// The message to display, also triggers resume and step over controls.
 	Message *string `json:"message,omitempty"`
 }
+
 
 func (obj *Overlay) SetPausedInDebuggerMessage(request *SetPausedInDebuggerMessageRequest) (err error) {
 	err = obj.conn.Send("Overlay.setPausedInDebuggerMessage", request, nil)
 	return
 }
 
+
 type SetSuspendedRequest struct {
 	// Whether overlay should be suspended and not consume any resources until resumed.
 	Suspended bool `json:"suspended"`
 }
 
+
 func (obj *Overlay) SetSuspended(request *SetSuspendedRequest) (err error) {
 	err = obj.conn.Send("Overlay.setSuspended", request, nil)
 	return
 }
+
 
 type SetInspectModeRequest struct {
 	// Set an inspection mode.
@@ -110,6 +128,7 @@ func (obj *Overlay) SetInspectMode(request *SetInspectModeRequest) (err error) {
 	err = obj.conn.Send("Overlay.setInspectMode", request, nil)
 	return
 }
+
 
 type HighlightRectRequest struct {
 	// X coordinate
@@ -132,6 +151,7 @@ func (obj *Overlay) HighlightRect(request *HighlightRectRequest) (err error) {
 	return
 }
 
+
 type HighlightQuadRequest struct {
 	// Quad to highlight
 	Quad types.DOM_Quad `json:"quad"`
@@ -146,6 +166,7 @@ func (obj *Overlay) HighlightQuad(request *HighlightQuadRequest) (err error) {
 	err = obj.conn.Send("Overlay.highlightQuad", request, nil)
 	return
 }
+
 
 type HighlightNodeRequest struct {
 	// A descriptor for the highlight appearance.
@@ -163,6 +184,7 @@ func (obj *Overlay) HighlightNode(request *HighlightNodeRequest) (err error) {
 	err = obj.conn.Send("Overlay.highlightNode", request, nil)
 	return
 }
+
 
 type HighlightFrameRequest struct {
 	// Identifier of the frame to highlight.
@@ -185,10 +207,13 @@ func (obj *Overlay) HideHighlight() (err error) {
 	return
 }
 
+
 type GetHighlightObjectForTestRequest struct {
 	// Id of the node to get highlight object for.
 	NodeId types.DOM_NodeId `json:"nodeId"`
 }
+
+
 type GetHighlightObjectForTestResponse struct {
 	// Highlight data for the node.
 	Highlight map[string]interface{} `json:"highlight"`

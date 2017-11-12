@@ -1,5 +1,12 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
 package types
 
+
+//Detailed application cache resource information.
 type ApplicationCache_ApplicationCacheResource struct {
 	// Resource url.
 	Url string `json:"url"`
@@ -8,6 +15,8 @@ type ApplicationCache_ApplicationCacheResource struct {
 	// Resource type.
 	Type string `json:"type"`
 }
+
+//Detailed application cache information.
 type ApplicationCache_ApplicationCache struct {
 	// Manifest URL.
 	ManifestURL string `json:"manifestURL"`
@@ -20,6 +29,8 @@ type ApplicationCache_ApplicationCache struct {
 	// Application cache resources.
 	Resources []ApplicationCache_ApplicationCacheResource `json:"resources"`
 }
+
+//Frame identifier - manifest URL pair.
 type ApplicationCache_FrameWithManifest struct {
 	// Frame identifier.
 	FrameId Page_FrameId `json:"frameId"`
@@ -28,3 +39,4 @@ type ApplicationCache_FrameWithManifest struct {
 	// Application cache status.
 	Status int `json:"status"`
 }
+

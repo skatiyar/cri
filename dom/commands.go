@@ -1,16 +1,24 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
+// This domain exposes DOM read/write operations. Each DOM Node is represented with its mirror object that has an <code>id</code>. This <code>id</code> can be used to get additional information on the Node, resolve it into the JavaScript object wrapper, etc. It is important that client receives DOM events only for the nodes that are known to the client. Backend keeps track of the nodes that were sent to the client and never sends the same node twice. It is client's responsibility to collect information about the nodes that were sent to the client.<p>Note that <code>iframe</code> owner elements will return corresponding document elements as their child nodes.</p>
 package dom
 
-import types "github.com/SKatiyar/cri/types"
-import "github.com/SKatiyar/cri"
+import (
+    "github.com/SKatiyar/cri"
+    types "github.com/SKatiyar/cri/types"
+)
 
 type DOM struct {
 	conn cri.Connector
 }
 
+// New creates a DOM instance
 func New(conn cri.Connector) *DOM {
 	return &DOM{conn}
 }
-
 // Enables DOM agent for the given page.
 func (obj *DOM) Enable() (err error) {
 	err = obj.conn.Send("DOM.enable", nil, nil)
@@ -23,6 +31,7 @@ func (obj *DOM) Disable() (err error) {
 	return
 }
 
+
 type GetDocumentRequest struct {
 	// The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
 	// NOTE Experimental
@@ -31,6 +40,8 @@ type GetDocumentRequest struct {
 	// NOTE Experimental
 	Pierce *bool `json:"pierce,omitempty"`
 }
+
+
 type GetDocumentResponse struct {
 	// Resulting node.
 	Root types.DOM_Node `json:"root"`
@@ -42,6 +53,7 @@ func (obj *DOM) GetDocument(request *GetDocumentRequest) (response GetDocumentRe
 	return
 }
 
+
 type GetFlattenedDocumentRequest struct {
 	// The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
 	// NOTE Experimental
@@ -50,6 +62,8 @@ type GetFlattenedDocumentRequest struct {
 	// NOTE Experimental
 	Pierce *bool `json:"pierce,omitempty"`
 }
+
+
 type GetFlattenedDocumentResponse struct {
 	// Resulting node.
 	Nodes []types.DOM_Node `json:"nodes"`
@@ -61,10 +75,13 @@ func (obj *DOM) GetFlattenedDocument(request *GetFlattenedDocumentRequest) (resp
 	return
 }
 
+
 type CollectClassNamesFromSubtreeRequest struct {
 	// Id of the node to collect class names.
 	NodeId types.DOM_NodeId `json:"nodeId"`
 }
+
+
 type CollectClassNamesFromSubtreeResponse struct {
 	// Class name list.
 	ClassNames []string `json:"classNames"`
@@ -75,6 +92,7 @@ func (obj *DOM) CollectClassNamesFromSubtree(request *CollectClassNamesFromSubtr
 	err = obj.conn.Send("DOM.collectClassNamesFromSubtree", request, &response)
 	return
 }
+
 
 type RequestChildNodesRequest struct {
 	// Id of the node to get children for.
@@ -93,12 +111,15 @@ func (obj *DOM) RequestChildNodes(request *RequestChildNodesRequest) (err error)
 	return
 }
 
+
 type QuerySelectorRequest struct {
 	// Id of the node to query upon.
 	NodeId types.DOM_NodeId `json:"nodeId"`
 	// Selector string.
 	Selector string `json:"selector"`
 }
+
+
 type QuerySelectorResponse struct {
 	// Query selector result.
 	NodeId types.DOM_NodeId `json:"nodeId"`
@@ -110,12 +131,15 @@ func (obj *DOM) QuerySelector(request *QuerySelectorRequest) (response QuerySele
 	return
 }
 
+
 type QuerySelectorAllRequest struct {
 	// Id of the node to query upon.
 	NodeId types.DOM_NodeId `json:"nodeId"`
 	// Selector string.
 	Selector string `json:"selector"`
 }
+
+
 type QuerySelectorAllResponse struct {
 	// Query selector result.
 	NodeIds []types.DOM_NodeId `json:"nodeIds"`
@@ -127,12 +151,15 @@ func (obj *DOM) QuerySelectorAll(request *QuerySelectorAllRequest) (response Que
 	return
 }
 
+
 type SetNodeNameRequest struct {
 	// Id of the node to set name for.
 	NodeId types.DOM_NodeId `json:"nodeId"`
 	// New node's name.
 	Name string `json:"name"`
 }
+
+
 type SetNodeNameResponse struct {
 	// New node's id.
 	NodeId types.DOM_NodeId `json:"nodeId"`
@@ -143,6 +170,7 @@ func (obj *DOM) SetNodeName(request *SetNodeNameRequest) (response SetNodeNameRe
 	err = obj.conn.Send("DOM.setNodeName", request, &response)
 	return
 }
+
 
 type SetNodeValueRequest struct {
 	// Id of the node to set value for.
@@ -157,6 +185,7 @@ func (obj *DOM) SetNodeValue(request *SetNodeValueRequest) (err error) {
 	return
 }
 
+
 type RemoveNodeRequest struct {
 	// Id of the node to remove.
 	NodeId types.DOM_NodeId `json:"nodeId"`
@@ -167,6 +196,7 @@ func (obj *DOM) RemoveNode(request *RemoveNodeRequest) (err error) {
 	err = obj.conn.Send("DOM.removeNode", request, nil)
 	return
 }
+
 
 type SetAttributeValueRequest struct {
 	// Id of the element to set attribute for.
@@ -183,6 +213,7 @@ func (obj *DOM) SetAttributeValue(request *SetAttributeValueRequest) (err error)
 	return
 }
 
+
 type SetAttributesAsTextRequest struct {
 	// Id of the element to set attributes for.
 	NodeId types.DOM_NodeId `json:"nodeId"`
@@ -198,6 +229,7 @@ func (obj *DOM) SetAttributesAsText(request *SetAttributesAsTextRequest) (err er
 	return
 }
 
+
 type RemoveAttributeRequest struct {
 	// Id of the element to remove attribute from.
 	NodeId types.DOM_NodeId `json:"nodeId"`
@@ -211,6 +243,7 @@ func (obj *DOM) RemoveAttribute(request *RemoveAttributeRequest) (err error) {
 	return
 }
 
+
 type GetOuterHTMLRequest struct {
 	// Identifier of the node.
 	NodeId *types.DOM_NodeId `json:"nodeId,omitempty"`
@@ -219,6 +252,8 @@ type GetOuterHTMLRequest struct {
 	// JavaScript object id of the node wrapper.
 	ObjectId *types.Runtime_RemoteObjectId `json:"objectId,omitempty"`
 }
+
+
 type GetOuterHTMLResponse struct {
 	// Outer HTML markup.
 	OuterHTML string `json:"outerHTML"`
@@ -229,6 +264,7 @@ func (obj *DOM) GetOuterHTML(request *GetOuterHTMLRequest) (response GetOuterHTM
 	err = obj.conn.Send("DOM.getOuterHTML", request, &response)
 	return
 }
+
 
 type SetOuterHTMLRequest struct {
 	// Id of the node to set markup for.
@@ -243,6 +279,7 @@ func (obj *DOM) SetOuterHTML(request *SetOuterHTMLRequest) (err error) {
 	return
 }
 
+
 type PerformSearchRequest struct {
 	// Plain text or query selector or XPath search query.
 	Query string `json:"query"`
@@ -250,6 +287,8 @@ type PerformSearchRequest struct {
 	// NOTE Experimental
 	IncludeUserAgentShadowDOM *bool `json:"includeUserAgentShadowDOM,omitempty"`
 }
+
+
 type PerformSearchResponse struct {
 	// Unique search session identifier.
 	SearchId string `json:"searchId"`
@@ -263,6 +302,7 @@ func (obj *DOM) PerformSearch(request *PerformSearchRequest) (response PerformSe
 	return
 }
 
+
 type GetSearchResultsRequest struct {
 	// Unique search session identifier.
 	SearchId string `json:"searchId"`
@@ -271,6 +311,8 @@ type GetSearchResultsRequest struct {
 	// End index of the search result to be returned.
 	ToIndex int `json:"toIndex"`
 }
+
+
 type GetSearchResultsResponse struct {
 	// Ids of the search result nodes.
 	NodeIds []types.DOM_NodeId `json:"nodeIds"`
@@ -281,6 +323,7 @@ func (obj *DOM) GetSearchResults(request *GetSearchResultsRequest) (response Get
 	err = obj.conn.Send("DOM.getSearchResults", request, &response)
 	return
 }
+
 
 type DiscardSearchResultsRequest struct {
 	// Unique search session identifier.
@@ -293,10 +336,13 @@ func (obj *DOM) DiscardSearchResults(request *DiscardSearchResultsRequest) (err 
 	return
 }
 
+
 type RequestNodeRequest struct {
 	// JavaScript object id to convert into node.
 	ObjectId types.Runtime_RemoteObjectId `json:"objectId"`
 }
+
+
 type RequestNodeResponse struct {
 	// Node id for given object.
 	NodeId types.DOM_NodeId `json:"nodeId"`
@@ -326,10 +372,13 @@ func (obj *DOM) HideHighlight() (err error) {
 	return
 }
 
+
 type PushNodeByPathToFrontendRequest struct {
 	// Path to node in the proprietary format.
 	Path string `json:"path"`
 }
+
+
 type PushNodeByPathToFrontendResponse struct {
 	// Id of the node for given path.
 	NodeId types.DOM_NodeId `json:"nodeId"`
@@ -341,10 +390,13 @@ func (obj *DOM) PushNodeByPathToFrontend(request *PushNodeByPathToFrontendReques
 	return
 }
 
+
 type PushNodesByBackendIdsToFrontendRequest struct {
 	// The array of backend node ids.
 	BackendNodeIds []types.DOM_BackendNodeId `json:"backendNodeIds"`
 }
+
+
 type PushNodesByBackendIdsToFrontendResponse struct {
 	// The array of ids of pushed nodes that correspond to the backend ids specified in backendNodeIds.
 	NodeIds []types.DOM_NodeId `json:"nodeIds"`
@@ -355,6 +407,7 @@ func (obj *DOM) PushNodesByBackendIdsToFrontend(request *PushNodesByBackendIdsTo
 	err = obj.conn.Send("DOM.pushNodesByBackendIdsToFrontend", request, &response)
 	return
 }
+
 
 type SetInspectedNodeRequest struct {
 	// DOM node id to be accessible by means of $x command line API.
@@ -367,6 +420,7 @@ func (obj *DOM) SetInspectedNode(request *SetInspectedNodeRequest) (err error) {
 	return
 }
 
+
 type ResolveNodeRequest struct {
 	// Id of the node to resolve.
 	NodeId *types.DOM_NodeId `json:"nodeId,omitempty"`
@@ -375,6 +429,8 @@ type ResolveNodeRequest struct {
 	// Symbolic group name that can be used to release multiple objects.
 	ObjectGroup *string `json:"objectGroup,omitempty"`
 }
+
+
 type ResolveNodeResponse struct {
 	// JavaScript object wrapper for given node.
 	Object types.Runtime_RemoteObject `json:"object"`
@@ -386,10 +442,13 @@ func (obj *DOM) ResolveNode(request *ResolveNodeRequest) (response ResolveNodeRe
 	return
 }
 
+
 type GetAttributesRequest struct {
 	// Id of the node to retrieve attibutes for.
 	NodeId types.DOM_NodeId `json:"nodeId"`
 }
+
+
 type GetAttributesResponse struct {
 	// An interleaved array of node attribute names and values.
 	Attributes []string `json:"attributes"`
@@ -401,6 +460,7 @@ func (obj *DOM) GetAttributes(request *GetAttributesRequest) (response GetAttrib
 	return
 }
 
+
 type CopyToRequest struct {
 	// Id of the node to copy.
 	NodeId types.DOM_NodeId `json:"nodeId"`
@@ -409,6 +469,8 @@ type CopyToRequest struct {
 	// Drop the copy before this node (if absent, the copy becomes the last child of <code>targetNodeId</code>).
 	InsertBeforeNodeId *types.DOM_NodeId `json:"insertBeforeNodeId,omitempty"`
 }
+
+
 type CopyToResponse struct {
 	// Id of the node clone.
 	NodeId types.DOM_NodeId `json:"nodeId"`
@@ -420,6 +482,7 @@ func (obj *DOM) CopyTo(request *CopyToRequest) (response CopyToResponse, err err
 	return
 }
 
+
 type MoveToRequest struct {
 	// Id of the node to move.
 	NodeId types.DOM_NodeId `json:"nodeId"`
@@ -428,6 +491,8 @@ type MoveToRequest struct {
 	// Drop node before this one (if absent, the moved node becomes the last child of <code>targetNodeId</code>).
 	InsertBeforeNodeId *types.DOM_NodeId `json:"insertBeforeNodeId,omitempty"`
 }
+
+
 type MoveToResponse struct {
 	// New id of the moved node.
 	NodeId types.DOM_NodeId `json:"nodeId"`
@@ -457,6 +522,7 @@ func (obj *DOM) MarkUndoableState() (err error) {
 	return
 }
 
+
 type FocusRequest struct {
 	// Identifier of the node.
 	NodeId *types.DOM_NodeId `json:"nodeId,omitempty"`
@@ -471,6 +537,7 @@ func (obj *DOM) Focus(request *FocusRequest) (err error) {
 	err = obj.conn.Send("DOM.focus", request, nil)
 	return
 }
+
 
 type SetFileInputFilesRequest struct {
 	// Array of file paths to set.
@@ -489,6 +556,7 @@ func (obj *DOM) SetFileInputFiles(request *SetFileInputFilesRequest) (err error)
 	return
 }
 
+
 type GetBoxModelRequest struct {
 	// Identifier of the node.
 	NodeId *types.DOM_NodeId `json:"nodeId,omitempty"`
@@ -497,6 +565,8 @@ type GetBoxModelRequest struct {
 	// JavaScript object id of the node wrapper.
 	ObjectId *types.Runtime_RemoteObjectId `json:"objectId,omitempty"`
 }
+
+
 type GetBoxModelResponse struct {
 	// Box model for the node.
 	Model types.DOM_BoxModel `json:"model"`
@@ -508,6 +578,7 @@ func (obj *DOM) GetBoxModel(request *GetBoxModelRequest) (response GetBoxModelRe
 	return
 }
 
+
 type GetNodeForLocationRequest struct {
 	// X coordinate.
 	X int `json:"x"`
@@ -516,6 +587,8 @@ type GetNodeForLocationRequest struct {
 	// False to skip to the nearest non-UA shadow root ancestor (default: false).
 	IncludeUserAgentShadowDOM *bool `json:"includeUserAgentShadowDOM,omitempty"`
 }
+
+
 type GetNodeForLocationResponse struct {
 	// Id of the node at given coordinates.
 	NodeId types.DOM_NodeId `json:"nodeId"`
@@ -527,10 +600,13 @@ func (obj *DOM) GetNodeForLocation(request *GetNodeForLocationRequest) (response
 	return
 }
 
+
 type GetRelayoutBoundaryRequest struct {
 	// Id of the node.
 	NodeId types.DOM_NodeId `json:"nodeId"`
 }
+
+
 type GetRelayoutBoundaryResponse struct {
 	// Relayout boundary node id for the given node.
 	NodeId types.DOM_NodeId `json:"nodeId"`
@@ -541,6 +617,7 @@ func (obj *DOM) GetRelayoutBoundary(request *GetRelayoutBoundaryRequest) (respon
 	err = obj.conn.Send("DOM.getRelayoutBoundary", request, &response)
 	return
 }
+
 
 type DescribeNodeRequest struct {
 	// Identifier of the node.
@@ -556,6 +633,8 @@ type DescribeNodeRequest struct {
 	// NOTE Experimental
 	Pierce *bool `json:"pierce,omitempty"`
 }
+
+
 type DescribeNodeResponse struct {
 	// Node description.
 	Node types.DOM_Node `json:"node"`

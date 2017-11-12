@@ -1,11 +1,20 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
+
 package deviceorientation
 
-import "github.com/SKatiyar/cri"
+import (
+    "github.com/SKatiyar/cri"
+)
 
 type DeviceOrientation struct {
 	conn cri.Connector
 }
 
+// New creates a DeviceOrientation instance
 func New(conn cri.Connector) *DeviceOrientation {
 	return &DeviceOrientation{conn}
 }

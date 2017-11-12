@@ -1,16 +1,24 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
+// This domain exposes CSS read/write operations. All CSS objects (stylesheets, rules, and styles) have an associated <code>id</code> used in subsequent operations on the related object. Each object type has a specific <code>id</code> structure, and those are not interchangeable between objects of different kinds. CSS objects can be loaded using the <code>get*ForNode()</code> calls (which accept a DOM node id). A client can also keep track of stylesheets via the <code>styleSheetAdded</code>/<code>styleSheetRemoved</code> events and subsequently load the required stylesheet contents using the <code>getStyleSheet[Text]()</code> methods.
 package css
 
-import types "github.com/SKatiyar/cri/types"
-import "github.com/SKatiyar/cri"
+import (
+    "github.com/SKatiyar/cri"
+    types "github.com/SKatiyar/cri/types"
+)
 
 type CSS struct {
 	conn cri.Connector
 }
 
+// New creates a CSS instance
 func New(conn cri.Connector) *CSS {
 	return &CSS{conn}
 }
-
 // Enables the CSS agent for the given page. Clients should not assume that the CSS agent has been enabled until the result of this command is received.
 func (obj *CSS) Enable() (err error) {
 	err = obj.conn.Send("CSS.enable", nil, nil)
@@ -23,9 +31,12 @@ func (obj *CSS) Disable() (err error) {
 	return
 }
 
+
 type GetMatchedStylesForNodeRequest struct {
 	NodeId types.DOM_NodeId `json:"nodeId"`
 }
+
+
 type GetMatchedStylesForNodeResponse struct {
 	// Inline style for the specified DOM node.
 	InlineStyle *types.CSS_CSSStyle `json:"inlineStyle,omitempty"`
@@ -47,9 +58,12 @@ func (obj *CSS) GetMatchedStylesForNode(request *GetMatchedStylesForNodeRequest)
 	return
 }
 
+
 type GetInlineStylesForNodeRequest struct {
 	NodeId types.DOM_NodeId `json:"nodeId"`
 }
+
+
 type GetInlineStylesForNodeResponse struct {
 	// Inline style for the specified DOM node.
 	InlineStyle *types.CSS_CSSStyle `json:"inlineStyle,omitempty"`
@@ -63,9 +77,12 @@ func (obj *CSS) GetInlineStylesForNode(request *GetInlineStylesForNodeRequest) (
 	return
 }
 
+
 type GetComputedStyleForNodeRequest struct {
 	NodeId types.DOM_NodeId `json:"nodeId"`
 }
+
+
 type GetComputedStyleForNodeResponse struct {
 	// Computed style for the specified DOM node.
 	ComputedStyle []types.CSS_CSSComputedStyleProperty `json:"computedStyle"`
@@ -77,9 +94,12 @@ func (obj *CSS) GetComputedStyleForNode(request *GetComputedStyleForNodeRequest)
 	return
 }
 
+
 type GetPlatformFontsForNodeRequest struct {
 	NodeId types.DOM_NodeId `json:"nodeId"`
 }
+
+
 type GetPlatformFontsForNodeResponse struct {
 	// Usage statistics for every employed platform font.
 	Fonts []types.CSS_PlatformFontUsage `json:"fonts"`
@@ -91,9 +111,12 @@ func (obj *CSS) GetPlatformFontsForNode(request *GetPlatformFontsForNodeRequest)
 	return
 }
 
+
 type GetStyleSheetTextRequest struct {
 	StyleSheetId types.CSS_StyleSheetId `json:"styleSheetId"`
 }
+
+
 type GetStyleSheetTextResponse struct {
 	// The stylesheet text.
 	Text string `json:"text"`
@@ -105,9 +128,12 @@ func (obj *CSS) GetStyleSheetText(request *GetStyleSheetTextRequest) (response G
 	return
 }
 
+
 type CollectClassNamesRequest struct {
 	StyleSheetId types.CSS_StyleSheetId `json:"styleSheetId"`
 }
+
+
 type CollectClassNamesResponse struct {
 	// Class name list.
 	ClassNames []string `json:"classNames"`
@@ -119,10 +145,13 @@ func (obj *CSS) CollectClassNames(request *CollectClassNamesRequest) (response C
 	return
 }
 
+
 type SetStyleSheetTextRequest struct {
 	StyleSheetId types.CSS_StyleSheetId `json:"styleSheetId"`
-	Text         string                 `json:"text"`
+	Text string `json:"text"`
 }
+
+
 type SetStyleSheetTextResponse struct {
 	// URL of source map associated with script (if any).
 	SourceMapURL *string `json:"sourceMapURL,omitempty"`
@@ -134,11 +163,14 @@ func (obj *CSS) SetStyleSheetText(request *SetStyleSheetTextRequest) (response S
 	return
 }
 
+
 type SetRuleSelectorRequest struct {
 	StyleSheetId types.CSS_StyleSheetId `json:"styleSheetId"`
-	Range        types.CSS_SourceRange  `json:"range"`
-	Selector     string                 `json:"selector"`
+	Range types.CSS_SourceRange `json:"range"`
+	Selector string `json:"selector"`
 }
+
+
 type SetRuleSelectorResponse struct {
 	// The resulting selector list after modification.
 	SelectorList types.CSS_SelectorList `json:"selectorList"`
@@ -150,11 +182,14 @@ func (obj *CSS) SetRuleSelector(request *SetRuleSelectorRequest) (response SetRu
 	return
 }
 
+
 type SetKeyframeKeyRequest struct {
 	StyleSheetId types.CSS_StyleSheetId `json:"styleSheetId"`
-	Range        types.CSS_SourceRange  `json:"range"`
-	KeyText      string                 `json:"keyText"`
+	Range types.CSS_SourceRange `json:"range"`
+	KeyText string `json:"keyText"`
 }
+
+
 type SetKeyframeKeyResponse struct {
 	// The resulting key text after modification.
 	KeyText types.CSS_Value `json:"keyText"`
@@ -166,9 +201,12 @@ func (obj *CSS) SetKeyframeKey(request *SetKeyframeKeyRequest) (response SetKeyf
 	return
 }
 
+
 type SetStyleTextsRequest struct {
 	Edits []types.CSS_StyleDeclarationEdit `json:"edits"`
 }
+
+
 type SetStyleTextsResponse struct {
 	// The resulting styles after modification.
 	Styles []types.CSS_CSSStyle `json:"styles"`
@@ -180,11 +218,14 @@ func (obj *CSS) SetStyleTexts(request *SetStyleTextsRequest) (response SetStyleT
 	return
 }
 
+
 type SetMediaTextRequest struct {
 	StyleSheetId types.CSS_StyleSheetId `json:"styleSheetId"`
-	Range        types.CSS_SourceRange  `json:"range"`
-	Text         string                 `json:"text"`
+	Range types.CSS_SourceRange `json:"range"`
+	Text string `json:"text"`
 }
+
+
 type SetMediaTextResponse struct {
 	// The resulting CSS media rule after modification.
 	Media types.CSS_CSSMedia `json:"media"`
@@ -196,10 +237,13 @@ func (obj *CSS) SetMediaText(request *SetMediaTextRequest) (response SetMediaTex
 	return
 }
 
+
 type CreateStyleSheetRequest struct {
 	// Identifier of the frame where "via-inspector" stylesheet should be created.
 	FrameId types.Page_FrameId `json:"frameId"`
 }
+
+
 type CreateStyleSheetResponse struct {
 	// Identifier of the created "via-inspector" stylesheet.
 	StyleSheetId types.CSS_StyleSheetId `json:"styleSheetId"`
@@ -211,6 +255,7 @@ func (obj *CSS) CreateStyleSheet(request *CreateStyleSheetRequest) (response Cre
 	return
 }
 
+
 type AddRuleRequest struct {
 	// The css style sheet identifier where a new rule should be inserted.
 	StyleSheetId types.CSS_StyleSheetId `json:"styleSheetId"`
@@ -219,6 +264,8 @@ type AddRuleRequest struct {
 	// Text position of a new rule in the target style sheet.
 	Location types.CSS_SourceRange `json:"location"`
 }
+
+
 type AddRuleResponse struct {
 	// The newly created rule.
 	Rule types.CSS_CSSRule `json:"rule"`
@@ -229,6 +276,7 @@ func (obj *CSS) AddRule(request *AddRuleRequest) (response AddRuleResponse, err 
 	err = obj.conn.Send("CSS.addRule", request, &response)
 	return
 }
+
 
 type ForcePseudoStateRequest struct {
 	// The element id for which to force the pseudo state.
@@ -243,6 +291,7 @@ func (obj *CSS) ForcePseudoState(request *ForcePseudoStateRequest) (err error) {
 	return
 }
 
+
 type GetMediaQueriesResponse struct {
 	Medias []types.CSS_CSSMedia `json:"medias"`
 }
@@ -253,11 +302,12 @@ func (obj *CSS) GetMediaQueries() (response GetMediaQueriesResponse, err error) 
 	return
 }
 
+
 type SetEffectivePropertyValueForNodeRequest struct {
 	// The element id for which to set property.
-	NodeId       types.DOM_NodeId `json:"nodeId"`
-	PropertyName string           `json:"propertyName"`
-	Value        string           `json:"value"`
+	NodeId types.DOM_NodeId `json:"nodeId"`
+	PropertyName string `json:"propertyName"`
+	Value string `json:"value"`
 }
 
 // Find a rule with the given active property for the given node and set the new value for this property
@@ -266,10 +316,13 @@ func (obj *CSS) SetEffectivePropertyValueForNode(request *SetEffectivePropertyVa
 	return
 }
 
+
 type GetBackgroundColorsRequest struct {
 	// Id of the node to get background colors for.
 	NodeId types.DOM_NodeId `json:"nodeId"`
 }
+
+
 type GetBackgroundColorsResponse struct {
 	// The range of background colors behind this element, if it contains any visible text. If no visible text is present, this will be undefined. In the case of a flat background color, this will consist of simply that color. In the case of a gradient, this will consist of each of the color stops. For anything more complicated, this will be an empty array. Images will be ignored (as if the image had failed to load).
 	BackgroundColors []string `json:"backgroundColors,omitempty"`
@@ -280,6 +333,7 @@ type GetBackgroundColorsResponse struct {
 	// The computed font size for the document body, as a computed CSS value string (e.g. '16px').
 	ComputedBodyFontSize *string `json:"computedBodyFontSize,omitempty"`
 }
+
 
 func (obj *CSS) GetBackgroundColors(request *GetBackgroundColorsRequest) (response GetBackgroundColorsResponse, err error) {
 	err = obj.conn.Send("CSS.getBackgroundColors", request, &response)
@@ -292,6 +346,7 @@ func (obj *CSS) StartRuleUsageTracking() (err error) {
 	return
 }
 
+
 type TakeCoverageDeltaResponse struct {
 	Coverage []types.CSS_RuleUsage `json:"coverage"`
 }
@@ -301,6 +356,7 @@ func (obj *CSS) TakeCoverageDelta() (response TakeCoverageDeltaResponse, err err
 	err = obj.conn.Send("CSS.takeCoverageDelta", nil, &response)
 	return
 }
+
 
 type StopRuleUsageTrackingResponse struct {
 	RuleUsage []types.CSS_RuleUsage `json:"ruleUsage"`

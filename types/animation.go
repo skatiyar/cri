@@ -1,5 +1,12 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
 package types
 
+
+//Animation instance.
 type Animation_Animation struct {
 	// <code>Animation</code>'s id.
 	Id string `json:"id"`
@@ -23,6 +30,8 @@ type Animation_Animation struct {
 	// A unique ID for <code>Animation</code> representing the sources that triggered this CSS animation/transition.
 	CssId *string `json:"cssId,omitempty"`
 }
+
+//AnimationEffect instance
 type Animation_AnimationEffect struct {
 	// <code>AnimationEffect</code>'s delay.
 	Delay float32 `json:"delay"`
@@ -45,15 +54,20 @@ type Animation_AnimationEffect struct {
 	// <code>AnimationEffect</code>'s timing function.
 	Easing string `json:"easing"`
 }
+
+//Keyframes Rule
 type Animation_KeyframesRule struct {
 	// CSS keyframed animation's name.
 	Name *string `json:"name,omitempty"`
 	// List of animation keyframes.
 	Keyframes []Animation_KeyframeStyle `json:"keyframes"`
 }
+
+//Keyframe Style
 type Animation_KeyframeStyle struct {
 	// Keyframe's time offset.
 	Offset string `json:"offset"`
 	// <code>AnimationEffect</code>'s timing function.
 	Easing string `json:"easing"`
 }
+
