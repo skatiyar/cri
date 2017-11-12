@@ -1,14 +1,14 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 // DOM debugging allows setting breakpoints on particular DOM operations and events. JavaScript execution will stop on these operations as if there was a regular breakpoint set.
 package domdebugger
 
 import (
-    "github.com/SKatiyar/cri"
-    types "github.com/SKatiyar/cri/types"
+	"github.com/SKatiyar/cri"
+	types "github.com/SKatiyar/cri/types"
 )
 
 type DOMDebugger struct {
@@ -33,7 +33,6 @@ func (obj *DOMDebugger) SetDOMBreakpoint(request *SetDOMBreakpointRequest) (err 
 	return
 }
 
-
 type RemoveDOMBreakpointRequest struct {
 	// Identifier of the node to remove breakpoint from.
 	NodeId types.DOM_NodeId `json:"nodeId"`
@@ -46,7 +45,6 @@ func (obj *DOMDebugger) RemoveDOMBreakpoint(request *RemoveDOMBreakpointRequest)
 	err = obj.conn.Send("DOMDebugger.removeDOMBreakpoint", request, nil)
 	return
 }
-
 
 type SetEventListenerBreakpointRequest struct {
 	// DOM Event name to stop on (any DOM event will do).
@@ -62,7 +60,6 @@ func (obj *DOMDebugger) SetEventListenerBreakpoint(request *SetEventListenerBrea
 	return
 }
 
-
 type RemoveEventListenerBreakpointRequest struct {
 	// Event name.
 	EventName string `json:"eventName"`
@@ -77,7 +74,6 @@ func (obj *DOMDebugger) RemoveEventListenerBreakpoint(request *RemoveEventListen
 	return
 }
 
-
 type SetInstrumentationBreakpointRequest struct {
 	// Instrumentation name to stop on.
 	EventName string `json:"eventName"`
@@ -88,7 +84,6 @@ func (obj *DOMDebugger) SetInstrumentationBreakpoint(request *SetInstrumentation
 	err = obj.conn.Send("DOMDebugger.setInstrumentationBreakpoint", request, nil)
 	return
 }
-
 
 type RemoveInstrumentationBreakpointRequest struct {
 	// Instrumentation name to stop on.
@@ -101,7 +96,6 @@ func (obj *DOMDebugger) RemoveInstrumentationBreakpoint(request *RemoveInstrumen
 	return
 }
 
-
 type SetXHRBreakpointRequest struct {
 	// Resource URL substring. All XHRs having this substring in the URL will get stopped upon.
 	Url string `json:"url"`
@@ -112,7 +106,6 @@ func (obj *DOMDebugger) SetXHRBreakpoint(request *SetXHRBreakpointRequest) (err 
 	err = obj.conn.Send("DOMDebugger.setXHRBreakpoint", request, nil)
 	return
 }
-
 
 type RemoveXHRBreakpointRequest struct {
 	// Resource URL substring.
@@ -125,7 +118,6 @@ func (obj *DOMDebugger) RemoveXHRBreakpoint(request *RemoveXHRBreakpointRequest)
 	return
 }
 
-
 type GetEventListenersRequest struct {
 	// Identifier of the object to return listeners for.
 	ObjectId types.Runtime_RemoteObjectId `json:"objectId"`
@@ -136,7 +128,6 @@ type GetEventListenersRequest struct {
 	// NOTE Experimental
 	Pierce *bool `json:"pierce,omitempty"`
 }
-
 
 type GetEventListenersResponse struct {
 	// Array of relevant listeners.

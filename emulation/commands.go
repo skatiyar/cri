@@ -1,14 +1,14 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 // This domain emulates different environments for the page.
 package emulation
 
 import (
-    "github.com/SKatiyar/cri"
-    types "github.com/SKatiyar/cri/types"
+	"github.com/SKatiyar/cri"
+	types "github.com/SKatiyar/cri/types"
 )
 
 type Emulation struct {
@@ -71,7 +71,6 @@ func (obj *Emulation) ResetPageScaleFactor() (err error) {
 	return
 }
 
-
 type SetPageScaleFactorRequest struct {
 	// Page scale factor.
 	PageScaleFactor float32 `json:"pageScaleFactor"`
@@ -82,7 +81,6 @@ func (obj *Emulation) SetPageScaleFactor(request *SetPageScaleFactorRequest) (er
 	err = obj.conn.Send("Emulation.setPageScaleFactor", request, nil)
 	return
 }
-
 
 type SetVisibleSizeRequest struct {
 	// Frame width (DIP).
@@ -97,7 +95,6 @@ func (obj *Emulation) SetVisibleSize(request *SetVisibleSizeRequest) (err error)
 	return
 }
 
-
 type SetScriptExecutionDisabledRequest struct {
 	// Whether script execution should be disabled in the page.
 	Value bool `json:"value"`
@@ -108,7 +105,6 @@ func (obj *Emulation) SetScriptExecutionDisabled(request *SetScriptExecutionDisa
 	err = obj.conn.Send("Emulation.setScriptExecutionDisabled", request, nil)
 	return
 }
-
 
 type SetGeolocationOverrideRequest struct {
 	// Mock latitude
@@ -131,7 +127,6 @@ func (obj *Emulation) ClearGeolocationOverride() (err error) {
 	return
 }
 
-
 type SetTouchEmulationEnabledRequest struct {
 	// Whether the touch event emulation should be enabled.
 	Enabled bool `json:"enabled"`
@@ -145,7 +140,6 @@ func (obj *Emulation) SetTouchEmulationEnabled(request *SetTouchEmulationEnabled
 	return
 }
 
-
 type SetEmitTouchEventsForMouseRequest struct {
 	// Whether touch emulation based on mouse input should be enabled.
 	Enabled bool `json:"enabled"`
@@ -153,12 +147,10 @@ type SetEmitTouchEventsForMouseRequest struct {
 	Configuration *string `json:"configuration,omitempty"`
 }
 
-
 func (obj *Emulation) SetEmitTouchEventsForMouse(request *SetEmitTouchEventsForMouseRequest) (err error) {
 	err = obj.conn.Send("Emulation.setEmitTouchEventsForMouse", request, nil)
 	return
 }
-
 
 type SetEmulatedMediaRequest struct {
 	// Media type to emulate. Empty string disables the override.
@@ -171,7 +163,6 @@ func (obj *Emulation) SetEmulatedMedia(request *SetEmulatedMediaRequest) (err er
 	return
 }
 
-
 type SetCPUThrottlingRateRequest struct {
 	// Throttling rate as a slowdown factor (1 is no throttle, 2 is 2x slowdown, etc).
 	Rate float32 `json:"rate"`
@@ -183,7 +174,6 @@ func (obj *Emulation) SetCPUThrottlingRate(request *SetCPUThrottlingRateRequest)
 	return
 }
 
-
 type CanEmulateResponse struct {
 	// True if emulation is supported.
 	Result bool `json:"result"`
@@ -194,7 +184,6 @@ func (obj *Emulation) CanEmulate() (response CanEmulateResponse, err error) {
 	err = obj.conn.Send("Emulation.canEmulate", nil, &response)
 	return
 }
-
 
 type SetVirtualTimePolicyRequest struct {
 	Policy types.Emulation_VirtualTimePolicy `json:"policy"`
@@ -210,7 +199,6 @@ func (obj *Emulation) SetVirtualTimePolicy(request *SetVirtualTimePolicyRequest)
 	return
 }
 
-
 type SetNavigatorOverridesRequest struct {
 	// The platform navigator.platform should return.
 	Platform string `json:"platform"`
@@ -222,7 +210,6 @@ func (obj *Emulation) SetNavigatorOverrides(request *SetNavigatorOverridesReques
 	return
 }
 
-
 type SetDefaultBackgroundColorOverrideRequest struct {
 	// RGBA of the default background color. If not specified, any existing override will be cleared.
 	Color *types.DOM_RGBA `json:"color,omitempty"`
@@ -232,4 +219,59 @@ type SetDefaultBackgroundColorOverrideRequest struct {
 func (obj *Emulation) SetDefaultBackgroundColorOverride(request *SetDefaultBackgroundColorOverrideRequest) (err error) {
 	err = obj.conn.Send("Emulation.setDefaultBackgroundColorOverride", request, nil)
 	return
+}
+
+// Notification sent after the virtual time budget for the current VirtualTimePolicy has run out.
+func (obj *Emulation) VirtualTimeBudgetExpired(fn func() bool) {
+
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Emulation.virtualTimeBudgetExpired", closeChn, nil)
+			if !fn() {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type VirtualTimeAdvancedParams struct {
+	// The amount of virtual time that has elapsed in milliseconds since virtual time was first enabled.
+	VirtualTimeElapsed int `json:"virtualTimeElapsed"`
+}
+
+// Notification sent after the virtual time has advanced.
+func (obj *Emulation) VirtualTimeAdvanced(fn func(params *VirtualTimeAdvancedParams) bool) {
+	params := VirtualTimeAdvancedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Emulation.virtualTimeAdvanced", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type VirtualTimePausedParams struct {
+	// The amount of virtual time that has elapsed in milliseconds since virtual time was first enabled.
+	VirtualTimeElapsed int `json:"virtualTimeElapsed"`
+}
+
+// Notification sent after the virtual time has paused.
+func (obj *Emulation) VirtualTimePaused(fn func(params *VirtualTimePausedParams) bool) {
+	params := VirtualTimePausedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Emulation.virtualTimePaused", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
 }

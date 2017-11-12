@@ -1,14 +1,14 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 // Security
 package security
 
 import (
-    "github.com/SKatiyar/cri"
-    types "github.com/SKatiyar/cri/types"
+	"github.com/SKatiyar/cri"
+	types "github.com/SKatiyar/cri/types"
 )
 
 type Security struct {
@@ -19,6 +19,7 @@ type Security struct {
 func New(conn cri.Connector) *Security {
 	return &Security{conn}
 }
+
 // Enables tracking security state changes.
 func (obj *Security) Enable() (err error) {
 	err = obj.conn.Send("Security.enable", nil, nil)
@@ -30,7 +31,6 @@ func (obj *Security) Disable() (err error) {
 	err = obj.conn.Send("Security.disable", nil, nil)
 	return
 }
-
 
 type HandleCertificateErrorRequest struct {
 	// The ID of the event.
@@ -45,7 +45,6 @@ func (obj *Security) HandleCertificateError(request *HandleCertificateErrorReque
 	return
 }
 
-
 type SetOverrideCertificateErrorsRequest struct {
 	// If true, certificate errors will be overridden.
 	Override bool `json:"override"`
@@ -55,4 +54,56 @@ type SetOverrideCertificateErrorsRequest struct {
 func (obj *Security) SetOverrideCertificateErrors(request *SetOverrideCertificateErrorsRequest) (err error) {
 	err = obj.conn.Send("Security.setOverrideCertificateErrors", request, nil)
 	return
+}
+
+type SecurityStateChangedParams struct {
+	// Security state.
+	SecurityState types.Security_SecurityState `json:"securityState"`
+	// True if the page was loaded over cryptographic transport such as HTTPS.
+	SchemeIsCryptographic bool `json:"schemeIsCryptographic"`
+	// List of explanations for the security state. If the overall security state is `insecure` or `warning`, at least one corresponding explanation should be included.
+	Explanations []types.Security_SecurityStateExplanation `json:"explanations"`
+	// Information about insecure content on the page.
+	InsecureContentStatus types.Security_InsecureContentStatus `json:"insecureContentStatus"`
+	// Overrides user-visible description of the state.
+	Summary *string `json:"summary,omitempty"`
+}
+
+// The security state of the page changed.
+func (obj *Security) SecurityStateChanged(fn func(params *SecurityStateChangedParams) bool) {
+	params := SecurityStateChangedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Security.securityStateChanged", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type CertificateErrorParams struct {
+	// The ID of the event.
+	EventId int `json:"eventId"`
+	// The type of the error.
+	ErrorType string `json:"errorType"`
+	// The url that was requested.
+	RequestURL string `json:"requestURL"`
+}
+
+// There is a certificate error. If overriding certificate errors is enabled, then it should be handled with the handleCertificateError command. Note: this event does not fire if the certificate error has been allowed internally.
+func (obj *Security) CertificateError(fn func(params *CertificateErrorParams) bool) {
+	params := CertificateErrorParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Security.certificateError", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
 }

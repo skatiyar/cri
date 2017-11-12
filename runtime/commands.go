@@ -1,14 +1,14 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 // Runtime domain exposes JavaScript runtime by means of remote evaluation and mirror objects. Evaluation results are returned as mirror object that expose object type, string representation and unique identifier that can be used for further object reference. Original objects are maintained in memory unless they are either explicitly released or are released along with the other objects in their object group.
 package runtime
 
 import (
-    "github.com/SKatiyar/cri"
-    types "github.com/SKatiyar/cri/types"
+	"github.com/SKatiyar/cri"
+	types "github.com/SKatiyar/cri/types"
 )
 
 type Runtime struct {
@@ -43,7 +43,6 @@ type EvaluateRequest struct {
 	AwaitPromise *bool `json:"awaitPromise,omitempty"`
 }
 
-
 type EvaluateResponse struct {
 	// Evaluation result.
 	Result types.Runtime_RemoteObject `json:"result"`
@@ -57,7 +56,6 @@ func (obj *Runtime) Evaluate(request *EvaluateRequest) (response EvaluateRespons
 	return
 }
 
-
 type AwaitPromiseRequest struct {
 	// Identifier of the promise.
 	PromiseObjectId types.Runtime_RemoteObjectId `json:"promiseObjectId"`
@@ -66,7 +64,6 @@ type AwaitPromiseRequest struct {
 	// Whether preview should be generated for the result.
 	GeneratePreview *bool `json:"generatePreview,omitempty"`
 }
-
 
 type AwaitPromiseResponse struct {
 	// Promise result. Will contain rejected value if promise was rejected.
@@ -80,7 +77,6 @@ func (obj *Runtime) AwaitPromise(request *AwaitPromiseRequest) (response AwaitPr
 	err = obj.conn.Send("Runtime.awaitPromise", request, &response)
 	return
 }
-
 
 type CallFunctionOnRequest struct {
 	// Declaration of the function to call.
@@ -107,7 +103,6 @@ type CallFunctionOnRequest struct {
 	ObjectGroup *string `json:"objectGroup,omitempty"`
 }
 
-
 type CallFunctionOnResponse struct {
 	// Call result.
 	Result types.Runtime_RemoteObject `json:"result"`
@@ -121,7 +116,6 @@ func (obj *Runtime) CallFunctionOn(request *CallFunctionOnRequest) (response Cal
 	return
 }
 
-
 type GetPropertiesRequest struct {
 	// Identifier of the object to return properties for.
 	ObjectId types.Runtime_RemoteObjectId `json:"objectId"`
@@ -134,7 +128,6 @@ type GetPropertiesRequest struct {
 	// NOTE Experimental
 	GeneratePreview *bool `json:"generatePreview,omitempty"`
 }
-
 
 type GetPropertiesResponse struct {
 	// Object properties.
@@ -151,7 +144,6 @@ func (obj *Runtime) GetProperties(request *GetPropertiesRequest) (response GetPr
 	return
 }
 
-
 type ReleaseObjectRequest struct {
 	// Identifier of the object to release.
 	ObjectId types.Runtime_RemoteObjectId `json:"objectId"`
@@ -162,7 +154,6 @@ func (obj *Runtime) ReleaseObject(request *ReleaseObjectRequest) (err error) {
 	err = obj.conn.Send("Runtime.releaseObject", request, nil)
 	return
 }
-
 
 type ReleaseObjectGroupRequest struct {
 	// Symbolic object group name.
@@ -199,17 +190,14 @@ func (obj *Runtime) DiscardConsoleEntries() (err error) {
 	return
 }
 
-
 type SetCustomObjectFormatterEnabledRequest struct {
 	Enabled bool `json:"enabled"`
 }
-
 
 func (obj *Runtime) SetCustomObjectFormatterEnabled(request *SetCustomObjectFormatterEnabledRequest) (err error) {
 	err = obj.conn.Send("Runtime.setCustomObjectFormatterEnabled", request, nil)
 	return
 }
-
 
 type CompileScriptRequest struct {
 	// Expression to compile.
@@ -221,7 +209,6 @@ type CompileScriptRequest struct {
 	// Specifies in which execution context to perform script run. If the parameter is omitted the evaluation will be performed in the context of the inspected page.
 	ExecutionContextId *types.Runtime_ExecutionContextId `json:"executionContextId,omitempty"`
 }
-
 
 type CompileScriptResponse struct {
 	// Id of the script.
@@ -235,7 +222,6 @@ func (obj *Runtime) CompileScript(request *CompileScriptRequest) (response Compi
 	err = obj.conn.Send("Runtime.compileScript", request, &response)
 	return
 }
-
 
 type RunScriptRequest struct {
 	// Id of the script to run.
@@ -256,7 +242,6 @@ type RunScriptRequest struct {
 	AwaitPromise *bool `json:"awaitPromise,omitempty"`
 }
 
-
 type RunScriptResponse struct {
 	// Run result.
 	Result types.Runtime_RemoteObject `json:"result"`
@@ -270,30 +255,25 @@ func (obj *Runtime) RunScript(request *RunScriptRequest) (response RunScriptResp
 	return
 }
 
-
 type QueryObjectsRequest struct {
 	// Identifier of the prototype to return objects for.
 	PrototypeObjectId types.Runtime_RemoteObjectId `json:"prototypeObjectId"`
 }
-
 
 type QueryObjectsResponse struct {
 	// Array with objects.
 	Objects types.Runtime_RemoteObject `json:"objects"`
 }
 
-
 func (obj *Runtime) QueryObjects(request *QueryObjectsRequest) (response QueryObjectsResponse, err error) {
 	err = obj.conn.Send("Runtime.queryObjects", request, &response)
 	return
 }
 
-
 type GlobalLexicalScopeNamesRequest struct {
 	// Specifies in which execution context to lookup global scope variables.
 	ExecutionContextId *types.Runtime_ExecutionContextId `json:"executionContextId,omitempty"`
 }
-
 
 type GlobalLexicalScopeNamesResponse struct {
 	Names []string `json:"names"`
@@ -303,4 +283,153 @@ type GlobalLexicalScopeNamesResponse struct {
 func (obj *Runtime) GlobalLexicalScopeNames(request *GlobalLexicalScopeNamesRequest) (response GlobalLexicalScopeNamesResponse, err error) {
 	err = obj.conn.Send("Runtime.globalLexicalScopeNames", request, &response)
 	return
+}
+
+type ExecutionContextCreatedParams struct {
+	// A newly created execution context.
+	Context types.Runtime_ExecutionContextDescription `json:"context"`
+}
+
+// Issued when new execution context is created.
+func (obj *Runtime) ExecutionContextCreated(fn func(params *ExecutionContextCreatedParams) bool) {
+	params := ExecutionContextCreatedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Runtime.executionContextCreated", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type ExecutionContextDestroyedParams struct {
+	// Id of the destroyed context
+	ExecutionContextId types.Runtime_ExecutionContextId `json:"executionContextId"`
+}
+
+// Issued when execution context is destroyed.
+func (obj *Runtime) ExecutionContextDestroyed(fn func(params *ExecutionContextDestroyedParams) bool) {
+	params := ExecutionContextDestroyedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Runtime.executionContextDestroyed", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+// Issued when all executionContexts were cleared in browser
+func (obj *Runtime) ExecutionContextsCleared(fn func() bool) {
+
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Runtime.executionContextsCleared", closeChn, nil)
+			if !fn() {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type ExceptionThrownParams struct {
+	// Timestamp of the exception.
+	Timestamp        types.Runtime_Timestamp        `json:"timestamp"`
+	ExceptionDetails types.Runtime_ExceptionDetails `json:"exceptionDetails"`
+}
+
+// Issued when exception was thrown and unhandled.
+func (obj *Runtime) ExceptionThrown(fn func(params *ExceptionThrownParams) bool) {
+	params := ExceptionThrownParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Runtime.exceptionThrown", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type ExceptionRevokedParams struct {
+	// Reason describing why exception was revoked.
+	Reason string `json:"reason"`
+	// The id of revoked exception, as reported in <code>exceptionThrown</code>.
+	ExceptionId int `json:"exceptionId"`
+}
+
+// Issued when unhandled exception was revoked.
+func (obj *Runtime) ExceptionRevoked(fn func(params *ExceptionRevokedParams) bool) {
+	params := ExceptionRevokedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Runtime.exceptionRevoked", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type ConsoleAPICalledParams struct {
+	// Type of the call.
+	Type string `json:"type"`
+	// Call arguments.
+	Args []types.Runtime_RemoteObject `json:"args"`
+	// Identifier of the context where the call was made.
+	ExecutionContextId types.Runtime_ExecutionContextId `json:"executionContextId"`
+	// Call timestamp.
+	Timestamp types.Runtime_Timestamp `json:"timestamp"`
+	// Stack trace captured when the call was made.
+	StackTrace *types.Runtime_StackTrace `json:"stackTrace,omitempty"`
+	// Console context descriptor for calls on non-default console context (not console.*): 'anonymous#unique-logger-id' for call on unnamed context, 'name#unique-logger-id' for call on named context.
+	// NOTE Experimental
+	Context *string `json:"context,omitempty"`
+}
+
+// Issued when console API was called.
+func (obj *Runtime) ConsoleAPICalled(fn func(params *ConsoleAPICalledParams) bool) {
+	params := ConsoleAPICalledParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Runtime.consoleAPICalled", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type InspectRequestedParams struct {
+	Object types.Runtime_RemoteObject `json:"object"`
+	Hints  map[string]interface{}     `json:"hints"`
+}
+
+// Issued when object should be inspected (for example, as a result of inspect() command line API call).
+func (obj *Runtime) InspectRequested(fn func(params *InspectRequestedParams) bool) {
+	params := InspectRequestedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Runtime.inspectRequested", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
 }

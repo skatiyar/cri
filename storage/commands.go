@@ -1,14 +1,13 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
-
+ */
 
 package storage
 
 import (
-    "github.com/SKatiyar/cri"
-    types "github.com/SKatiyar/cri/types"
+	"github.com/SKatiyar/cri"
+	types "github.com/SKatiyar/cri/types"
 )
 
 type Storage struct {
@@ -33,12 +32,10 @@ func (obj *Storage) ClearDataForOrigin(request *ClearDataForOriginRequest) (err 
 	return
 }
 
-
 type GetUsageAndQuotaRequest struct {
 	// Security origin.
 	Origin string `json:"origin"`
 }
-
 
 type GetUsageAndQuotaResponse struct {
 	// Storage usage (bytes).
@@ -55,7 +52,6 @@ func (obj *Storage) GetUsageAndQuota(request *GetUsageAndQuotaRequest) (response
 	return
 }
 
-
 type TrackCacheStorageForOriginRequest struct {
 	// Security origin.
 	Origin string `json:"origin"`
@@ -66,7 +62,6 @@ func (obj *Storage) TrackCacheStorageForOrigin(request *TrackCacheStorageForOrig
 	err = obj.conn.Send("Storage.trackCacheStorageForOrigin", request, nil)
 	return
 }
-
 
 type UntrackCacheStorageForOriginRequest struct {
 	// Security origin.
@@ -79,7 +74,6 @@ func (obj *Storage) UntrackCacheStorageForOrigin(request *UntrackCacheStorageFor
 	return
 }
 
-
 type TrackIndexedDBForOriginRequest struct {
 	// Security origin.
 	Origin string `json:"origin"`
@@ -91,7 +85,6 @@ func (obj *Storage) TrackIndexedDBForOrigin(request *TrackIndexedDBForOriginRequ
 	return
 }
 
-
 type UntrackIndexedDBForOriginRequest struct {
 	// Security origin.
 	Origin string `json:"origin"`
@@ -101,4 +94,90 @@ type UntrackIndexedDBForOriginRequest struct {
 func (obj *Storage) UntrackIndexedDBForOrigin(request *UntrackIndexedDBForOriginRequest) (err error) {
 	err = obj.conn.Send("Storage.untrackIndexedDBForOrigin", request, nil)
 	return
+}
+
+type CacheStorageListUpdatedParams struct {
+	// Origin to update.
+	Origin string `json:"origin"`
+}
+
+// A cache has been added/deleted.
+func (obj *Storage) CacheStorageListUpdated(fn func(params *CacheStorageListUpdatedParams) bool) {
+	params := CacheStorageListUpdatedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Storage.cacheStorageListUpdated", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type CacheStorageContentUpdatedParams struct {
+	// Origin to update.
+	Origin string `json:"origin"`
+	// Name of cache in origin.
+	CacheName string `json:"cacheName"`
+}
+
+// A cache's contents have been modified.
+func (obj *Storage) CacheStorageContentUpdated(fn func(params *CacheStorageContentUpdatedParams) bool) {
+	params := CacheStorageContentUpdatedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Storage.cacheStorageContentUpdated", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type IndexedDBListUpdatedParams struct {
+	// Origin to update.
+	Origin string `json:"origin"`
+}
+
+// The origin's IndexedDB database list has been modified.
+func (obj *Storage) IndexedDBListUpdated(fn func(params *IndexedDBListUpdatedParams) bool) {
+	params := IndexedDBListUpdatedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Storage.indexedDBListUpdated", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type IndexedDBContentUpdatedParams struct {
+	// Origin to update.
+	Origin string `json:"origin"`
+	// Database to update.
+	DatabaseName string `json:"databaseName"`
+	// ObjectStore to update.
+	ObjectStoreName string `json:"objectStoreName"`
+}
+
+// The origin's IndexedDB object store has been modified.
+func (obj *Storage) IndexedDBContentUpdated(fn func(params *IndexedDBContentUpdatedParams) bool) {
+	params := IndexedDBContentUpdatedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Storage.indexedDBContentUpdated", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
 }

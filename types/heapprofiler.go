@@ -1,10 +1,9 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 package types
-
 
 //Heap snapshot object id.
 type HeapProfiler_HeapSnapshotObjectId string
@@ -23,4 +22,3 @@ type HeapProfiler_SamplingHeapProfileNode struct {
 type HeapProfiler_SamplingHeapProfile struct {
 	Head HeapProfiler_SamplingHeapProfileNode `json:"head"`
 }
-

@@ -1,10 +1,9 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 package types
-
 
 //Log entry.
 type Log_LogEntry struct {
@@ -37,4 +36,3 @@ type Log_ViolationSetting struct {
 	// Time threshold to trigger upon.
 	Threshold float32 `json:"threshold"`
 }
-

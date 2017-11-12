@@ -1,14 +1,13 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
-
+ */
 
 package animation
 
 import (
-    "github.com/SKatiyar/cri"
-    types "github.com/SKatiyar/cri/types"
+	"github.com/SKatiyar/cri"
+	types "github.com/SKatiyar/cri/types"
 )
 
 type Animation struct {
@@ -19,6 +18,7 @@ type Animation struct {
 func New(conn cri.Connector) *Animation {
 	return &Animation{conn}
 }
+
 // Enables animation domain notifications.
 func (obj *Animation) Enable() (err error) {
 	err = obj.conn.Send("Animation.enable", nil, nil)
@@ -31,7 +31,6 @@ func (obj *Animation) Disable() (err error) {
 	return
 }
 
-
 type GetPlaybackRateResponse struct {
 	// Playback rate for animations on page.
 	PlaybackRate float32 `json:"playbackRate"`
@@ -42,7 +41,6 @@ func (obj *Animation) GetPlaybackRate() (response GetPlaybackRateResponse, err e
 	err = obj.conn.Send("Animation.getPlaybackRate", nil, &response)
 	return
 }
-
 
 type SetPlaybackRateRequest struct {
 	// Playback rate for animations on page
@@ -55,12 +53,10 @@ func (obj *Animation) SetPlaybackRate(request *SetPlaybackRateRequest) (err erro
 	return
 }
 
-
 type GetCurrentTimeRequest struct {
 	// Id of animation.
 	Id string `json:"id"`
 }
-
 
 type GetCurrentTimeResponse struct {
 	// Current time of the page.
@@ -72,7 +68,6 @@ func (obj *Animation) GetCurrentTime(request *GetCurrentTimeRequest) (response G
 	err = obj.conn.Send("Animation.getCurrentTime", request, &response)
 	return
 }
-
 
 type SetPausedRequest struct {
 	// Animations to set the pause state of.
@@ -86,7 +81,6 @@ func (obj *Animation) SetPaused(request *SetPausedRequest) (err error) {
 	err = obj.conn.Send("Animation.setPaused", request, nil)
 	return
 }
-
 
 type SetTimingRequest struct {
 	// Animation id.
@@ -103,7 +97,6 @@ func (obj *Animation) SetTiming(request *SetTimingRequest) (err error) {
 	return
 }
 
-
 type SeekAnimationsRequest struct {
 	// List of animation ids to seek.
 	Animations []string `json:"animations"`
@@ -117,7 +110,6 @@ func (obj *Animation) SeekAnimations(request *SeekAnimationsRequest) (err error)
 	return
 }
 
-
 type ReleaseAnimationsRequest struct {
 	// List of animation ids to seek.
 	Animations []string `json:"animations"`
@@ -129,12 +121,10 @@ func (obj *Animation) ReleaseAnimations(request *ReleaseAnimationsRequest) (err 
 	return
 }
 
-
 type ResolveAnimationRequest struct {
 	// Animation id.
 	AnimationId string `json:"animationId"`
 }
-
 
 type ResolveAnimationResponse struct {
 	// Corresponding remote object.
@@ -145,4 +135,64 @@ type ResolveAnimationResponse struct {
 func (obj *Animation) ResolveAnimation(request *ResolveAnimationRequest) (response ResolveAnimationResponse, err error) {
 	err = obj.conn.Send("Animation.resolveAnimation", request, &response)
 	return
+}
+
+type AnimationCreatedParams struct {
+	// Id of the animation that was created.
+	Id string `json:"id"`
+}
+
+// Event for each animation that has been created.
+func (obj *Animation) AnimationCreated(fn func(params *AnimationCreatedParams) bool) {
+	params := AnimationCreatedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Animation.animationCreated", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type AnimationStartedParams struct {
+	// Animation that was started.
+	Animation types.Animation_Animation `json:"animation"`
+}
+
+// Event for animation that has been started.
+func (obj *Animation) AnimationStarted(fn func(params *AnimationStartedParams) bool) {
+	params := AnimationStartedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Animation.animationStarted", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type AnimationCanceledParams struct {
+	// Id of the animation that was cancelled.
+	Id string `json:"id"`
+}
+
+// Event for when an animation has been cancelled.
+func (obj *Animation) AnimationCanceled(fn func(params *AnimationCanceledParams) bool) {
+	params := AnimationCanceledParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("Animation.animationCanceled", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
 }

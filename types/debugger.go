@@ -1,10 +1,9 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 package types
-
 
 //Breakpoint identifier.
 type Debugger_BreakpointId string
@@ -24,7 +23,7 @@ type Debugger_Location struct {
 
 //Location in the source code.
 type Debugger_ScriptPosition struct {
-	LineNumber int `json:"lineNumber"`
+	LineNumber   int `json:"lineNumber"`
 	ColumnNumber int `json:"columnNumber"`
 }
 
@@ -55,7 +54,7 @@ type Debugger_Scope struct {
 	Type string `json:"type"`
 	// Object representing the scope. For <code>global</code> and <code>with</code> scopes it represents the actual object; for the rest of the scopes, it is artificial transient object enumerating scope variables as its properties.
 	Object Runtime_RemoteObject `json:"object"`
-	Name *string `json:"name,omitempty"`
+	Name   *string              `json:"name,omitempty"`
 	// Location in the source code where scope starts
 	StartLocation *Debugger_Location `json:"startLocation,omitempty"`
 	// Location in the source code where scope ends
@@ -70,14 +69,12 @@ type Debugger_SearchMatch struct {
 	LineContent string `json:"lineContent"`
 }
 
-
 type Debugger_BreakLocation struct {
 	// Script identifier as reported in the <code>Debugger.scriptParsed</code>.
 	ScriptId Runtime_ScriptId `json:"scriptId"`
 	// Line number in the script (0-based).
 	LineNumber int `json:"lineNumber"`
 	// Column number in the script (0-based).
-	ColumnNumber *int `json:"columnNumber,omitempty"`
-	Type *string `json:"type,omitempty"`
+	ColumnNumber *int    `json:"columnNumber,omitempty"`
+	Type         *string `json:"type,omitempty"`
 }
-

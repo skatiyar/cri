@@ -1,10 +1,9 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 package types
-
 
 //Animation instance.
 type Animation_Animation struct {
@@ -70,4 +69,3 @@ type Animation_KeyframeStyle struct {
 	// <code>AnimationEffect</code>'s timing function.
 	Easing string `json:"easing"`
 }
-

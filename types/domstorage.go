@@ -1,10 +1,9 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 package types
-
 
 //DOM Storage identifier.
 type DOMStorage_StorageId struct {
@@ -16,4 +15,3 @@ type DOMStorage_StorageId struct {
 
 //DOM Storage item.
 type DOMStorage_Item []string
-

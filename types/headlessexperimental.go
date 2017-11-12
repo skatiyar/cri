@@ -1,10 +1,9 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 package types
-
 
 //Encoding options for a screenshot.
 type HeadlessExperimental_ScreenshotParams struct {
@@ -13,4 +12,3 @@ type HeadlessExperimental_ScreenshotParams struct {
 	// Compression quality from range [0..100] (jpeg only).
 	Quality *int `json:"quality,omitempty"`
 }
-

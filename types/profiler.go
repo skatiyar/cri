@@ -1,10 +1,9 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 package types
-
 
 //Profile node. Holds callsite information, execution statistics and child nodes.
 type Profiler_ProfileNode struct {
@@ -99,4 +98,3 @@ type Profiler_ScriptTypeProfile struct {
 	// Type profile entries for parameters and return values of the functions in the script.
 	Entries []Profiler_TypeProfileEntry `json:"entries"`
 }
-

@@ -1,14 +1,13 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
-
+ */
 
 package applicationcache
 
 import (
-    "github.com/SKatiyar/cri"
-    types "github.com/SKatiyar/cri/types"
+	"github.com/SKatiyar/cri"
+	types "github.com/SKatiyar/cri/types"
 )
 
 type ApplicationCache struct {
@@ -37,12 +36,10 @@ func (obj *ApplicationCache) Enable() (err error) {
 	return
 }
 
-
 type GetManifestForFrameRequest struct {
 	// Identifier of the frame containing document whose manifest is retrieved.
 	FrameId types.Page_FrameId `json:"frameId"`
 }
-
 
 type GetManifestForFrameResponse struct {
 	// Manifest URL for document in the given frame.
@@ -55,12 +52,10 @@ func (obj *ApplicationCache) GetManifestForFrame(request *GetManifestForFrameReq
 	return
 }
 
-
 type GetApplicationCacheForFrameRequest struct {
 	// Identifier of the frame containing document whose application cache is retrieved.
 	FrameId types.Page_FrameId `json:"frameId"`
 }
-
 
 type GetApplicationCacheForFrameResponse struct {
 	// Relevant application cache data for the document in given frame.
@@ -71,4 +66,45 @@ type GetApplicationCacheForFrameResponse struct {
 func (obj *ApplicationCache) GetApplicationCacheForFrame(request *GetApplicationCacheForFrameRequest) (response GetApplicationCacheForFrameResponse, err error) {
 	err = obj.conn.Send("ApplicationCache.getApplicationCacheForFrame", request, &response)
 	return
+}
+
+type ApplicationCacheStatusUpdatedParams struct {
+	// Identifier of the frame containing document whose application cache updated status.
+	FrameId types.Page_FrameId `json:"frameId"`
+	// Manifest URL.
+	ManifestURL string `json:"manifestURL"`
+	// Updated application cache status.
+	Status int `json:"status"`
+}
+
+func (obj *ApplicationCache) ApplicationCacheStatusUpdated(fn func(params *ApplicationCacheStatusUpdatedParams) bool) {
+	params := ApplicationCacheStatusUpdatedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("ApplicationCache.applicationCacheStatusUpdated", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
+}
+
+type NetworkStateUpdatedParams struct {
+	IsNowOnline bool `json:"isNowOnline"`
+}
+
+func (obj *ApplicationCache) NetworkStateUpdated(fn func(params *NetworkStateUpdatedParams) bool) {
+	params := NetworkStateUpdatedParams{}
+	closeChn := make(chan struct{})
+	go func() {
+		for closeChn != nil {
+			obj.conn.On("ApplicationCache.networkStateUpdated", closeChn, &params)
+			if !fn(&params) {
+				closeChn <- struct{}{}
+				close(closeChn)
+			}
+		}
+	}()
 }

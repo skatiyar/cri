@@ -1,10 +1,9 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 package types
-
 
 //Description of the protocol domain.
 type Schema_Domain struct {
@@ -13,4 +12,3 @@ type Schema_Domain struct {
 	// Domain version.
 	Version string `json:"version"`
 }
-

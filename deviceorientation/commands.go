@@ -1,13 +1,12 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
-
+ */
 
 package deviceorientation
 
 import (
-    "github.com/SKatiyar/cri"
+	"github.com/SKatiyar/cri"
 )
 
 type DeviceOrientation struct {

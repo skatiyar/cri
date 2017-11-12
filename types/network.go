@@ -1,10 +1,9 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 package types
-
 
 //Unique loader identifier.
 type Network_LoaderId string
@@ -26,7 +25,6 @@ type Network_MonotonicTime float32
 
 //Request / response headers as keys / values of JSON object.
 type Network_Headers struct {
-
 }
 
 //The underlying connection technology that the browser is supposedly using.
@@ -324,4 +322,3 @@ type Network_RequestPattern struct {
 	// If set, only requests for matching resource types will be intercepted.
 	ResourceType *Page_ResourceType `json:"resourceType,omitempty"`
 }
-

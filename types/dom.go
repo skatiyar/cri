@@ -1,10 +1,9 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 package types
-
 
 //Unique DOM node identifier.
 type DOM_NodeId int
@@ -17,7 +16,7 @@ type DOM_BackendNode struct {
 	// <code>Node</code>'s nodeType.
 	NodeType int `json:"nodeType"`
 	// <code>Node</code>'s nodeName.
-	NodeName string `json:"nodeName"`
+	NodeName      string            `json:"nodeName"`
 	BackendNodeId DOM_BackendNodeId `json:"backendNodeId"`
 }
 
@@ -150,4 +149,3 @@ type DOM_Rect struct {
 	// Rectangle height
 	Height float32 `json:"height"`
 }
-

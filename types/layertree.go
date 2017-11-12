@@ -1,10 +1,9 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 package types
-
 
 //Unique Layer identifier.
 type LayerTree_LayerId string
@@ -80,4 +79,3 @@ type LayerTree_Layer struct {
 
 //Array of timings, one per paint step.
 type LayerTree_PaintProfile []float32
-

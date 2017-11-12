@@ -1,10 +1,9 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 package types
-
 
 //Enum of possible storage types.
 type Storage_StorageType string
@@ -16,4 +15,3 @@ type Storage_UsageForType struct {
 	// Storage usage (bytes).
 	Usage float32 `json:"usage"`
 }
-

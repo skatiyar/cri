@@ -1,11 +1,9 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 package types
-
-
 
 type Browser_WindowID int
 
@@ -25,4 +23,3 @@ type Browser_Bounds struct {
 	// The window state. Default to normal.
 	WindowState *Browser_WindowState `json:"windowState,omitempty"`
 }
-

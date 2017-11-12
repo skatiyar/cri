@@ -1,10 +1,9 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 package types
-
 
 //Unique identifier of Database object.
 type Database_DatabaseId string
@@ -28,4 +27,3 @@ type Database_Error struct {
 	// Error code.
 	Code int `json:"code"`
 }
-

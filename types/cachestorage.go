@@ -1,10 +1,9 @@
 /*
 * CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
-*/
+ */
 
 package types
-
 
 //Unique identifier of the Cache object.
 type CacheStorage_CacheId string
@@ -37,9 +36,8 @@ type CacheStorage_Cache struct {
 	CacheName string `json:"cacheName"`
 }
 
-
 type CacheStorage_Header struct {
-	Name string `json:"name"`
+	Name  string `json:"name"`
 	Value string `json:"value"`
 }
 
@@ -48,4 +46,3 @@ type CacheStorage_CachedResponse struct {
 	// Entry content, base64-encoded.
 	Body string `json:"body"`
 }
-
