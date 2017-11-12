@@ -1,12 +1,21 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
+
 package input
 
-import types "github.com/SKatiyar/cri/types"
-import "github.com/SKatiyar/cri"
+import (
+    "github.com/SKatiyar/cri"
+    types "github.com/SKatiyar/cri/types"
+)
 
 type Input struct {
 	conn cri.Connector
 }
 
+// New creates a Input instance
 func New(conn cri.Connector) *Input {
 	return &Input{conn}
 }
@@ -21,6 +30,7 @@ func (obj *Input) SetIgnoreInputEvents(request *SetIgnoreInputEventsRequest) (er
 	err = obj.conn.Send("Input.setIgnoreInputEvents", request, nil)
 	return
 }
+
 
 type DispatchKeyEventRequest struct {
 	// Type of the key event.
@@ -60,6 +70,7 @@ func (obj *Input) DispatchKeyEvent(request *DispatchKeyEventRequest) (err error)
 	return
 }
 
+
 type DispatchMouseEventRequest struct {
 	// Type of the mouse event.
 	Type string `json:"type"`
@@ -87,6 +98,7 @@ func (obj *Input) DispatchMouseEvent(request *DispatchMouseEventRequest) (err er
 	return
 }
 
+
 type DispatchTouchEventRequest struct {
 	// Type of the touch event. TouchEnd and TouchCancel must not contain any touch points, while TouchStart and TouchMove must contains at least one.
 	Type string `json:"type"`
@@ -103,6 +115,7 @@ func (obj *Input) DispatchTouchEvent(request *DispatchTouchEventRequest) (err er
 	err = obj.conn.Send("Input.dispatchTouchEvent", request, nil)
 	return
 }
+
 
 type EmulateTouchFromMouseEventRequest struct {
 	// Type of the mouse event.
@@ -131,6 +144,7 @@ func (obj *Input) EmulateTouchFromMouseEvent(request *EmulateTouchFromMouseEvent
 	return
 }
 
+
 type SynthesizePinchGestureRequest struct {
 	// X coordinate of the start of the gesture in CSS pixels.
 	X float32 `json:"x"`
@@ -149,6 +163,7 @@ func (obj *Input) SynthesizePinchGesture(request *SynthesizePinchGestureRequest)
 	err = obj.conn.Send("Input.synthesizePinchGesture", request, nil)
 	return
 }
+
 
 type SynthesizeScrollGestureRequest struct {
 	// X coordinate of the start of the gesture in CSS pixels.
@@ -182,6 +197,7 @@ func (obj *Input) SynthesizeScrollGesture(request *SynthesizeScrollGestureReques
 	err = obj.conn.Send("Input.synthesizeScrollGesture", request, nil)
 	return
 }
+
 
 type SynthesizeTapGestureRequest struct {
 	// X coordinate of the start of the gesture in CSS pixels.

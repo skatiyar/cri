@@ -1,12 +1,21 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
+// Network domain allows tracking network activities of the page. It exposes information about http, file, data and other requests and responses, their headers, bodies, timing, etc.
 package network
 
-import types "github.com/SKatiyar/cri/types"
-import "github.com/SKatiyar/cri"
+import (
+    "github.com/SKatiyar/cri"
+    types "github.com/SKatiyar/cri/types"
+)
 
 type Network struct {
 	conn cri.Connector
 }
 
+// New creates a Network instance
 func New(conn cri.Connector) *Network {
 	return &Network{conn}
 }
@@ -32,6 +41,7 @@ func (obj *Network) Disable() (err error) {
 	return
 }
 
+
 type SetUserAgentOverrideRequest struct {
 	// User agent to use.
 	UserAgent string `json:"userAgent"`
@@ -42,6 +52,7 @@ func (obj *Network) SetUserAgentOverride(request *SetUserAgentOverrideRequest) (
 	err = obj.conn.Send("Network.setUserAgentOverride", request, nil)
 	return
 }
+
 
 type SetExtraHTTPHeadersRequest struct {
 	// Map with extra HTTP headers.
@@ -54,10 +65,13 @@ func (obj *Network) SetExtraHTTPHeaders(request *SetExtraHTTPHeadersRequest) (er
 	return
 }
 
+
 type GetResponseBodyRequest struct {
 	// Identifier of the network request to get content for.
 	RequestId types.Network_RequestId `json:"requestId"`
 }
+
+
 type GetResponseBodyResponse struct {
 	// Response body.
 	Body string `json:"body"`
@@ -71,6 +85,7 @@ func (obj *Network) GetResponseBody(request *GetResponseBodyRequest) (response G
 	return
 }
 
+
 type SetBlockedURLsRequest struct {
 	// URL patterns to block. Wildcards ('*') are allowed.
 	Urls []string `json:"urls"`
@@ -82,6 +97,7 @@ func (obj *Network) SetBlockedURLs(request *SetBlockedURLsRequest) (err error) {
 	return
 }
 
+
 type ReplayXHRRequest struct {
 	// Identifier of XHR to replay.
 	RequestId types.Network_RequestId `json:"requestId"`
@@ -92,6 +108,7 @@ func (obj *Network) ReplayXHR(request *ReplayXHRRequest) (err error) {
 	err = obj.conn.Send("Network.replayXHR", request, nil)
 	return
 }
+
 
 type CanClearBrowserCacheResponse struct {
 	// True if browser cache can be cleared.
@@ -110,6 +127,7 @@ func (obj *Network) ClearBrowserCache() (err error) {
 	return
 }
 
+
 type CanClearBrowserCookiesResponse struct {
 	// True if browser cookies can be cleared.
 	Result bool `json:"result"`
@@ -127,10 +145,13 @@ func (obj *Network) ClearBrowserCookies() (err error) {
 	return
 }
 
+
 type GetCookiesRequest struct {
 	// The list of URLs for which applicable cookies will be fetched
 	Urls []string `json:"urls,omitempty"`
 }
+
+
 type GetCookiesResponse struct {
 	// Array of cookie objects.
 	Cookies []types.Network_Cookie `json:"cookies"`
@@ -142,6 +163,7 @@ func (obj *Network) GetCookies(request *GetCookiesRequest) (response GetCookiesR
 	return
 }
 
+
 type GetAllCookiesResponse struct {
 	// Array of cookie objects.
 	Cookies []types.Network_Cookie `json:"cookies"`
@@ -152,6 +174,7 @@ func (obj *Network) GetAllCookies() (response GetAllCookiesResponse, err error) 
 	err = obj.conn.Send("Network.getAllCookies", nil, &response)
 	return
 }
+
 
 type DeleteCookiesRequest struct {
 	// Name of the cookies to remove.
@@ -169,6 +192,7 @@ func (obj *Network) DeleteCookies(request *DeleteCookiesRequest) (err error) {
 	err = obj.conn.Send("Network.deleteCookies", request, nil)
 	return
 }
+
 
 type SetCookieRequest struct {
 	// Cookie name.
@@ -190,6 +214,8 @@ type SetCookieRequest struct {
 	// Cookie expiration date, session cookie if not set
 	Expires *types.Network_TimeSinceEpoch `json:"expires,omitempty"`
 }
+
+
 type SetCookieResponse struct {
 	// True if successfully set cookie.
 	Success bool `json:"success"`
@@ -200,6 +226,7 @@ func (obj *Network) SetCookie(request *SetCookieRequest) (response SetCookieResp
 	err = obj.conn.Send("Network.setCookie", request, &response)
 	return
 }
+
 
 type SetCookiesRequest struct {
 	// Cookies to be set.
@@ -212,6 +239,7 @@ func (obj *Network) SetCookies(request *SetCookiesRequest) (err error) {
 	return
 }
 
+
 type CanEmulateNetworkConditionsResponse struct {
 	// True if emulation of network conditions is supported.
 	Result bool `json:"result"`
@@ -222,6 +250,7 @@ func (obj *Network) CanEmulateNetworkConditions() (response CanEmulateNetworkCon
 	err = obj.conn.Send("Network.canEmulateNetworkConditions", nil, &response)
 	return
 }
+
 
 type EmulateNetworkConditionsRequest struct {
 	// True to emulate internet disconnection.
@@ -242,6 +271,7 @@ func (obj *Network) EmulateNetworkConditions(request *EmulateNetworkConditionsRe
 	return
 }
 
+
 type SetCacheDisabledRequest struct {
 	// Cache disabled state.
 	CacheDisabled bool `json:"cacheDisabled"`
@@ -253,6 +283,7 @@ func (obj *Network) SetCacheDisabled(request *SetCacheDisabledRequest) (err erro
 	return
 }
 
+
 type SetBypassServiceWorkerRequest struct {
 	// Bypass service worker and load from network.
 	Bypass bool `json:"bypass"`
@@ -263,6 +294,7 @@ func (obj *Network) SetBypassServiceWorker(request *SetBypassServiceWorkerReques
 	err = obj.conn.Send("Network.setBypassServiceWorker", request, nil)
 	return
 }
+
 
 type SetDataSizeLimitsForTestRequest struct {
 	// Maximum total buffer size.
@@ -277,10 +309,13 @@ func (obj *Network) SetDataSizeLimitsForTest(request *SetDataSizeLimitsForTestRe
 	return
 }
 
+
 type GetCertificateRequest struct {
 	// Origin to get certificate for.
 	Origin string `json:"origin"`
 }
+
+
 type GetCertificateResponse struct {
 	TableNames []string `json:"tableNames"`
 }
@@ -290,6 +325,7 @@ func (obj *Network) GetCertificate(request *GetCertificateRequest) (response Get
 	err = obj.conn.Send("Network.getCertificate", request, &response)
 	return
 }
+
 
 type SetRequestInterceptionRequest struct {
 	// Requests matching any of these patterns will be forwarded and wait for the corresponding continueInterceptedRequest call.
@@ -301,6 +337,7 @@ func (obj *Network) SetRequestInterception(request *SetRequestInterceptionReques
 	err = obj.conn.Send("Network.setRequestInterception", request, nil)
 	return
 }
+
 
 type ContinueInterceptedRequestRequest struct {
 	InterceptionId types.Network_InterceptionId `json:"interceptionId"`

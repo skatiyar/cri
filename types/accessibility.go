@@ -1,9 +1,24 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
 package types
 
+
+//Unique accessibility node identifier.
 type Accessibility_AXNodeId string
+
+//Enum of possible property types.
 type Accessibility_AXValueType string
+
+//Enum of possible property sources.
 type Accessibility_AXValueSourceType string
+
+//Enum of possible native property sources (as a subtype of a particular AXValueSourceType).
 type Accessibility_AXValueNativeSourceType string
+
+//A single source for a computed AX property.
 type Accessibility_AXValueSource struct {
 	// What type of source this is.
 	Type Accessibility_AXValueSourceType `json:"type"`
@@ -24,6 +39,8 @@ type Accessibility_AXValueSource struct {
 	// Reason for the value being invalid, if it is.
 	InvalidReason *string `json:"invalidReason,omitempty"`
 }
+
+
 type Accessibility_AXRelatedNode struct {
 	// The BackendNodeId of the related DOM node.
 	BackendDOMNodeId DOM_BackendNodeId `json:"backendDOMNodeId"`
@@ -32,12 +49,16 @@ type Accessibility_AXRelatedNode struct {
 	// The text alternative of this node in the current context.
 	Text *string `json:"text,omitempty"`
 }
+
+
 type Accessibility_AXProperty struct {
 	// The name of this property.
 	Name string `json:"name"`
 	// The value of this property.
 	Value Accessibility_AXValue `json:"value"`
 }
+
+//A single computed AX property.
 type Accessibility_AXValue struct {
 	// The type of this value.
 	Type Accessibility_AXValueType `json:"type"`
@@ -48,11 +69,23 @@ type Accessibility_AXValue struct {
 	// The sources which contributed to the computation of this property.
 	Sources []Accessibility_AXValueSource `json:"sources,omitempty"`
 }
+
+//States which apply to every AX node.
 type Accessibility_AXGlobalStates string
+
+//Attributes which apply to nodes in live regions.
 type Accessibility_AXLiveRegionAttributes string
+
+//Attributes which apply to widgets.
 type Accessibility_AXWidgetAttributes string
+
+//States which apply to widgets.
 type Accessibility_AXWidgetStates string
+
+//Relationships between elements other than parent/child/sibling.
 type Accessibility_AXRelationshipAttributes string
+
+//A node in the accessibility tree.
 type Accessibility_AXNode struct {
 	// Unique identifier for this node.
 	NodeId Accessibility_AXNodeId `json:"nodeId"`
@@ -75,3 +108,4 @@ type Accessibility_AXNode struct {
 	// The backend ID for the associated DOM node, if any.
 	BackendDOMNodeId *DOM_BackendNodeId `json:"backendDOMNodeId,omitempty"`
 }
+

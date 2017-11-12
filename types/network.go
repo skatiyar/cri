@@ -1,15 +1,41 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
 package types
 
+
+//Unique loader identifier.
 type Network_LoaderId string
+
+//Unique request identifier.
 type Network_RequestId string
+
+//Unique intercepted request identifier.
 type Network_InterceptionId string
+
+//Network level fetch failure reason.
 type Network_ErrorReason string
+
+//UTC time in seconds, counted from January 1, 1970.
 type Network_TimeSinceEpoch float32
+
+//Monotonically increasing time in seconds since an arbitrary point in the past.
 type Network_MonotonicTime float32
+
+//Request / response headers as keys / values of JSON object.
 type Network_Headers struct {
+
 }
+
+//The underlying connection technology that the browser is supposedly using.
 type Network_ConnectionType string
+
+//Represents the cookie's 'SameSite' status: https://tools.ietf.org/html/draft-west-first-party-cookies
 type Network_CookieSameSite string
+
+//Timing information for the request.
 type Network_ResourceTiming struct {
 	// Timing's requestTime is a baseline in seconds, while the other numbers are ticks in milliseconds relatively to this requestTime.
 	RequestTime float32 `json:"requestTime"`
@@ -48,7 +74,11 @@ type Network_ResourceTiming struct {
 	// Finished receiving response headers.
 	ReceiveHeadersEnd float32 `json:"receiveHeadersEnd"`
 }
+
+//Loading priority of a resource request.
 type Network_ResourcePriority string
+
+//HTTP request data.
 type Network_Request struct {
 	// Request URL.
 	Url string `json:"url"`
@@ -67,6 +97,8 @@ type Network_Request struct {
 	// Whether is loaded via link preload.
 	IsLinkPreload *bool `json:"isLinkPreload,omitempty"`
 }
+
+//Details of a signed certificate timestamp (SCT).
 type Network_SignedCertificateTimestamp struct {
 	// Validation status.
 	Status string `json:"status"`
@@ -85,6 +117,8 @@ type Network_SignedCertificateTimestamp struct {
 	// Signature data.
 	SignatureData string `json:"signatureData"`
 }
+
+//Security details about a request.
 type Network_SecurityDetails struct {
 	// Protocol name (e.g. "TLS 1.2" or "QUIC").
 	Protocol string `json:"protocol"`
@@ -111,7 +145,11 @@ type Network_SecurityDetails struct {
 	// List of signed certificate timestamps (SCTs).
 	SignedCertificateTimestampList []Network_SignedCertificateTimestamp `json:"signedCertificateTimestampList"`
 }
+
+//The reason why request was blocked.
 type Network_BlockedReason string
+
+//HTTP response data.
 type Network_Response struct {
 	// Response URL. This URL can be different from CachedResource.url in case of redirect.
 	Url string `json:"url"`
@@ -154,10 +192,14 @@ type Network_Response struct {
 	// Security details for the request.
 	SecurityDetails *Network_SecurityDetails `json:"securityDetails,omitempty"`
 }
+
+//WebSocket request data.
 type Network_WebSocketRequest struct {
 	// HTTP request headers.
 	Headers Network_Headers `json:"headers"`
 }
+
+//WebSocket response data.
 type Network_WebSocketResponse struct {
 	// HTTP response status code.
 	Status int `json:"status"`
@@ -172,6 +214,8 @@ type Network_WebSocketResponse struct {
 	// HTTP request headers text.
 	RequestHeadersText *string `json:"requestHeadersText,omitempty"`
 }
+
+//WebSocket frame data.
 type Network_WebSocketFrame struct {
 	// WebSocket frame opcode.
 	Opcode float32 `json:"opcode"`
@@ -180,6 +224,8 @@ type Network_WebSocketFrame struct {
 	// WebSocke frame payload data.
 	PayloadData string `json:"payloadData"`
 }
+
+//Information about the cached resource.
 type Network_CachedResource struct {
 	// Resource URL. This is the url of the original network request.
 	Url string `json:"url"`
@@ -190,6 +236,8 @@ type Network_CachedResource struct {
 	// Cached response body size.
 	BodySize float32 `json:"bodySize"`
 }
+
+//Information about the request initiator.
 type Network_Initiator struct {
 	// Type of this initiator.
 	Type string `json:"type"`
@@ -200,6 +248,8 @@ type Network_Initiator struct {
 	// Initiator line number, set for Parser type or for Script type (when script is importing module) (0-based).
 	LineNumber *float32 `json:"lineNumber,omitempty"`
 }
+
+//Cookie object
 type Network_Cookie struct {
 	// Cookie name.
 	Name string `json:"name"`
@@ -222,6 +272,8 @@ type Network_Cookie struct {
 	// Cookie SameSite type.
 	SameSite *Network_CookieSameSite `json:"sameSite,omitempty"`
 }
+
+//Cookie parameter object
 type Network_CookieParam struct {
 	// Cookie name.
 	Name string `json:"name"`
@@ -242,6 +294,8 @@ type Network_CookieParam struct {
 	// Cookie expiration date, session cookie if not set
 	Expires *Network_TimeSinceEpoch `json:"expires,omitempty"`
 }
+
+//Authorization challenge for HTTP status code 401 or 407.
 type Network_AuthChallenge struct {
 	// Source of the authentication challenge.
 	Source *string `json:"source,omitempty"`
@@ -252,6 +306,8 @@ type Network_AuthChallenge struct {
 	// The realm of the challenge. May be empty.
 	Realm string `json:"realm"`
 }
+
+//Response to an AuthChallenge.
 type Network_AuthChallengeResponse struct {
 	// The decision on what to do in response to the authorization challenge.  Default means deferring to the default behavior of the net stack, which will likely either the Cancel authentication or display a popup dialog box.
 	Response string `json:"response"`
@@ -260,9 +316,12 @@ type Network_AuthChallengeResponse struct {
 	// The password to provide, possibly empty. Should only be set if response is ProvideCredentials.
 	Password *string `json:"password,omitempty"`
 }
+
+//Request pattern for interception.
 type Network_RequestPattern struct {
 	// Wildcards ('*' -> zero or more, '?' -> exactly one) are allowed. Escape character is backslash. Omitting is equivalent to "*".
 	UrlPattern *string `json:"urlPattern,omitempty"`
 	// If set, only requests for matching resource types will be intercepted.
 	ResourceType *Page_ResourceType `json:"resourceType,omitempty"`
 }
+

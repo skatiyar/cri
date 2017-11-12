@@ -1,5 +1,12 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
 package types
 
+
+//Database with an array of object stores.
 type IndexedDB_DatabaseWithObjectStores struct {
 	// Database name.
 	Name string `json:"name"`
@@ -8,6 +15,8 @@ type IndexedDB_DatabaseWithObjectStores struct {
 	// Object stores in this database.
 	ObjectStores []IndexedDB_ObjectStore `json:"objectStores"`
 }
+
+//Object store.
 type IndexedDB_ObjectStore struct {
 	// Object store name.
 	Name string `json:"name"`
@@ -18,6 +27,8 @@ type IndexedDB_ObjectStore struct {
 	// Indexes in this object store.
 	Indexes []IndexedDB_ObjectStoreIndex `json:"indexes"`
 }
+
+//Object store index.
 type IndexedDB_ObjectStoreIndex struct {
 	// Index name.
 	Name string `json:"name"`
@@ -28,6 +39,8 @@ type IndexedDB_ObjectStoreIndex struct {
 	// If true, index allows multiple entries for a key.
 	MultiEntry bool `json:"multiEntry"`
 }
+
+//Key.
 type IndexedDB_Key struct {
 	// Key type.
 	Type string `json:"type"`
@@ -40,6 +53,8 @@ type IndexedDB_Key struct {
 	// Array value.
 	Array []*IndexedDB_Key `json:"array,omitempty"`
 }
+
+//Key range.
 type IndexedDB_KeyRange struct {
 	// Lower bound.
 	Lower *IndexedDB_Key `json:"lower,omitempty"`
@@ -50,6 +65,8 @@ type IndexedDB_KeyRange struct {
 	// If true upper bound is open.
 	UpperOpen bool `json:"upperOpen"`
 }
+
+//Data entry.
 type IndexedDB_DataEntry struct {
 	// Key object.
 	Key Runtime_RemoteObject `json:"key"`
@@ -58,6 +75,8 @@ type IndexedDB_DataEntry struct {
 	// Value object.
 	Value Runtime_RemoteObject `json:"value"`
 }
+
+//Key path.
 type IndexedDB_KeyPath struct {
 	// Key path type.
 	Type string `json:"type"`
@@ -66,3 +85,4 @@ type IndexedDB_KeyPath struct {
 	// Array value.
 	Array []string `json:"array,omitempty"`
 }
+

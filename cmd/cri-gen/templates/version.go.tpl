@@ -7,5 +7,5 @@ package cri
 
 // Version returns the current major and minor version of the devtools protocol.
 func Version() (major, minor string) {
-	return "1", "2"
+	return {{printf "%q" .Major}}, {{printf "%q" .Minor}}
 }

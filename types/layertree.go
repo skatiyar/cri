@@ -1,13 +1,26 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
 package types
 
+
+//Unique Layer identifier.
 type LayerTree_LayerId string
+
+//Unique snapshot identifier.
 type LayerTree_SnapshotId string
+
+//Rectangle where scrolling happens on the main thread.
 type LayerTree_ScrollRect struct {
 	// Rectangle itself.
 	Rect DOM_Rect `json:"rect"`
 	// Reason for rectangle to force scrolling on the main thread
 	Type string `json:"type"`
 }
+
+//Sticky position constraints.
 type LayerTree_StickyPositionConstraint struct {
 	// Layout rectangle of the sticky element before being shifted
 	StickyBoxRect DOM_Rect `json:"stickyBoxRect"`
@@ -18,6 +31,8 @@ type LayerTree_StickyPositionConstraint struct {
 	// The nearest sticky layer that shifts the containing block
 	NearestLayerShiftingContainingBlock *LayerTree_LayerId `json:"nearestLayerShiftingContainingBlock,omitempty"`
 }
+
+//Serialized fragment of layer picture along with its offset within the layer.
 type LayerTree_PictureTile struct {
 	// Offset from owning layer left boundary
 	X float32 `json:"x"`
@@ -26,6 +41,8 @@ type LayerTree_PictureTile struct {
 	// Base64-encoded snapshot data.
 	Picture string `json:"picture"`
 }
+
+//Information about a compositing layer.
 type LayerTree_Layer struct {
 	// The unique id for this layer.
 	LayerId LayerTree_LayerId `json:"layerId"`
@@ -60,4 +77,7 @@ type LayerTree_Layer struct {
 	// Sticky position constraint information
 	StickyPositionConstraint *LayerTree_StickyPositionConstraint `json:"stickyPositionConstraint,omitempty"`
 }
+
+//Array of timings, one per paint step.
 type LayerTree_PaintProfile []float32
+

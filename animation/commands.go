@@ -1,16 +1,24 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
+
 package animation
 
-import types "github.com/SKatiyar/cri/types"
-import "github.com/SKatiyar/cri"
+import (
+    "github.com/SKatiyar/cri"
+    types "github.com/SKatiyar/cri/types"
+)
 
 type Animation struct {
 	conn cri.Connector
 }
 
+// New creates a Animation instance
 func New(conn cri.Connector) *Animation {
 	return &Animation{conn}
 }
-
 // Enables animation domain notifications.
 func (obj *Animation) Enable() (err error) {
 	err = obj.conn.Send("Animation.enable", nil, nil)
@@ -23,6 +31,7 @@ func (obj *Animation) Disable() (err error) {
 	return
 }
 
+
 type GetPlaybackRateResponse struct {
 	// Playback rate for animations on page.
 	PlaybackRate float32 `json:"playbackRate"`
@@ -33,6 +42,7 @@ func (obj *Animation) GetPlaybackRate() (response GetPlaybackRateResponse, err e
 	err = obj.conn.Send("Animation.getPlaybackRate", nil, &response)
 	return
 }
+
 
 type SetPlaybackRateRequest struct {
 	// Playback rate for animations on page
@@ -45,10 +55,13 @@ func (obj *Animation) SetPlaybackRate(request *SetPlaybackRateRequest) (err erro
 	return
 }
 
+
 type GetCurrentTimeRequest struct {
 	// Id of animation.
 	Id string `json:"id"`
 }
+
+
 type GetCurrentTimeResponse struct {
 	// Current time of the page.
 	CurrentTime float32 `json:"currentTime"`
@@ -59,6 +72,7 @@ func (obj *Animation) GetCurrentTime(request *GetCurrentTimeRequest) (response G
 	err = obj.conn.Send("Animation.getCurrentTime", request, &response)
 	return
 }
+
 
 type SetPausedRequest struct {
 	// Animations to set the pause state of.
@@ -72,6 +86,7 @@ func (obj *Animation) SetPaused(request *SetPausedRequest) (err error) {
 	err = obj.conn.Send("Animation.setPaused", request, nil)
 	return
 }
+
 
 type SetTimingRequest struct {
 	// Animation id.
@@ -88,6 +103,7 @@ func (obj *Animation) SetTiming(request *SetTimingRequest) (err error) {
 	return
 }
 
+
 type SeekAnimationsRequest struct {
 	// List of animation ids to seek.
 	Animations []string `json:"animations"`
@@ -101,6 +117,7 @@ func (obj *Animation) SeekAnimations(request *SeekAnimationsRequest) (err error)
 	return
 }
 
+
 type ReleaseAnimationsRequest struct {
 	// List of animation ids to seek.
 	Animations []string `json:"animations"`
@@ -112,10 +129,13 @@ func (obj *Animation) ReleaseAnimations(request *ReleaseAnimationsRequest) (err 
 	return
 }
 
+
 type ResolveAnimationRequest struct {
 	// Animation id.
 	AnimationId string `json:"animationId"`
 }
+
+
 type ResolveAnimationResponse struct {
 	// Corresponding remote object.
 	RemoteObject types.Runtime_RemoteObject `json:"remoteObject"`

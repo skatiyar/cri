@@ -1,16 +1,24 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
+// Security
 package security
 
-import types "github.com/SKatiyar/cri/types"
-import "github.com/SKatiyar/cri"
+import (
+    "github.com/SKatiyar/cri"
+    types "github.com/SKatiyar/cri/types"
+)
 
 type Security struct {
 	conn cri.Connector
 }
 
+// New creates a Security instance
 func New(conn cri.Connector) *Security {
 	return &Security{conn}
 }
-
 // Enables tracking security state changes.
 func (obj *Security) Enable() (err error) {
 	err = obj.conn.Send("Security.enable", nil, nil)
@@ -22,6 +30,7 @@ func (obj *Security) Disable() (err error) {
 	err = obj.conn.Send("Security.disable", nil, nil)
 	return
 }
+
 
 type HandleCertificateErrorRequest struct {
 	// The ID of the event.
@@ -35,6 +44,7 @@ func (obj *Security) HandleCertificateError(request *HandleCertificateErrorReque
 	err = obj.conn.Send("Security.handleCertificateError", request, nil)
 	return
 }
+
 
 type SetOverrideCertificateErrorsRequest struct {
 	// If true, certificate errors will be overridden.

@@ -1,6 +1,15 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
 package types
 
+
+//DOM breakpoint type.
 type DOMDebugger_DOMBreakpointType string
+
+//Object event listener.
 type DOMDebugger_EventListener struct {
 	// <code>EventListener</code>'s type.
 	Type string `json:"type"`
@@ -23,3 +32,4 @@ type DOMDebugger_EventListener struct {
 	// Node the listener is added to (if any).
 	BackendNodeId *DOM_BackendNodeId `json:"backendNodeId,omitempty"`
 }
+

@@ -1,12 +1,21 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
+// Supports additional targets discovery and allows to attach to them.
 package target
 
-import types "github.com/SKatiyar/cri/types"
-import "github.com/SKatiyar/cri"
+import (
+    "github.com/SKatiyar/cri"
+    types "github.com/SKatiyar/cri/types"
+)
 
 type Target struct {
 	conn cri.Connector
 }
 
+// New creates a Target instance
 func New(conn cri.Connector) *Target {
 	return &Target{conn}
 }
@@ -22,6 +31,7 @@ func (obj *Target) SetDiscoverTargets(request *SetDiscoverTargetsRequest) (err e
 	return
 }
 
+
 type SetAutoAttachRequest struct {
 	// Whether to auto-attach to related targets.
 	AutoAttach bool `json:"autoAttach"`
@@ -35,15 +45,18 @@ func (obj *Target) SetAutoAttach(request *SetAutoAttachRequest) (err error) {
 	return
 }
 
+
 type SetAttachToFramesRequest struct {
 	// Whether to attach to frames.
 	Value bool `json:"value"`
 }
 
+
 func (obj *Target) SetAttachToFrames(request *SetAttachToFramesRequest) (err error) {
 	err = obj.conn.Send("Target.setAttachToFrames", request, nil)
 	return
 }
+
 
 type SetRemoteLocationsRequest struct {
 	// List of remote locations.
@@ -55,6 +68,7 @@ func (obj *Target) SetRemoteLocations(request *SetRemoteLocationsRequest) (err e
 	err = obj.conn.Send("Target.setRemoteLocations", request, nil)
 	return
 }
+
 
 type SendMessageToTargetRequest struct {
 	Message string `json:"message"`
@@ -70,9 +84,12 @@ func (obj *Target) SendMessageToTarget(request *SendMessageToTargetRequest) (err
 	return
 }
 
+
 type GetTargetInfoRequest struct {
 	TargetId types.Target_TargetID `json:"targetId"`
 }
+
+
 type GetTargetInfoResponse struct {
 	TargetInfo types.Target_TargetInfo `json:"targetInfo"`
 }
@@ -82,6 +99,7 @@ func (obj *Target) GetTargetInfo(request *GetTargetInfoRequest) (response GetTar
 	err = obj.conn.Send("Target.getTargetInfo", request, &response)
 	return
 }
+
 
 type ActivateTargetRequest struct {
 	TargetId types.Target_TargetID `json:"targetId"`
@@ -93,9 +111,12 @@ func (obj *Target) ActivateTarget(request *ActivateTargetRequest) (err error) {
 	return
 }
 
+
 type CloseTargetRequest struct {
 	TargetId types.Target_TargetID `json:"targetId"`
 }
+
+
 type CloseTargetResponse struct {
 	Success bool `json:"success"`
 }
@@ -106,9 +127,12 @@ func (obj *Target) CloseTarget(request *CloseTargetRequest) (response CloseTarge
 	return
 }
 
+
 type AttachToTargetRequest struct {
 	TargetId types.Target_TargetID `json:"targetId"`
 }
+
+
 type AttachToTargetResponse struct {
 	// Id assigned to the session.
 	SessionId types.Target_SessionID `json:"sessionId"`
@@ -119,6 +143,7 @@ func (obj *Target) AttachToTarget(request *AttachToTargetRequest) (response Atta
 	err = obj.conn.Send("Target.attachToTarget", request, &response)
 	return
 }
+
 
 type DetachFromTargetRequest struct {
 	// Session to detach.
@@ -133,6 +158,7 @@ func (obj *Target) DetachFromTarget(request *DetachFromTargetRequest) (err error
 	return
 }
 
+
 type CreateBrowserContextResponse struct {
 	// The id of the context created.
 	BrowserContextId types.Target_BrowserContextID `json:"browserContextId"`
@@ -144,9 +170,12 @@ func (obj *Target) CreateBrowserContext() (response CreateBrowserContextResponse
 	return
 }
 
+
 type DisposeBrowserContextRequest struct {
 	BrowserContextId types.Target_BrowserContextID `json:"browserContextId"`
 }
+
+
 type DisposeBrowserContextResponse struct {
 	Success bool `json:"success"`
 }
@@ -156,6 +185,7 @@ func (obj *Target) DisposeBrowserContext(request *DisposeBrowserContextRequest) 
 	err = obj.conn.Send("Target.disposeBrowserContext", request, &response)
 	return
 }
+
 
 type CreateTargetRequest struct {
 	// The initial URL the page will be navigated to.
@@ -170,6 +200,8 @@ type CreateTargetRequest struct {
 	// NOTE Experimental
 	EnableBeginFrameControl *bool `json:"enableBeginFrameControl,omitempty"`
 }
+
+
 type CreateTargetResponse struct {
 	// The id of the page opened.
 	TargetId types.Target_TargetID `json:"targetId"`
@@ -180,6 +212,7 @@ func (obj *Target) CreateTarget(request *CreateTargetRequest) (response CreateTa
 	err = obj.conn.Send("Target.createTarget", request, &response)
 	return
 }
+
 
 type GetTargetsResponse struct {
 	// The list of targets.

@@ -1,12 +1,21 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
+
 package applicationcache
 
-import types "github.com/SKatiyar/cri/types"
-import "github.com/SKatiyar/cri"
+import (
+    "github.com/SKatiyar/cri"
+    types "github.com/SKatiyar/cri/types"
+)
 
 type ApplicationCache struct {
 	conn cri.Connector
 }
 
+// New creates a ApplicationCache instance
 func New(conn cri.Connector) *ApplicationCache {
 	return &ApplicationCache{conn}
 }
@@ -28,10 +37,13 @@ func (obj *ApplicationCache) Enable() (err error) {
 	return
 }
 
+
 type GetManifestForFrameRequest struct {
 	// Identifier of the frame containing document whose manifest is retrieved.
 	FrameId types.Page_FrameId `json:"frameId"`
 }
+
+
 type GetManifestForFrameResponse struct {
 	// Manifest URL for document in the given frame.
 	ManifestURL string `json:"manifestURL"`
@@ -43,10 +55,13 @@ func (obj *ApplicationCache) GetManifestForFrame(request *GetManifestForFrameReq
 	return
 }
 
+
 type GetApplicationCacheForFrameRequest struct {
 	// Identifier of the frame containing document whose application cache is retrieved.
 	FrameId types.Page_FrameId `json:"frameId"`
 }
+
+
 type GetApplicationCacheForFrameResponse struct {
 	// Relevant application cache data for the document in given frame.
 	ApplicationCache types.ApplicationCache_ApplicationCache `json:"applicationCache"`

@@ -1,4 +1,11 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
 package types
+
+
 
 type Input_TouchPoint struct {
 	// X coordinate of the event relative to the main frame's viewport in CSS pixels.
@@ -16,5 +23,10 @@ type Input_TouchPoint struct {
 	// Identifier used to track touch sources between events, must be unique within an event.
 	Id *float32 `json:"id,omitempty"`
 }
+
+
 type Input_GestureSourceType string
+
+//UTC time in seconds, counted from January 1, 1970.
 type Input_TimeSinceEpoch float32
+

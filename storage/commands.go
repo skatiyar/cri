@@ -1,12 +1,21 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
+
 package storage
 
-import types "github.com/SKatiyar/cri/types"
-import "github.com/SKatiyar/cri"
+import (
+    "github.com/SKatiyar/cri"
+    types "github.com/SKatiyar/cri/types"
+)
 
 type Storage struct {
 	conn cri.Connector
 }
 
+// New creates a Storage instance
 func New(conn cri.Connector) *Storage {
 	return &Storage{conn}
 }
@@ -24,10 +33,13 @@ func (obj *Storage) ClearDataForOrigin(request *ClearDataForOriginRequest) (err 
 	return
 }
 
+
 type GetUsageAndQuotaRequest struct {
 	// Security origin.
 	Origin string `json:"origin"`
 }
+
+
 type GetUsageAndQuotaResponse struct {
 	// Storage usage (bytes).
 	Usage float32 `json:"usage"`
@@ -43,6 +55,7 @@ func (obj *Storage) GetUsageAndQuota(request *GetUsageAndQuotaRequest) (response
 	return
 }
 
+
 type TrackCacheStorageForOriginRequest struct {
 	// Security origin.
 	Origin string `json:"origin"`
@@ -53,6 +66,7 @@ func (obj *Storage) TrackCacheStorageForOrigin(request *TrackCacheStorageForOrig
 	err = obj.conn.Send("Storage.trackCacheStorageForOrigin", request, nil)
 	return
 }
+
 
 type UntrackCacheStorageForOriginRequest struct {
 	// Security origin.
@@ -65,6 +79,7 @@ func (obj *Storage) UntrackCacheStorageForOrigin(request *UntrackCacheStorageFor
 	return
 }
 
+
 type TrackIndexedDBForOriginRequest struct {
 	// Security origin.
 	Origin string `json:"origin"`
@@ -75,6 +90,7 @@ func (obj *Storage) TrackIndexedDBForOrigin(request *TrackIndexedDBForOriginRequ
 	err = obj.conn.Send("Storage.trackIndexedDBForOrigin", request, nil)
 	return
 }
+
 
 type UntrackIndexedDBForOriginRequest struct {
 	// Security origin.

@@ -1,12 +1,21 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
+
 package accessibility
 
-import types "github.com/SKatiyar/cri/types"
-import "github.com/SKatiyar/cri"
+import (
+    "github.com/SKatiyar/cri"
+    types "github.com/SKatiyar/cri/types"
+)
 
 type Accessibility struct {
 	conn cri.Connector
 }
 
+// New creates a Accessibility instance
 func New(conn cri.Connector) *Accessibility {
 	return &Accessibility{conn}
 }
@@ -17,6 +26,8 @@ type GetPartialAXTreeRequest struct {
 	// Whether to fetch this nodes ancestors, siblings and children. Defaults to true.
 	FetchRelatives *bool `json:"fetchRelatives,omitempty"`
 }
+
+
 type GetPartialAXTreeResponse struct {
 	// The <code>Accessibility.AXNode</code> for this DOM node, if it exists, plus its ancestors, siblings and children, if requested.
 	Nodes []types.Accessibility_AXNode `json:"nodes"`

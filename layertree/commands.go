@@ -1,16 +1,24 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
+
 package layertree
 
-import types "github.com/SKatiyar/cri/types"
-import "github.com/SKatiyar/cri"
+import (
+    "github.com/SKatiyar/cri"
+    types "github.com/SKatiyar/cri/types"
+)
 
 type LayerTree struct {
 	conn cri.Connector
 }
 
+// New creates a LayerTree instance
 func New(conn cri.Connector) *LayerTree {
 	return &LayerTree{conn}
 }
-
 // Enables compositing tree inspection.
 func (obj *LayerTree) Enable() (err error) {
 	err = obj.conn.Send("LayerTree.enable", nil, nil)
@@ -23,10 +31,13 @@ func (obj *LayerTree) Disable() (err error) {
 	return
 }
 
+
 type CompositingReasonsRequest struct {
 	// The id of the layer for which we want to get the reasons it was composited.
 	LayerId types.LayerTree_LayerId `json:"layerId"`
 }
+
+
 type CompositingReasonsResponse struct {
 	// A list of strings specifying reasons for the given layer to become composited.
 	CompositingReasons []string `json:"compositingReasons"`
@@ -38,10 +49,13 @@ func (obj *LayerTree) CompositingReasons(request *CompositingReasonsRequest) (re
 	return
 }
 
+
 type MakeSnapshotRequest struct {
 	// The id of the layer.
 	LayerId types.LayerTree_LayerId `json:"layerId"`
 }
+
+
 type MakeSnapshotResponse struct {
 	// The id of the layer snapshot.
 	SnapshotId types.LayerTree_SnapshotId `json:"snapshotId"`
@@ -53,10 +67,13 @@ func (obj *LayerTree) MakeSnapshot(request *MakeSnapshotRequest) (response MakeS
 	return
 }
 
+
 type LoadSnapshotRequest struct {
 	// An array of tiles composing the snapshot.
 	Tiles []types.LayerTree_PictureTile `json:"tiles"`
 }
+
+
 type LoadSnapshotResponse struct {
 	// The id of the snapshot.
 	SnapshotId types.LayerTree_SnapshotId `json:"snapshotId"`
@@ -67,6 +84,7 @@ func (obj *LayerTree) LoadSnapshot(request *LoadSnapshotRequest) (response LoadS
 	err = obj.conn.Send("LayerTree.loadSnapshot", request, &response)
 	return
 }
+
 
 type ReleaseSnapshotRequest struct {
 	// The id of the layer snapshot.
@@ -79,6 +97,7 @@ func (obj *LayerTree) ReleaseSnapshot(request *ReleaseSnapshotRequest) (err erro
 	return
 }
 
+
 type ProfileSnapshotRequest struct {
 	// The id of the layer snapshot.
 	SnapshotId types.LayerTree_SnapshotId `json:"snapshotId"`
@@ -89,15 +108,19 @@ type ProfileSnapshotRequest struct {
 	// The clip rectangle to apply when replaying the snapshot.
 	ClipRect *types.DOM_Rect `json:"clipRect,omitempty"`
 }
+
+
 type ProfileSnapshotResponse struct {
 	// The array of paint profiles, one per run.
 	Timings []types.LayerTree_PaintProfile `json:"timings"`
 }
 
+
 func (obj *LayerTree) ProfileSnapshot(request *ProfileSnapshotRequest) (response ProfileSnapshotResponse, err error) {
 	err = obj.conn.Send("LayerTree.profileSnapshot", request, &response)
 	return
 }
+
 
 type ReplaySnapshotRequest struct {
 	// The id of the layer snapshot.
@@ -109,6 +132,8 @@ type ReplaySnapshotRequest struct {
 	// The scale to apply while replaying (defaults to 1).
 	Scale *float32 `json:"scale,omitempty"`
 }
+
+
 type ReplaySnapshotResponse struct {
 	// A data: URL for resulting image.
 	DataURL string `json:"dataURL"`
@@ -120,10 +145,13 @@ func (obj *LayerTree) ReplaySnapshot(request *ReplaySnapshotRequest) (response R
 	return
 }
 
+
 type SnapshotCommandLogRequest struct {
 	// The id of the layer snapshot.
 	SnapshotId types.LayerTree_SnapshotId `json:"snapshotId"`
 }
+
+
 type SnapshotCommandLogResponse struct {
 	// The array of canvas function calls.
 	CommandLog []map[string]interface{} `json:"commandLog"`

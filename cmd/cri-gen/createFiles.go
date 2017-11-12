@@ -3,19 +3,13 @@ package main
 import (
 	"path"
 	"strings"
+	"text/template"
 
 	"go/ast"
 	"go/token"
 )
 
 const ImportPath = "github.com/SKatiyar/cri"
-
-func toPackageName(s string) string {
-	strs := strings.Split(s, ".")
-	strs[0] = strings.ToLower(strs[0])
-
-	return strings.Join(strs, ".")
-}
 
 func parseBasicType(typ string) ast.Expr {
 	if typ == "integer" {
@@ -185,194 +179,126 @@ func parseParameter(p Parameter, domain, structName string, notTypes bool) (*ast
 	return nField, deps
 }
 
-func parseCommand(c Command, d Domain) (*ast.FuncDecl, []string) {
-	resultsFieldList := make([]*ast.Field, 0)
-	callParams := make([]ast.Expr, 0)
+type TypeData struct {
+	ID   string
+	Doc  string
+	Type string
+}
+
+type TypesData struct {
+	Package string
+	Types   []TypeData
+}
+
+func transformBasicTypes(typ string) string {
+	if typ == "integer" {
+		return "int"
+	} else if typ == "number" {
+		return "float32"
+	} else if typ == "string" {
+		return "string"
+	} else if typ == "boolean" {
+		return "bool"
+	} else if typ == "object" {
+		return "map[string]interface{}"
+	} else if typ == "any" {
+		return "interface{}"
+	} else {
+		panic("Unhandled type " + typ)
+	}
+}
+
+func transformParameter(p Parameter, domain, structName string, notTypes bool) (string, []string) {
+	nField := make([]string, 0)
 	deps := make([]string, 0)
 
-	for i := 0; i < len(c.Returns); i++ {
-		param, ldeps := parseParameter(c.Returns[i], d.Domain, "", true)
-		resultsFieldList = append(resultsFieldList, param)
-		deps = append(deps, ldeps...)
+	if len(p.Description) > 0 {
+		nField = append(nField, "\t// "+strings.Trim(p.Description, "\n"))
+	}
+	if p.Experimental {
+		nField = append(nField, "\t// NOTE Experimental")
 	}
 
-	callParams = append(callParams, &ast.BasicLit{
-		Kind:  token.STRING,
-		Value: "\"" + d.Domain + "." + c.Name + "\"",
-	})
-	if len(c.Parameters) > 0 {
-		callParams = append(callParams, &ast.BasicLit{
-			Kind:  token.STRING,
-			Value: "request",
-		})
-	} else {
-		callParams = append(callParams, &ast.BasicLit{
-			Kind:  token.STRING,
-			Value: "nil",
-		})
-	}
-	if len(c.Returns) > 0 {
-		callParams = append(callParams, &ast.BasicLit{
-			Kind:  token.STRING,
-			Value: "&response",
-		})
-	} else {
-		callParams = append(callParams, &ast.BasicLit{
-			Kind:  token.STRING,
-			Value: "nil",
-		})
-	}
-
-	nFunc := &ast.FuncDecl{
-		Name: ast.NewIdent(strings.Title(c.Name)),
-		Recv: &ast.FieldList{
-			List: []*ast.Field{
-				&ast.Field{
-					Names: []*ast.Ident{
-						ast.NewIdent("obj"),
-					},
-					Type: &ast.StarExpr{
-						X: &ast.BasicLit{
-							Kind:  token.STRING,
-							Value: strings.Title(d.Domain),
-						},
-					},
-				},
-			},
-		},
-		Type: &ast.FuncType{
-			Params: &ast.FieldList{
-				List: []*ast.Field{},
-			},
-			Results: &ast.FieldList{
-				List: []*ast.Field{
-					&ast.Field{
-						Names: []*ast.Ident{
-							ast.NewIdent("err"),
-						},
-						Type: &ast.BasicLit{
-							Kind:  token.STRING,
-							Value: "error",
-						},
-					},
-				},
-			},
-		},
-		Body: &ast.BlockStmt{
-			List: []ast.Stmt{
-				&ast.ExprStmt{
-					X: &ast.BinaryExpr{
-						X: &ast.BasicLit{
-							Kind:  token.STRING,
-							Value: "err",
-						},
-						Op: token.ASSIGN,
-						Y: &ast.CallExpr{
-							Fun: &ast.BasicLit{
-								Kind:  token.STRING,
-								Value: "obj.conn.Send",
-							},
-							Args: callParams,
-						},
-					},
-				},
-				&ast.ReturnStmt{},
-			},
-		},
-	}
-
-	if len(c.Parameters) > 0 {
-		nFunc.Type.Params.List = append(nFunc.Type.Params.List, &ast.Field{
-			Names: []*ast.Ident{
-				ast.NewIdent("request"),
-			},
-			Type: &ast.StarExpr{
-				X: &ast.BasicLit{
-					Kind:  token.STRING,
-					Value: strings.Title(c.Name) + "Request",
-				},
-			},
-		})
-	}
-	if len(c.Returns) > 0 {
-		nFunc.Type.Results.List = append([]*ast.Field{
-			&ast.Field{
-				Names: []*ast.Ident{
-					ast.NewIdent("response"),
-				},
-				Type: &ast.BasicLit{
-					Kind:  token.STRING,
-					Value: strings.Title(c.Name) + "Response",
-				},
-			},
-		}, nFunc.Type.Results.List...)
-	}
-	if len(c.Description) > 0 {
-		nFunc.Doc = &ast.CommentGroup{
-			List: []*ast.Comment{
-				&ast.Comment{
-					Text: "// " + c.Description,
-				},
-			},
+	fieldSpecs := []string{"\t" + strings.Title(p.Name)}
+	if len(p.Type) != 0 {
+		if p.Type == "array" {
+			if len(p.Items.Type) > 0 {
+				fieldSpecs = append(fieldSpecs, "[]"+transformBasicTypes(p.Items.Type))
+			} else if len(p.Items.Ref) > 0 {
+				stm, stmDeps := transformRef(p.Items.Ref, domain, structName, notTypes)
+				fieldSpecs = append(fieldSpecs, "[]"+stm)
+				deps = append(deps, stmDeps...)
+			} else {
+				fieldSpecs = append(fieldSpecs, "[]interface{}")
+			}
+		} else if p.Type == "integer" ||
+			p.Type == "number" ||
+			p.Type == "boolean" ||
+			p.Type == "any" ||
+			p.Type == "object" ||
+			p.Type == "string" {
+			if p.Optional && p.Type != "any" && p.Type != "object" {
+				fieldSpecs = append(fieldSpecs, "*"+transformBasicTypes(p.Type))
+			} else {
+				fieldSpecs = append(fieldSpecs, transformBasicTypes(p.Type))
+			}
+		} else {
+			panic("Unhandled type " + p.Type)
+		}
+	} else if len(p.Ref) != 0 {
+		if p.Optional && p.Ref != structName {
+			stm, stmDeps := transformRef(p.Ref, domain, structName, notTypes)
+			fieldSpecs = append(fieldSpecs, "*"+stm)
+			deps = append(deps, stmDeps...)
+		} else {
+			stm, stmDeps := transformRef(p.Ref, domain, structName, notTypes)
+			fieldSpecs = append(fieldSpecs, stm)
+			deps = append(deps, stmDeps...)
 		}
 	}
 
-	return nFunc, deps
+	if p.Optional {
+		fieldSpecs = append(fieldSpecs, "`json:\""+p.Name+",omitempty\"`")
+	} else {
+		fieldSpecs = append(fieldSpecs, "`json:\""+p.Name+"\"`")
+	}
+
+	nField = append(nField, strings.Join(fieldSpecs, " "))
+
+	return strings.Join(nField, "\n"), deps
 }
 
-func createVersionFile(v Version, pkgPath string) *ast.File {
-	return &ast.File{
-		Name: ast.NewIdent(path.Base(pkgPath)),
-		Decls: []ast.Decl{
-			&ast.FuncDecl{
-				Name: ast.NewIdent("Version"),
-				Type: &ast.FuncType{
-					Results: &ast.FieldList{
-						List: []*ast.Field{
-							&ast.Field{
-								Names: []*ast.Ident{
-									ast.NewIdent("major"),
-									ast.NewIdent("minor"),
-								},
-								Type: &ast.BasicLit{
-									Kind:  token.STRING,
-									Value: "string",
-								},
-							},
-						},
-					},
-				},
-				Body: &ast.BlockStmt{
-					List: []ast.Stmt{
-						&ast.ReturnStmt{
-							Results: []ast.Expr{
-								&ast.BasicLit{
-									Kind:  token.STRING,
-									Value: "\"" + v.Major + "\"",
-								},
-								&ast.BasicLit{
-									Kind:  token.STRING,
-									Value: "\"" + v.Minor + "\"",
-								},
-							},
-						},
-					},
-				},
-			},
-		},
+func transformRef(ref, domain, structName string, notTypes bool) (string, []string) {
+	if idx := strings.Index(ref, "."); idx != -1 {
+		if notTypes {
+			return "types." + strings.Replace(ref, ".", "_", -1), []string{domain}
+		} else {
+			return strings.Replace(ref, ".", "_", -1), []string{string(ref[:idx])}
+		}
+	} else {
+		if ref == structName {
+			return "*" + domain + "_" + ref, nil
+		} else if notTypes {
+			return "types." + domain + "_" + ref, []string{domain}
+		} else {
+			return domain + "_" + ref, []string{domain}
+		}
 	}
 }
 
-func createTypesFile(d Domain) *ast.File {
-	nFile := &ast.File{
-		Name: ast.NewIdent("types"),
+func transformTypes(d Domain) TypesData {
+	data := TypesData{
+		Package: "types",
 	}
+
+	imports := make(map[string]bool)
 	typs := d.Types
-	decls := make([]ast.Decl, 0)
-
 	for i := 0; i < len(typs); i++ {
-		typeSpec := &ast.TypeSpec{
-			Name: ast.NewIdent(d.Domain + "_" + typs[i].ID),
+		typeSpec := TypeData{
+			ID: d.Domain + "_" + typs[i].ID,
+		}
+		if len(typs[i].Description) > 0 {
+			typeSpec.Doc = "//" + typs[i].Description
 		}
 
 		if len(typs[i].Enum) != 0 {
@@ -384,225 +310,151 @@ func createTypesFile(d Domain) *ast.File {
 
 		if typs[i].Type == "array" {
 			if len(typs[i].Items.Type) > 0 {
-				typeSpec.Type = &ast.ArrayType{
-					Elt: parseBasicType(typs[i].Items.Type),
-				}
+				typeSpec.Type = "[]" + transformBasicTypes(typs[i].Items.Type)
 			} else if len(typs[i].Items.Ref) > 0 {
-				typeSpec.Type = &ast.ArrayType{
-					Elt: parseRef(typs[i].Items.Ref, d.Domain, typs[i].ID, false),
+				stm, stmDeps := transformRef(typs[i].Items.Ref, d.Domain, typs[i].ID, false)
+				typeSpec.Type = "[]" + stm
+				for _, dep := range stmDeps {
+					imports[dep] = true
 				}
 			} else {
-				typeSpec.Type = &ast.ArrayType{
-					Elt: &ast.BasicLit{
-						Kind:  token.STRING,
-						Value: "interface{}",
-					},
-				}
+				typeSpec.Type = "[]interface{}"
 			}
 		} else if typs[i].Type == "integer" ||
 			typs[i].Type == "number" ||
 			typs[i].Type == "boolean" ||
 			typs[i].Type == "any" ||
 			typs[i].Type == "string" {
-			typeSpec.Type = parseBasicType(typs[i].Type)
+			typeSpec.Type = transformBasicTypes(typs[i].Type)
 		} else if typs[i].Type == "object" {
-			properties := make([]*ast.Field, 0)
+			properties := make([]string, 0)
 			for j := 0; j < len(typs[i].Properties); j++ {
-				param, _ := parseParameter(typs[i].Properties[j], d.Domain, typs[i].ID, false)
+				param, paramDeps := transformParameter(typs[i].Properties[j], d.Domain, typs[i].ID, false)
 				properties = append(properties, param)
+				for _, dep := range paramDeps {
+					imports[dep] = true
+				}
 			}
-			typeSpec.Type = &ast.StructType{
-				Fields: &ast.FieldList{
-					List: properties,
-				},
-			}
+			typeSpec.Type = "struct {\n" + strings.Join(properties, "\n") + "\n}"
 		} else {
 			panic("Unhandled type " + typs[i].Type)
 		}
 
-		decls = append(decls, &ast.GenDecl{
-			Tok: token.TYPE,
-			Specs: []ast.Spec{
-				typeSpec,
-			},
+		data.Types = append(data.Types, typeSpec)
+	}
+
+	return data
+}
+
+type CommandImport struct {
+	Name string
+	Path string
+}
+
+type CommandData struct {
+	Doc           string
+	Domain        string
+	Command       string
+	Name          string
+	RequestName   string
+	RequestValue  string
+	ResponseName  string
+	ResponseValue string
+	Types         []TypeData
+}
+
+type CommandsData struct {
+	Doc      string
+	Domain   string
+	Package  string
+	Imports  []CommandImport
+	Commands []CommandData
+}
+
+func transformCommands(d Domain) CommandsData {
+	data := CommandsData{
+		Domain:   d.Domain,
+		Package:  strings.ToLower(d.Domain),
+		Imports:  make([]CommandImport, 0),
+		Commands: make([]CommandData, 0),
+	}
+
+	if len(d.Description) > 0 {
+		data.Doc = "// " + d.Description
+	}
+
+	imports := make(map[string]bool)
+	for i := 0; i < len(d.Commands); i++ {
+		cmd := CommandData{
+			Domain:  d.Domain,
+			Name:    strings.Title(d.Commands[i].Name),
+			Command: d.Domain + "." + d.Commands[i].Name,
+			Types:   make([]TypeData, 0),
+		}
+		if len(d.Commands[i].Description) > 0 {
+			cmd.Doc = "// " + d.Commands[i].Description
+		}
+		if len(d.Commands[i].Parameters) > 0 {
+			reqName := strings.Title(d.Commands[i].Name) + "Request"
+			cmd.RequestName = "request *" + reqName
+			cmd.RequestValue = "request"
+			properties := make([]string, 0)
+			for j := 0; j < len(d.Commands[i].Parameters); j++ {
+				param, paramDeps := transformParameter(d.Commands[i].Parameters[j], d.Domain, reqName, true)
+				properties = append(properties, param)
+				for _, dep := range paramDeps {
+					imports[dep] = true
+				}
+			}
+			cmd.Types = append(cmd.Types, TypeData{
+				ID:   reqName,
+				Type: "struct {\n" + strings.Join(properties, "\n") + "\n}",
+			})
+		} else {
+			cmd.RequestName = ""
+			cmd.RequestValue = "nil"
+		}
+		if len(d.Commands[i].Returns) > 0 {
+			resName := strings.Title(d.Commands[i].Name) + "Response"
+			cmd.ResponseName = "response " + resName + ", err error"
+			cmd.ResponseValue = "&response"
+			properties := make([]string, 0)
+			for j := 0; j < len(d.Commands[i].Returns); j++ {
+				param, paramDeps := transformParameter(d.Commands[i].Returns[j], d.Domain, resName, true)
+				properties = append(properties, param)
+				for _, dep := range paramDeps {
+					imports[dep] = true
+				}
+			}
+			cmd.Types = append(cmd.Types, TypeData{
+				ID:   resName,
+				Type: "struct {\n" + strings.Join(properties, "\n") + "\n}",
+			})
+		} else {
+			cmd.ResponseName = "err error"
+			cmd.ResponseValue = "nil"
+		}
+
+		data.Commands = append(data.Commands, cmd)
+	}
+	if len(imports) > 0 {
+		data.Imports = append(data.Imports, CommandImport{
+			Name: "types",
+			Path: path.Join(ImportPath, "types"),
 		})
 	}
 
-	nFile.Decls = decls
-
-	return nFile
+	return data
 }
 
-func createCommandsFile(d Domain) *ast.File {
-	nFile := &ast.File{
-		Name: ast.NewIdent(strings.ToLower(d.Domain)),
-	}
+func createTypesFile() (*template.Template, error) {
+	return template.ParseFiles(TypesTplFile)
+}
 
-	decls := make([]ast.Decl, 0)
-	imports := make([]string, 0)
-	structName := d.Domain
+func createCommandsFile() (*template.Template, error) {
+	return template.ParseFiles(CommandsTplFile)
+}
 
-	structDecl := &ast.GenDecl{
-		Tok: token.TYPE,
-		Specs: []ast.Spec{
-			&ast.TypeSpec{
-				Name: ast.NewIdent(structName),
-				Type: &ast.StructType{
-					Fields: &ast.FieldList{
-						List: []*ast.Field{
-							&ast.Field{
-								Names: []*ast.Ident{
-									ast.NewIdent("conn"),
-								},
-								Type: &ast.BasicLit{
-									Kind:  token.STRING,
-									Value: "cri.Connector",
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-	}
-	decls = append(decls, structDecl)
-
-	constructorDecl := &ast.FuncDecl{
-		Name: ast.NewIdent("New"),
-		Type: &ast.FuncType{
-			Params: &ast.FieldList{
-				List: []*ast.Field{
-					&ast.Field{
-						Names: []*ast.Ident{
-							ast.NewIdent("conn"),
-						},
-						Type: &ast.BasicLit{
-							Kind:  token.STRING,
-							Value: "cri.Connector",
-						},
-					},
-				},
-			},
-			Results: &ast.FieldList{
-				List: []*ast.Field{
-					&ast.Field{
-						Type: &ast.StarExpr{
-							X: &ast.BasicLit{
-								Kind:  token.STRING,
-								Value: structName,
-							},
-						},
-					},
-				},
-			},
-		},
-		Body: &ast.BlockStmt{
-			List: []ast.Stmt{
-				&ast.ReturnStmt{
-					Results: []ast.Expr{
-						&ast.UnaryExpr{
-							Op: token.AND,
-							X: &ast.CompositeLit{
-								Type: &ast.BasicLit{
-									Kind:  token.STRING,
-									Value: structName,
-								},
-								Elts: []ast.Expr{
-									&ast.BasicLit{
-										Kind:  token.STRING,
-										Value: "conn",
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-	}
-	decls = append(decls, constructorDecl)
-
-	for i := 0; i < len(d.Commands); i++ {
-		if len(d.Commands[i].Parameters) > 0 {
-			paramsDecls := make([]*ast.Field, 0)
-			for j := 0; j < len(d.Commands[i].Parameters); j++ {
-				param, ldeps := parseParameter(d.Commands[i].Parameters[j], d.Domain, strings.Title(d.Commands[i].Name)+"Request", true)
-				paramsDecls = append(paramsDecls, param)
-				imports = append(imports, ldeps...)
-			}
-			responseDecl := &ast.GenDecl{
-				Tok: token.TYPE,
-				Specs: []ast.Spec{
-					&ast.TypeSpec{
-						Name: ast.NewIdent(strings.Title(d.Commands[i].Name) + "Request"),
-						Type: &ast.StructType{
-							Fields: &ast.FieldList{
-								List: paramsDecls,
-							},
-						},
-					},
-				},
-			}
-			decls = append(decls, responseDecl)
-		}
-		if len(d.Commands[i].Returns) > 0 {
-			paramsDecls := make([]*ast.Field, 0)
-			for j := 0; j < len(d.Commands[i].Returns); j++ {
-				param, ldeps := parseParameter(d.Commands[i].Returns[j], d.Domain, strings.Title(d.Commands[i].Name)+"Response", true)
-				paramsDecls = append(paramsDecls, param)
-				imports = append(imports, ldeps...)
-			}
-			responseDecl := &ast.GenDecl{
-				Tok: token.TYPE,
-				Specs: []ast.Spec{
-					&ast.TypeSpec{
-						Name: ast.NewIdent(strings.Title(d.Commands[i].Name) + "Response"),
-						Type: &ast.StructType{
-							Fields: &ast.FieldList{
-								List: paramsDecls,
-							},
-						},
-					},
-				},
-			}
-			decls = append(decls, responseDecl)
-		}
-		cmdDecls, cmdDeps := parseCommand(d.Commands[i], d)
-		decls = append(decls, cmdDecls)
-		imports = append(imports, cmdDeps...)
-	}
-
-	decls = append([]ast.Decl{
-		&ast.GenDecl{
-			Tok: token.IMPORT,
-			Specs: []ast.Spec{
-				&ast.ImportSpec{
-					Path: &ast.BasicLit{
-						Kind:  token.IMPORT,
-						Value: "\"" + path.Join(ImportPath) + "\"",
-					},
-				},
-			},
-		},
-	}, decls...)
-	if len(imports) > 0 {
-		decls = append([]ast.Decl{
-			&ast.GenDecl{
-				Tok: token.IMPORT,
-				Specs: []ast.Spec{
-					&ast.ImportSpec{
-						Name: ast.NewIdent("types"),
-						Path: &ast.BasicLit{
-							Kind:  token.IMPORT,
-							Value: "\"" + path.Join(ImportPath, "types") + "\"",
-						},
-					},
-				},
-			},
-		}, decls...)
-	}
-
-	nFile.Decls = decls
-
-	return nFile
+func createVersionFile() (*template.Template, error) {
+	return template.ParseFiles(VersionTplFile)
 }

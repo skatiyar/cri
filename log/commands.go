@@ -1,16 +1,24 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
+// Provides access to log entries.
 package log
 
-import types "github.com/SKatiyar/cri/types"
-import "github.com/SKatiyar/cri"
+import (
+    "github.com/SKatiyar/cri"
+    types "github.com/SKatiyar/cri/types"
+)
 
 type Log struct {
 	conn cri.Connector
 }
 
+// New creates a Log instance
 func New(conn cri.Connector) *Log {
 	return &Log{conn}
 }
-
 // Enables log domain, sends the entries collected so far to the client by means of the <code>entryAdded</code> notification.
 func (obj *Log) Enable() (err error) {
 	err = obj.conn.Send("Log.enable", nil, nil)
@@ -28,6 +36,7 @@ func (obj *Log) Clear() (err error) {
 	err = obj.conn.Send("Log.clear", nil, nil)
 	return
 }
+
 
 type StartViolationsReportRequest struct {
 	// Configuration for violations.

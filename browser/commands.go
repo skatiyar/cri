@@ -1,26 +1,37 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
+// The Browser domain defines methods and events for browser managing.
 package browser
 
-import types "github.com/SKatiyar/cri/types"
-import "github.com/SKatiyar/cri"
+import (
+    "github.com/SKatiyar/cri"
+    types "github.com/SKatiyar/cri/types"
+)
 
 type Browser struct {
 	conn cri.Connector
 }
 
+// New creates a Browser instance
 func New(conn cri.Connector) *Browser {
 	return &Browser{conn}
 }
-
 // Close browser gracefully.
 func (obj *Browser) Close() (err error) {
 	err = obj.conn.Send("Browser.close", nil, nil)
 	return
 }
 
+
 type GetWindowForTargetRequest struct {
 	// Devtools agent host id.
 	TargetId types.Target_TargetID `json:"targetId"`
 }
+
+
 type GetWindowForTargetResponse struct {
 	// Browser window id.
 	WindowId types.Browser_WindowID `json:"windowId"`
@@ -33,6 +44,7 @@ func (obj *Browser) GetWindowForTarget(request *GetWindowForTargetRequest) (resp
 	err = obj.conn.Send("Browser.getWindowForTarget", request, &response)
 	return
 }
+
 
 type GetVersionResponse struct {
 	// Protocol version.
@@ -53,6 +65,7 @@ func (obj *Browser) GetVersion() (response GetVersionResponse, err error) {
 	return
 }
 
+
 type SetWindowBoundsRequest struct {
 	// Browser window id.
 	WindowId types.Browser_WindowID `json:"windowId"`
@@ -66,10 +79,13 @@ func (obj *Browser) SetWindowBounds(request *SetWindowBoundsRequest) (err error)
 	return
 }
 
+
 type GetWindowBoundsRequest struct {
 	// Browser window id.
 	WindowId types.Browser_WindowID `json:"windowId"`
 }
+
+
 type GetWindowBoundsResponse struct {
 	// Bounds information of the window. When window state is 'minimized', the restored window position and size are returned.
 	Bounds types.Browser_Bounds `json:"bounds"`

@@ -1,5 +1,12 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
 package types
 
+
+//Log entry.
 type Log_LogEntry struct {
 	// Log entry source.
 	Source string `json:"source"`
@@ -22,9 +29,12 @@ type Log_LogEntry struct {
 	// Call arguments.
 	Args []Runtime_RemoteObject `json:"args,omitempty"`
 }
+
+//Violation configuration setting.
 type Log_ViolationSetting struct {
 	// Violation type.
 	Name string `json:"name"`
 	// Time threshold to trigger upon.
 	Threshold float32 `json:"threshold"`
 }
+

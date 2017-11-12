@@ -1,12 +1,21 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
+// Audits domain allows investigation of page violations and possible improvements.
 package audits
 
-import types "github.com/SKatiyar/cri/types"
-import "github.com/SKatiyar/cri"
+import (
+    "github.com/SKatiyar/cri"
+    types "github.com/SKatiyar/cri/types"
+)
 
 type Audits struct {
 	conn cri.Connector
 }
 
+// New creates a Audits instance
 func New(conn cri.Connector) *Audits {
 	return &Audits{conn}
 }
@@ -21,6 +30,8 @@ type GetEncodedResponseRequest struct {
 	// Whether to only return the size information (defaults to false).
 	SizeOnly *bool `json:"sizeOnly,omitempty"`
 }
+
+
 type GetEncodedResponseResponse struct {
 	// The encoded body as a base64 string. Omitted if sizeOnly is true.
 	Body *string `json:"body,omitempty"`

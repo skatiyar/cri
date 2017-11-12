@@ -1,8 +1,21 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
 package types
 
+
+//An internal certificate ID value.
 type Security_CertificateId int
+
+//A description of mixed content (HTTP resources on HTTPS pages), as defined by https://www.w3.org/TR/mixed-content/#categories
 type Security_MixedContentType string
+
+//The security level of a page or resource.
 type Security_SecurityState string
+
+//An explanation of an factor contributing to the security state.
 type Security_SecurityStateExplanation struct {
 	// Security state representing the severity of the factor being explained.
 	SecurityState Security_SecurityState `json:"securityState"`
@@ -15,6 +28,8 @@ type Security_SecurityStateExplanation struct {
 	// Page certificate.
 	Certificate []string `json:"certificate"`
 }
+
+//Information about insecure content on the page.
 type Security_InsecureContentStatus struct {
 	// True if the page was loaded over HTTPS and ran mixed (HTTP) content such as scripts.
 	RanMixedContent bool `json:"ranMixedContent"`
@@ -31,4 +46,7 @@ type Security_InsecureContentStatus struct {
 	// Security state representing a page that displayed insecure content.
 	DisplayedInsecureContentStyle Security_SecurityState `json:"displayedInsecureContentStyle"`
 }
+
+//The action to take when a certificate error occurs. continue will continue processing the request and cancel will cancel the request.
 type Security_CertificateErrorAction string
+

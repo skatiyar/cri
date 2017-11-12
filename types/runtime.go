@@ -1,8 +1,21 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
 package types
 
+
+//Unique script identifier.
 type Runtime_ScriptId string
+
+//Unique object identifier.
 type Runtime_RemoteObjectId string
+
+//Primitive value which cannot be JSON-stringified.
 type Runtime_UnserializableValue string
+
+//Mirror object referencing original JavaScript object.
 type Runtime_RemoteObject struct {
 	// Object type.
 	Type string `json:"type"`
@@ -20,16 +33,21 @@ type Runtime_RemoteObject struct {
 	ObjectId *Runtime_RemoteObjectId `json:"objectId,omitempty"`
 	// Preview containing abbreviated property values. Specified for <code>object</code> type values only.
 	// NOTE Experimental
-	Preview       *Runtime_ObjectPreview `json:"preview,omitempty"` // NOTE Experimental
+	Preview *Runtime_ObjectPreview `json:"preview,omitempty"`
+	// NOTE Experimental
 	CustomPreview *Runtime_CustomPreview `json:"customPreview,omitempty"`
 }
+
+
 type Runtime_CustomPreview struct {
-	Header                     string                  `json:"header"`
-	HasBody                    bool                    `json:"hasBody"`
-	FormatterObjectId          Runtime_RemoteObjectId  `json:"formatterObjectId"`
-	BindRemoteObjectFunctionId Runtime_RemoteObjectId  `json:"bindRemoteObjectFunctionId"`
-	ConfigObjectId             *Runtime_RemoteObjectId `json:"configObjectId,omitempty"`
+	Header string `json:"header"`
+	HasBody bool `json:"hasBody"`
+	FormatterObjectId Runtime_RemoteObjectId `json:"formatterObjectId"`
+	BindRemoteObjectFunctionId Runtime_RemoteObjectId `json:"bindRemoteObjectFunctionId"`
+	ConfigObjectId *Runtime_RemoteObjectId `json:"configObjectId,omitempty"`
 }
+
+//Object containing abbreviated remote object value.
 type Runtime_ObjectPreview struct {
 	// Object type.
 	Type string `json:"type"`
@@ -44,6 +62,8 @@ type Runtime_ObjectPreview struct {
 	// List of the entries. Specified for <code>map</code> and <code>set</code> subtype values only.
 	Entries []Runtime_EntryPreview `json:"entries,omitempty"`
 }
+
+
 type Runtime_PropertyPreview struct {
 	// Property name.
 	Name string `json:"name"`
@@ -56,12 +76,16 @@ type Runtime_PropertyPreview struct {
 	// Object subtype hint. Specified for <code>object</code> type values only.
 	Subtype *string `json:"subtype,omitempty"`
 }
+
+
 type Runtime_EntryPreview struct {
 	// Preview of the key. Specified for map-like collection entries.
 	Key *Runtime_ObjectPreview `json:"key,omitempty"`
 	// Preview of the value.
 	Value Runtime_ObjectPreview `json:"value"`
 }
+
+//Object property descriptor.
 type Runtime_PropertyDescriptor struct {
 	// Property name or symbol description.
 	Name string `json:"name"`
@@ -84,12 +108,16 @@ type Runtime_PropertyDescriptor struct {
 	// Property symbol object, if the property is of the <code>symbol</code> type.
 	Symbol *Runtime_RemoteObject `json:"symbol,omitempty"`
 }
+
+//Object internal property descriptor. This property isn't normally visible in JavaScript code.
 type Runtime_InternalPropertyDescriptor struct {
 	// Conventional property name.
 	Name string `json:"name"`
 	// The value associated with the property.
 	Value *Runtime_RemoteObject `json:"value,omitempty"`
 }
+
+//Represents function call argument. Either remote object id <code>objectId</code>, primitive <code>value</code>, unserializable primitive value or neither of (for undefined) them should be specified.
 type Runtime_CallArgument struct {
 	// Primitive value or serializable javascript object.
 	Value interface{} `json:"value,omitempty"`
@@ -98,7 +126,11 @@ type Runtime_CallArgument struct {
 	// Remote object handle.
 	ObjectId *Runtime_RemoteObjectId `json:"objectId,omitempty"`
 }
+
+//Id of an execution context.
 type Runtime_ExecutionContextId int
+
+//Description of an isolated world.
 type Runtime_ExecutionContextDescription struct {
 	// Unique id of the execution context. It can be used to specify in which execution context script evaluation should be performed.
 	Id Runtime_ExecutionContextId `json:"id"`
@@ -107,8 +139,10 @@ type Runtime_ExecutionContextDescription struct {
 	// Human readable name describing given context.
 	Name string `json:"name"`
 	// Embedder-specific auxiliary data.
-	AuxData *map[string]interface{} `json:"auxData,omitempty"`
+	AuxData map[string]interface{} `json:"auxData,omitempty"`
 }
+
+//Detailed information about exception (or error) that was thrown during script compilation or execution.
 type Runtime_ExceptionDetails struct {
 	// Exception id.
 	ExceptionId int `json:"exceptionId"`
@@ -129,7 +163,11 @@ type Runtime_ExceptionDetails struct {
 	// Identifier of the context where exception happened.
 	ExecutionContextId *Runtime_ExecutionContextId `json:"executionContextId,omitempty"`
 }
+
+//Number of milliseconds since epoch.
 type Runtime_Timestamp float32
+
+//Stack entry for runtime errors and assertions.
 type Runtime_CallFrame struct {
 	// JavaScript function name.
 	FunctionName string `json:"functionName"`
@@ -142,6 +180,8 @@ type Runtime_CallFrame struct {
 	// JavaScript script column number (0-based).
 	ColumnNumber int `json:"columnNumber"`
 }
+
+//Call frames for assertions or error messages.
 type Runtime_StackTrace struct {
 	// String label of this stack trace. For async traces this may be a name of the function that initiated the async call.
 	Description *string `json:"description,omitempty"`
@@ -153,3 +193,4 @@ type Runtime_StackTrace struct {
 	// NOTE Experimental
 	PromiseCreationFrame *Runtime_CallFrame `json:"promiseCreationFrame,omitempty"`
 }
+

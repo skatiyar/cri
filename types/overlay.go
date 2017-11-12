@@ -1,5 +1,12 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
 package types
 
+
+//Configuration data for the highlighting of page elements.
 type Overlay_HighlightConfig struct {
 	// Whether the node info tooltip should be shown (default: false).
 	ShowInfo *bool `json:"showInfo,omitempty"`
@@ -7,7 +14,7 @@ type Overlay_HighlightConfig struct {
 	ShowRulers *bool `json:"showRulers,omitempty"`
 	// Whether the extension lines from node to the rulers should be shown (default: false).
 	ShowExtensionLines *bool `json:"showExtensionLines,omitempty"`
-	DisplayAsMaterial  *bool `json:"displayAsMaterial,omitempty"`
+	DisplayAsMaterial *bool `json:"displayAsMaterial,omitempty"`
 	// The content box highlight fill color (default: transparent).
 	ContentColor *DOM_RGBA `json:"contentColor,omitempty"`
 	// The padding highlight fill color (default: transparent).
@@ -27,4 +34,7 @@ type Overlay_HighlightConfig struct {
 	// The grid layout color (default: transparent).
 	CssGridColor *DOM_RGBA `json:"cssGridColor,omitempty"`
 }
+
+
 type Overlay_InspectMode string
+

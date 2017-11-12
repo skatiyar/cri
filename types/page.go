@@ -1,7 +1,18 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
 package types
 
+
+//Resource type as it was perceived by the rendering engine.
 type Page_ResourceType string
+
+//Unique frame identifier.
 type Page_FrameId string
+
+//Information about the Frame on the page.
 type Page_Frame struct {
 	// Frame unique identifier.
 	Id string `json:"id"`
@@ -21,6 +32,8 @@ type Page_Frame struct {
 	// NOTE Experimental
 	UnreachableUrl *string `json:"unreachableUrl,omitempty"`
 }
+
+//Information about the Resource on the page.
 type Page_FrameResource struct {
 	// Resource URL.
 	Url string `json:"url"`
@@ -37,6 +50,8 @@ type Page_FrameResource struct {
 	// True if the resource was canceled during loading.
 	Canceled *bool `json:"canceled,omitempty"`
 }
+
+//Information about the Frame hierarchy along with their cached resources.
 type Page_FrameResourceTree struct {
 	// Frame information for this tree item.
 	Frame Page_Frame `json:"frame"`
@@ -45,8 +60,14 @@ type Page_FrameResourceTree struct {
 	// Information about frame resources.
 	Resources []Page_FrameResource `json:"resources"`
 }
+
+//Unique script identifier.
 type Page_ScriptIdentifier string
+
+//Transition type.
 type Page_TransitionType string
+
+//Navigation history entry.
 type Page_NavigationEntry struct {
 	// Unique id of the navigation history entry.
 	Id int `json:"id"`
@@ -59,6 +80,8 @@ type Page_NavigationEntry struct {
 	// Transition type.
 	TransitionType Page_TransitionType `json:"transitionType"`
 }
+
+//Screencast frame metadata.
 type Page_ScreencastFrameMetadata struct {
 	// Top offset in DIP.
 	// NOTE Experimental
@@ -82,7 +105,11 @@ type Page_ScreencastFrameMetadata struct {
 	// NOTE Experimental
 	Timestamp *Network_TimeSinceEpoch `json:"timestamp,omitempty"`
 }
+
+//Javascript dialog type.
 type Page_DialogType string
+
+//Error while paring app manifest.
 type Page_AppManifestError struct {
 	// Error message.
 	Message string `json:"message"`
@@ -93,7 +120,11 @@ type Page_AppManifestError struct {
 	// Error column.
 	Column int `json:"column"`
 }
+
+//Proceed: allow the navigation; Cancel: cancel the navigation; CancelAndIgnore: cancels the navigation and makes the requester of the navigation acts like the request was never made.
 type Page_NavigationResponse string
+
+//Layout viewport position and dimensions.
 type Page_LayoutViewport struct {
 	// Horizontal offset relative to the document (CSS pixels).
 	PageX int `json:"pageX"`
@@ -104,6 +135,8 @@ type Page_LayoutViewport struct {
 	// Height (CSS pixels), excludes scrollbar if present.
 	ClientHeight int `json:"clientHeight"`
 }
+
+//Visual viewport position, dimensions, and scale.
 type Page_VisualViewport struct {
 	// Horizontal offset relative to the layout viewport (CSS pixels).
 	OffsetX float32 `json:"offsetX"`
@@ -120,6 +153,8 @@ type Page_VisualViewport struct {
 	// Scale relative to the ideal viewport (size at width=device-width).
 	Scale float32 `json:"scale"`
 }
+
+//Viewport for capturing screenshot.
 type Page_Viewport struct {
 	// X offset in CSS pixels.
 	X float32 `json:"x"`
@@ -132,3 +167,4 @@ type Page_Viewport struct {
 	// Page scale factor.
 	Scale float32 `json:"scale"`
 }
+

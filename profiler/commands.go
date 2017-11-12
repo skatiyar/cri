@@ -1,23 +1,36 @@
+/*
+* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* THIS FILE SHOULD NOT BE EDITED BY HAND
+*/
+
+
 package profiler
 
-import types "github.com/SKatiyar/cri/types"
-import "github.com/SKatiyar/cri"
+import (
+    "github.com/SKatiyar/cri"
+    types "github.com/SKatiyar/cri/types"
+)
 
 type Profiler struct {
 	conn cri.Connector
 }
 
+// New creates a Profiler instance
 func New(conn cri.Connector) *Profiler {
 	return &Profiler{conn}
 }
+
 func (obj *Profiler) Enable() (err error) {
 	err = obj.conn.Send("Profiler.enable", nil, nil)
 	return
 }
+
+
 func (obj *Profiler) Disable() (err error) {
 	err = obj.conn.Send("Profiler.disable", nil, nil)
 	return
 }
+
 
 type SetSamplingIntervalRequest struct {
 	// New sampling interval in microseconds.
@@ -29,20 +42,25 @@ func (obj *Profiler) SetSamplingInterval(request *SetSamplingIntervalRequest) (e
 	err = obj.conn.Send("Profiler.setSamplingInterval", request, nil)
 	return
 }
+
+
 func (obj *Profiler) Start() (err error) {
 	err = obj.conn.Send("Profiler.start", nil, nil)
 	return
 }
+
 
 type StopResponse struct {
 	// Recorded profile.
 	Profile types.Profiler_Profile `json:"profile"`
 }
 
+
 func (obj *Profiler) Stop() (response StopResponse, err error) {
 	err = obj.conn.Send("Profiler.stop", nil, &response)
 	return
 }
+
 
 type StartPreciseCoverageRequest struct {
 	// Collect accurate call counts beyond simple 'covered' or 'not covered'.
@@ -63,6 +81,7 @@ func (obj *Profiler) StopPreciseCoverage() (err error) {
 	return
 }
 
+
 type TakePreciseCoverageResponse struct {
 	// Coverage data for the current isolate.
 	Result []types.Profiler_ScriptCoverage `json:"result"`
@@ -73,6 +92,7 @@ func (obj *Profiler) TakePreciseCoverage() (response TakePreciseCoverageResponse
 	err = obj.conn.Send("Profiler.takePreciseCoverage", nil, &response)
 	return
 }
+
 
 type GetBestEffortCoverageResponse struct {
 	// Coverage data for the current isolate.
@@ -96,6 +116,7 @@ func (obj *Profiler) StopTypeProfile() (err error) {
 	err = obj.conn.Send("Profiler.stopTypeProfile", nil, nil)
 	return
 }
+
 
 type TakeTypeProfileResponse struct {
 	// Type profile for all scripts since startTypeProfile() was turned on.
