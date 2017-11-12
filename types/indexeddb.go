@@ -5,7 +5,7 @@
 
 package types
 
-//Database with an array of object stores.
+// Database with an array of object stores.
 type IndexedDB_DatabaseWithObjectStores struct {
 	// Database name.
 	Name string `json:"name"`
@@ -15,7 +15,7 @@ type IndexedDB_DatabaseWithObjectStores struct {
 	ObjectStores []IndexedDB_ObjectStore `json:"objectStores"`
 }
 
-//Object store.
+// Object store.
 type IndexedDB_ObjectStore struct {
 	// Object store name.
 	Name string `json:"name"`
@@ -27,7 +27,7 @@ type IndexedDB_ObjectStore struct {
 	Indexes []IndexedDB_ObjectStoreIndex `json:"indexes"`
 }
 
-//Object store index.
+// Object store index.
 type IndexedDB_ObjectStoreIndex struct {
 	// Index name.
 	Name string `json:"name"`
@@ -39,7 +39,7 @@ type IndexedDB_ObjectStoreIndex struct {
 	MultiEntry bool `json:"multiEntry"`
 }
 
-//Key.
+// Key.
 type IndexedDB_Key struct {
 	// Key type.
 	Type string `json:"type"`
@@ -53,7 +53,7 @@ type IndexedDB_Key struct {
 	Array []*IndexedDB_Key `json:"array,omitempty"`
 }
 
-//Key range.
+// Key range.
 type IndexedDB_KeyRange struct {
 	// Lower bound.
 	Lower *IndexedDB_Key `json:"lower,omitempty"`
@@ -65,7 +65,7 @@ type IndexedDB_KeyRange struct {
 	UpperOpen bool `json:"upperOpen"`
 }
 
-//Data entry.
+// Data entry.
 type IndexedDB_DataEntry struct {
 	// Key object.
 	Key Runtime_RemoteObject `json:"key"`
@@ -75,7 +75,7 @@ type IndexedDB_DataEntry struct {
 	Value Runtime_RemoteObject `json:"value"`
 }
 
-//Key path.
+// Key path.
 type IndexedDB_KeyPath struct {
 	// Key path type.
 	Type string `json:"type"`

@@ -5,13 +5,13 @@
 
 package types
 
-//Unique DOM node identifier.
+// Unique DOM node identifier.
 type DOM_NodeId int
 
-//Unique DOM node identifier used to reference a node that may not have been pushed to the front-end.
+// Unique DOM node identifier used to reference a node that may not have been pushed to the front-end.
 type DOM_BackendNodeId int
 
-//Backend node with a friendly name.
+// Backend node with a friendly name.
 type DOM_BackendNode struct {
 	// <code>Node</code>'s nodeType.
 	NodeType int `json:"nodeType"`
@@ -20,13 +20,13 @@ type DOM_BackendNode struct {
 	BackendNodeId DOM_BackendNodeId `json:"backendNodeId"`
 }
 
-//Pseudo element type.
+// Pseudo element type.
 type DOM_PseudoType string
 
-//Shadow root type.
+// Shadow root type.
 type DOM_ShadowRootType string
 
-//DOM interaction is implemented in terms of mirror objects that represent the actual DOM nodes. DOMNode is a base node mirror type.
+// DOM interaction is implemented in terms of mirror objects that represent the actual DOM nodes. DOMNode is a base node mirror type.
 type DOM_Node struct {
 	// Node identifier that is passed into the rest of the DOM messages as the <code>nodeId</code>. Backend will only push node with given <code>id</code> once. It is aware of all requested nodes and will only fire DOM events for nodes known to the client.
 	NodeId DOM_NodeId `json:"nodeId"`
@@ -95,7 +95,7 @@ type DOM_Node struct {
 	IsSVG *bool `json:"isSVG,omitempty"`
 }
 
-//A structure holding an RGBA color.
+// A structure holding an RGBA color.
 type DOM_RGBA struct {
 	// The red component, in the [0-255] range.
 	R int `json:"r"`
@@ -107,10 +107,10 @@ type DOM_RGBA struct {
 	A *float32 `json:"a,omitempty"`
 }
 
-//An array of quad vertices, x immediately followed by y for each point, points clock-wise.
+// An array of quad vertices, x immediately followed by y for each point, points clock-wise.
 type DOM_Quad []float32
 
-//Box model.
+// Box model.
 type DOM_BoxModel struct {
 	// Content box
 	Content DOM_Quad `json:"content"`
@@ -128,7 +128,7 @@ type DOM_BoxModel struct {
 	ShapeOutside *DOM_ShapeOutsideInfo `json:"shapeOutside,omitempty"`
 }
 
-//CSS Shape Outside details.
+// CSS Shape Outside details.
 type DOM_ShapeOutsideInfo struct {
 	// Shape bounds
 	Bounds DOM_Quad `json:"bounds"`
@@ -138,7 +138,7 @@ type DOM_ShapeOutsideInfo struct {
 	MarginShape []interface{} `json:"marginShape"`
 }
 
-//Rectangle.
+// Rectangle.
 type DOM_Rect struct {
 	// X coordinate
 	X float32 `json:"x"`

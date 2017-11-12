@@ -5,7 +5,7 @@
 
 package types
 
-//Encoding options for a screenshot.
+// Encoding options for a screenshot.
 type HeadlessExperimental_ScreenshotParams struct {
 	// Image compression format (defaults to png).
 	Format *string `json:"format,omitempty"`

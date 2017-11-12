@@ -5,7 +5,7 @@
 
 package types
 
-//Describes a single graphics processor (GPU).
+// Describes a single graphics processor (GPU).
 type SystemInfo_GPUDevice struct {
 	// PCI ID of the GPU vendor, if available; 0 otherwise.
 	VendorId float32 `json:"vendorId"`
@@ -17,7 +17,7 @@ type SystemInfo_GPUDevice struct {
 	DeviceString string `json:"deviceString"`
 }
 
-//Provides information about the GPU(s) on the system.
+// Provides information about the GPU(s) on the system.
 type SystemInfo_GPUInfo struct {
 	// The graphics devices on the system. Element 0 is the primary GPU.
 	Devices []SystemInfo_GPUDevice `json:"devices"`

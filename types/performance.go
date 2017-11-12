@@ -5,7 +5,7 @@
 
 package types
 
-//Run-time execution metric.
+// Run-time execution metric.
 type Performance_Metric struct {
 	// Metric name.
 	Name string `json:"name"`

@@ -5,13 +5,13 @@
 
 package types
 
-//Unique Layer identifier.
+// Unique Layer identifier.
 type LayerTree_LayerId string
 
-//Unique snapshot identifier.
+// Unique snapshot identifier.
 type LayerTree_SnapshotId string
 
-//Rectangle where scrolling happens on the main thread.
+// Rectangle where scrolling happens on the main thread.
 type LayerTree_ScrollRect struct {
 	// Rectangle itself.
 	Rect DOM_Rect `json:"rect"`
@@ -19,7 +19,7 @@ type LayerTree_ScrollRect struct {
 	Type string `json:"type"`
 }
 
-//Sticky position constraints.
+// Sticky position constraints.
 type LayerTree_StickyPositionConstraint struct {
 	// Layout rectangle of the sticky element before being shifted
 	StickyBoxRect DOM_Rect `json:"stickyBoxRect"`
@@ -31,7 +31,7 @@ type LayerTree_StickyPositionConstraint struct {
 	NearestLayerShiftingContainingBlock *LayerTree_LayerId `json:"nearestLayerShiftingContainingBlock,omitempty"`
 }
 
-//Serialized fragment of layer picture along with its offset within the layer.
+// Serialized fragment of layer picture along with its offset within the layer.
 type LayerTree_PictureTile struct {
 	// Offset from owning layer left boundary
 	X float32 `json:"x"`
@@ -41,7 +41,7 @@ type LayerTree_PictureTile struct {
 	Picture string `json:"picture"`
 }
 
-//Information about a compositing layer.
+// Information about a compositing layer.
 type LayerTree_Layer struct {
 	// The unique id for this layer.
 	LayerId LayerTree_LayerId `json:"layerId"`
@@ -77,5 +77,5 @@ type LayerTree_Layer struct {
 	StickyPositionConstraint *LayerTree_StickyPositionConstraint `json:"stickyPositionConstraint,omitempty"`
 }
 
-//Array of timings, one per paint step.
+// Array of timings, one per paint step.
 type LayerTree_PaintProfile []float32

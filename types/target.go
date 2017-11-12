@@ -7,7 +7,7 @@ package types
 
 type Target_TargetID string
 
-//Unique identifier of attached debugging session.
+// Unique identifier of attached debugging session.
 type Target_SessionID string
 
 type Target_BrowserContextID string

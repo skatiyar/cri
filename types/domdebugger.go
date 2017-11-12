@@ -5,10 +5,10 @@
 
 package types
 
-//DOM breakpoint type.
+// DOM breakpoint type.
 type DOMDebugger_DOMBreakpointType string
 
-//Object event listener.
+// Object event listener.
 type DOMDebugger_EventListener struct {
 	// <code>EventListener</code>'s type.
 	Type string `json:"type"`

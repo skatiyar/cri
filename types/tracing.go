@@ -5,7 +5,7 @@
 
 package types
 
-//Configuration for memory dump. Used only when "memory-infra" category is enabled.
+// Configuration for memory dump. Used only when "memory-infra" category is enabled.
 type Tracing_MemoryDumpConfig struct {
 }
 

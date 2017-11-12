@@ -5,10 +5,10 @@
 
 package types
 
-//Enum of possible storage types.
+// Enum of possible storage types.
 type Storage_StorageType string
 
-//Usage for a storage type.
+// Usage for a storage type.
 type Storage_UsageForType struct {
 	// Name of storage type.
 	StorageType Storage_StorageType `json:"storageType"`

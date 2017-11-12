@@ -5,7 +5,7 @@
 
 package types
 
-//DOM Storage identifier.
+// DOM Storage identifier.
 type DOMStorage_StorageId struct {
 	// Security origin for the storage.
 	SecurityOrigin string `json:"securityOrigin"`
@@ -13,5 +13,5 @@ type DOMStorage_StorageId struct {
 	IsLocalStorage bool `json:"isLocalStorage"`
 }
 
-//DOM Storage item.
+// DOM Storage item.
 type DOMStorage_Item []string

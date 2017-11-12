@@ -127,7 +127,7 @@ func transformTypes(d Domain) TypesData {
 			ID: d.Domain + "_" + typs[i].ID,
 		}
 		if len(typs[i].Description) > 0 {
-			typeSpec.Doc = "//" + typs[i].Description
+			typeSpec.Doc = "// " + typs[i].Description
 		}
 
 		if len(typs[i].Enum) != 0 {

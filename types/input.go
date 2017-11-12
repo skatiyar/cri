@@ -24,5 +24,5 @@ type Input_TouchPoint struct {
 
 type Input_GestureSourceType string
 
-//UTC time in seconds, counted from January 1, 1970.
+// UTC time in seconds, counted from January 1, 1970.
 type Input_TimeSinceEpoch float32

@@ -5,7 +5,7 @@
 
 package types
 
-//A Node in the DOM tree.
+// A Node in the DOM tree.
 type DOMSnapshot_DOMNode struct {
 	// <code>Node</code>'s nodeType.
 	NodeType int `json:"nodeType"`
@@ -57,7 +57,7 @@ type DOMSnapshot_DOMNode struct {
 	IsClickable *bool `json:"isClickable,omitempty"`
 }
 
-//Details of an element in the DOM tree with a LayoutObject.
+// Details of an element in the DOM tree with a LayoutObject.
 type DOMSnapshot_LayoutTreeNode struct {
 	// The index of the related DOM node in the <code>domNodes</code> array returned by <code>getSnapshot</code>.
 	DomNodeIndex int `json:"domNodeIndex"`
@@ -71,13 +71,13 @@ type DOMSnapshot_LayoutTreeNode struct {
 	StyleIndex *int `json:"styleIndex,omitempty"`
 }
 
-//A subset of the full ComputedStyle as defined by the request whitelist.
+// A subset of the full ComputedStyle as defined by the request whitelist.
 type DOMSnapshot_ComputedStyle struct {
 	// Name/value pairs of computed style properties.
 	Properties []DOMSnapshot_NameValue `json:"properties"`
 }
 
-//A name/value pair.
+// A name/value pair.
 type DOMSnapshot_NameValue struct {
 	// Attribute/property name.
 	Name string `json:"name"`

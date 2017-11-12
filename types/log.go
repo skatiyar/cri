@@ -5,7 +5,7 @@
 
 package types
 
-//Log entry.
+// Log entry.
 type Log_LogEntry struct {
 	// Log entry source.
 	Source string `json:"source"`
@@ -29,7 +29,7 @@ type Log_LogEntry struct {
 	Args []Runtime_RemoteObject `json:"args,omitempty"`
 }
 
-//Violation configuration setting.
+// Violation configuration setting.
 type Log_ViolationSetting struct {
 	// Violation type.
 	Name string `json:"name"`

@@ -7,10 +7,10 @@ package types
 
 type CSS_StyleSheetId string
 
-//Stylesheet type: "injected" for stylesheets injected via extension, "user-agent" for user-agent stylesheets, "inspector" for stylesheets created by the inspector (i.e. those holding the "via inspector" rules), "regular" for regular stylesheets.
+// Stylesheet type: "injected" for stylesheets injected via extension, "user-agent" for user-agent stylesheets, "inspector" for stylesheets created by the inspector (i.e. those holding the "via inspector" rules), "regular" for regular stylesheets.
 type CSS_StyleSheetOrigin string
 
-//CSS rule collection for a single pseudo style.
+// CSS rule collection for a single pseudo style.
 type CSS_PseudoElementMatches struct {
 	// Pseudo element type.
 	PseudoType DOM_PseudoType `json:"pseudoType"`
@@ -18,7 +18,7 @@ type CSS_PseudoElementMatches struct {
 	Matches []CSS_RuleMatch `json:"matches"`
 }
 
-//Inherited CSS rule collection from ancestor node.
+// Inherited CSS rule collection from ancestor node.
 type CSS_InheritedStyleEntry struct {
 	// The ancestor node's inline style, if any, in the style inheritance chain.
 	InlineStyle *CSS_CSSStyle `json:"inlineStyle,omitempty"`
@@ -26,7 +26,7 @@ type CSS_InheritedStyleEntry struct {
 	MatchedCSSRules []CSS_RuleMatch `json:"matchedCSSRules"`
 }
 
-//Match data for a CSS rule.
+// Match data for a CSS rule.
 type CSS_RuleMatch struct {
 	// CSS rule in the match.
 	Rule CSS_CSSRule `json:"rule"`
@@ -34,7 +34,7 @@ type CSS_RuleMatch struct {
 	MatchingSelectors []int `json:"matchingSelectors"`
 }
 
-//Data for a simple selector (these are delimited by commas in a selector list).
+// Data for a simple selector (these are delimited by commas in a selector list).
 type CSS_Value struct {
 	// Value text.
 	Text string `json:"text"`
@@ -42,7 +42,7 @@ type CSS_Value struct {
 	Range *CSS_SourceRange `json:"range,omitempty"`
 }
 
-//Selector list data.
+// Selector list data.
 type CSS_SelectorList struct {
 	// Selectors in the list.
 	Selectors []CSS_Value `json:"selectors"`
@@ -50,7 +50,7 @@ type CSS_SelectorList struct {
 	Text string `json:"text"`
 }
 
-//CSS stylesheet metainformation.
+// CSS stylesheet metainformation.
 type CSS_CSSStyleSheetHeader struct {
 	// The stylesheet identifier.
 	StyleSheetId CSS_StyleSheetId `json:"styleSheetId"`
@@ -81,7 +81,7 @@ type CSS_CSSStyleSheetHeader struct {
 	Length float32 `json:"length"`
 }
 
-//CSS rule representation.
+// CSS rule representation.
 type CSS_CSSRule struct {
 	// The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
 	StyleSheetId *CSS_StyleSheetId `json:"styleSheetId,omitempty"`
@@ -95,7 +95,7 @@ type CSS_CSSRule struct {
 	Media []CSS_CSSMedia `json:"media,omitempty"`
 }
 
-//CSS coverage information.
+// CSS coverage information.
 type CSS_RuleUsage struct {
 	// The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
 	StyleSheetId CSS_StyleSheetId `json:"styleSheetId"`
@@ -107,7 +107,7 @@ type CSS_RuleUsage struct {
 	Used bool `json:"used"`
 }
 
-//Text range within a resource. All numbers are zero-based.
+// Text range within a resource. All numbers are zero-based.
 type CSS_SourceRange struct {
 	// Start line of range.
 	StartLine int `json:"startLine"`
@@ -135,7 +135,7 @@ type CSS_CSSComputedStyleProperty struct {
 	Value string `json:"value"`
 }
 
-//CSS style representation.
+// CSS style representation.
 type CSS_CSSStyle struct {
 	// The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
 	StyleSheetId *CSS_StyleSheetId `json:"styleSheetId,omitempty"`
@@ -149,7 +149,7 @@ type CSS_CSSStyle struct {
 	Range *CSS_SourceRange `json:"range,omitempty"`
 }
 
-//CSS property declaration data.
+// CSS property declaration data.
 type CSS_CSSProperty struct {
 	// The property name.
 	Name string `json:"name"`
@@ -169,7 +169,7 @@ type CSS_CSSProperty struct {
 	Range *CSS_SourceRange `json:"range,omitempty"`
 }
 
-//CSS media rule descriptor.
+// CSS media rule descriptor.
 type CSS_CSSMedia struct {
 	// Media query text.
 	Text string `json:"text"`
@@ -186,7 +186,7 @@ type CSS_CSSMedia struct {
 	MediaList []CSS_MediaQuery `json:"mediaList,omitempty"`
 }
 
-//Media query descriptor.
+// Media query descriptor.
 type CSS_MediaQuery struct {
 	// Array of media query expressions.
 	Expressions []CSS_MediaQueryExpression `json:"expressions"`
@@ -194,7 +194,7 @@ type CSS_MediaQuery struct {
 	Active bool `json:"active"`
 }
 
-//Media query expression descriptor.
+// Media query expression descriptor.
 type CSS_MediaQueryExpression struct {
 	// Media query expression value.
 	Value float32 `json:"value"`
@@ -208,7 +208,7 @@ type CSS_MediaQueryExpression struct {
 	ComputedLength *float32 `json:"computedLength,omitempty"`
 }
 
-//Information about amount of glyphs that were rendered with given font.
+// Information about amount of glyphs that were rendered with given font.
 type CSS_PlatformFontUsage struct {
 	// Font's family name reported by platform.
 	FamilyName string `json:"familyName"`
@@ -218,7 +218,7 @@ type CSS_PlatformFontUsage struct {
 	GlyphCount float32 `json:"glyphCount"`
 }
 
-//CSS keyframes rule representation.
+// CSS keyframes rule representation.
 type CSS_CSSKeyframesRule struct {
 	// Animation name.
 	AnimationName CSS_Value `json:"animationName"`
@@ -226,7 +226,7 @@ type CSS_CSSKeyframesRule struct {
 	Keyframes []CSS_CSSKeyframeRule `json:"keyframes"`
 }
 
-//CSS keyframe rule representation.
+// CSS keyframe rule representation.
 type CSS_CSSKeyframeRule struct {
 	// The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from.
 	StyleSheetId *CSS_StyleSheetId `json:"styleSheetId,omitempty"`
@@ -238,7 +238,7 @@ type CSS_CSSKeyframeRule struct {
 	Style CSS_CSSStyle `json:"style"`
 }
 
-//A descriptor of operation to mutate style declaration text.
+// A descriptor of operation to mutate style declaration text.
 type CSS_StyleDeclarationEdit struct {
 	// The css style sheet identifier.
 	StyleSheetId CSS_StyleSheetId `json:"styleSheetId"`
@@ -248,7 +248,7 @@ type CSS_StyleDeclarationEdit struct {
 	Text string `json:"text"`
 }
 
-//Details of post layout rendered text positions. The exact layout should not be regarded as stable and may change between versions.
+// Details of post layout rendered text positions. The exact layout should not be regarded as stable and may change between versions.
 type CSS_InlineTextBox struct {
 	// The absolute position bounding box.
 	BoundingBox DOM_Rect `json:"boundingBox"`

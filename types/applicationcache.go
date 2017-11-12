@@ -5,7 +5,7 @@
 
 package types
 
-//Detailed application cache resource information.
+// Detailed application cache resource information.
 type ApplicationCache_ApplicationCacheResource struct {
 	// Resource url.
 	Url string `json:"url"`
@@ -15,7 +15,7 @@ type ApplicationCache_ApplicationCacheResource struct {
 	Type string `json:"type"`
 }
 
-//Detailed application cache information.
+// Detailed application cache information.
 type ApplicationCache_ApplicationCache struct {
 	// Manifest URL.
 	ManifestURL string `json:"manifestURL"`
@@ -29,7 +29,7 @@ type ApplicationCache_ApplicationCache struct {
 	Resources []ApplicationCache_ApplicationCacheResource `json:"resources"`
 }
 
-//Frame identifier - manifest URL pair.
+// Frame identifier - manifest URL pair.
 type ApplicationCache_FrameWithManifest struct {
 	// Frame identifier.
 	FrameId Page_FrameId `json:"frameId"`

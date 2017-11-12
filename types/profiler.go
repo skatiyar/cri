@@ -5,7 +5,7 @@
 
 package types
 
-//Profile node. Holds callsite information, execution statistics and child nodes.
+// Profile node. Holds callsite information, execution statistics and child nodes.
 type Profiler_ProfileNode struct {
 	// Unique id of the node.
 	Id int `json:"id"`
@@ -23,7 +23,7 @@ type Profiler_ProfileNode struct {
 	PositionTicks []Profiler_PositionTickInfo `json:"positionTicks,omitempty"`
 }
 
-//Profile.
+// Profile.
 type Profiler_Profile struct {
 	// The list of profile nodes. First item is the root node.
 	Nodes []Profiler_ProfileNode `json:"nodes"`
@@ -37,7 +37,7 @@ type Profiler_Profile struct {
 	TimeDeltas []int `json:"timeDeltas,omitempty"`
 }
 
-//Specifies a number of samples attributed to a certain source position.
+// Specifies a number of samples attributed to a certain source position.
 type Profiler_PositionTickInfo struct {
 	// Source line number (1-based).
 	Line int `json:"line"`
@@ -45,7 +45,7 @@ type Profiler_PositionTickInfo struct {
 	Ticks int `json:"ticks"`
 }
 
-//Coverage data for a source range.
+// Coverage data for a source range.
 type Profiler_CoverageRange struct {
 	// JavaScript script source offset for the range start.
 	StartOffset int `json:"startOffset"`
@@ -55,7 +55,7 @@ type Profiler_CoverageRange struct {
 	Count int `json:"count"`
 }
 
-//Coverage data for a JavaScript function.
+// Coverage data for a JavaScript function.
 type Profiler_FunctionCoverage struct {
 	// JavaScript function name.
 	FunctionName string `json:"functionName"`
@@ -65,7 +65,7 @@ type Profiler_FunctionCoverage struct {
 	IsBlockCoverage bool `json:"isBlockCoverage"`
 }
 
-//Coverage data for a JavaScript script.
+// Coverage data for a JavaScript script.
 type Profiler_ScriptCoverage struct {
 	// JavaScript script id.
 	ScriptId Runtime_ScriptId `json:"scriptId"`
@@ -75,13 +75,13 @@ type Profiler_ScriptCoverage struct {
 	Functions []Profiler_FunctionCoverage `json:"functions"`
 }
 
-//Describes a type collected during runtime.
+// Describes a type collected during runtime.
 type Profiler_TypeObject struct {
 	// Name of a type collected with type profiling.
 	Name string `json:"name"`
 }
 
-//Source offset and types for a parameter or return value.
+// Source offset and types for a parameter or return value.
 type Profiler_TypeProfileEntry struct {
 	// Source offset of the parameter or end of function for return values.
 	Offset int `json:"offset"`
@@ -89,7 +89,7 @@ type Profiler_TypeProfileEntry struct {
 	Types []Profiler_TypeObject `json:"types"`
 }
 
-//Type profile data collected during runtime for a JavaScript script.
+// Type profile data collected during runtime for a JavaScript script.
 type Profiler_ScriptTypeProfile struct {
 	// JavaScript script id.
 	ScriptId Runtime_ScriptId `json:"scriptId"`

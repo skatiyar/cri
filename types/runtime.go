@@ -5,16 +5,16 @@
 
 package types
 
-//Unique script identifier.
+// Unique script identifier.
 type Runtime_ScriptId string
 
-//Unique object identifier.
+// Unique object identifier.
 type Runtime_RemoteObjectId string
 
-//Primitive value which cannot be JSON-stringified.
+// Primitive value which cannot be JSON-stringified.
 type Runtime_UnserializableValue string
 
-//Mirror object referencing original JavaScript object.
+// Mirror object referencing original JavaScript object.
 type Runtime_RemoteObject struct {
 	// Object type.
 	Type string `json:"type"`
@@ -45,7 +45,7 @@ type Runtime_CustomPreview struct {
 	ConfigObjectId             *Runtime_RemoteObjectId `json:"configObjectId,omitempty"`
 }
 
-//Object containing abbreviated remote object value.
+// Object containing abbreviated remote object value.
 type Runtime_ObjectPreview struct {
 	// Object type.
 	Type string `json:"type"`
@@ -81,7 +81,7 @@ type Runtime_EntryPreview struct {
 	Value Runtime_ObjectPreview `json:"value"`
 }
 
-//Object property descriptor.
+// Object property descriptor.
 type Runtime_PropertyDescriptor struct {
 	// Property name or symbol description.
 	Name string `json:"name"`
@@ -105,7 +105,7 @@ type Runtime_PropertyDescriptor struct {
 	Symbol *Runtime_RemoteObject `json:"symbol,omitempty"`
 }
 
-//Object internal property descriptor. This property isn't normally visible in JavaScript code.
+// Object internal property descriptor. This property isn't normally visible in JavaScript code.
 type Runtime_InternalPropertyDescriptor struct {
 	// Conventional property name.
 	Name string `json:"name"`
@@ -113,7 +113,7 @@ type Runtime_InternalPropertyDescriptor struct {
 	Value *Runtime_RemoteObject `json:"value,omitempty"`
 }
 
-//Represents function call argument. Either remote object id <code>objectId</code>, primitive <code>value</code>, unserializable primitive value or neither of (for undefined) them should be specified.
+// Represents function call argument. Either remote object id <code>objectId</code>, primitive <code>value</code>, unserializable primitive value or neither of (for undefined) them should be specified.
 type Runtime_CallArgument struct {
 	// Primitive value or serializable javascript object.
 	Value interface{} `json:"value,omitempty"`
@@ -123,10 +123,10 @@ type Runtime_CallArgument struct {
 	ObjectId *Runtime_RemoteObjectId `json:"objectId,omitempty"`
 }
 
-//Id of an execution context.
+// Id of an execution context.
 type Runtime_ExecutionContextId int
 
-//Description of an isolated world.
+// Description of an isolated world.
 type Runtime_ExecutionContextDescription struct {
 	// Unique id of the execution context. It can be used to specify in which execution context script evaluation should be performed.
 	Id Runtime_ExecutionContextId `json:"id"`
@@ -138,7 +138,7 @@ type Runtime_ExecutionContextDescription struct {
 	AuxData map[string]interface{} `json:"auxData,omitempty"`
 }
 
-//Detailed information about exception (or error) that was thrown during script compilation or execution.
+// Detailed information about exception (or error) that was thrown during script compilation or execution.
 type Runtime_ExceptionDetails struct {
 	// Exception id.
 	ExceptionId int `json:"exceptionId"`
@@ -160,10 +160,10 @@ type Runtime_ExceptionDetails struct {
 	ExecutionContextId *Runtime_ExecutionContextId `json:"executionContextId,omitempty"`
 }
 
-//Number of milliseconds since epoch.
+// Number of milliseconds since epoch.
 type Runtime_Timestamp float32
 
-//Stack entry for runtime errors and assertions.
+// Stack entry for runtime errors and assertions.
 type Runtime_CallFrame struct {
 	// JavaScript function name.
 	FunctionName string `json:"functionName"`
@@ -177,7 +177,7 @@ type Runtime_CallFrame struct {
 	ColumnNumber int `json:"columnNumber"`
 }
 
-//Call frames for assertions or error messages.
+// Call frames for assertions or error messages.
 type Runtime_StackTrace struct {
 	// String label of this stack trace. For async traces this may be a name of the function that initiated the async call.
 	Description *string `json:"description,omitempty"`

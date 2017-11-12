@@ -5,7 +5,7 @@
 
 package types
 
-//Console message.
+// Console message.
 type Console_ConsoleMessage struct {
 	// Message source.
 	Source string `json:"source"`

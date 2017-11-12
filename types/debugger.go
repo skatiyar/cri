@@ -5,13 +5,13 @@
 
 package types
 
-//Breakpoint identifier.
+// Breakpoint identifier.
 type Debugger_BreakpointId string
 
-//Call frame identifier.
+// Call frame identifier.
 type Debugger_CallFrameId string
 
-//Location in the source code.
+// Location in the source code.
 type Debugger_Location struct {
 	// Script identifier as reported in the <code>Debugger.scriptParsed</code>.
 	ScriptId Runtime_ScriptId `json:"scriptId"`
@@ -21,13 +21,13 @@ type Debugger_Location struct {
 	ColumnNumber *int `json:"columnNumber,omitempty"`
 }
 
-//Location in the source code.
+// Location in the source code.
 type Debugger_ScriptPosition struct {
 	LineNumber   int `json:"lineNumber"`
 	ColumnNumber int `json:"columnNumber"`
 }
 
-//JavaScript call frame. Array of call frames form the call stack.
+// JavaScript call frame. Array of call frames form the call stack.
 type Debugger_CallFrame struct {
 	// Call frame identifier. This identifier is only valid while the virtual machine is paused.
 	CallFrameId Debugger_CallFrameId `json:"callFrameId"`
@@ -48,7 +48,7 @@ type Debugger_CallFrame struct {
 	ReturnValue *Runtime_RemoteObject `json:"returnValue,omitempty"`
 }
 
-//Scope description.
+// Scope description.
 type Debugger_Scope struct {
 	// Scope type.
 	Type string `json:"type"`
@@ -61,7 +61,7 @@ type Debugger_Scope struct {
 	EndLocation *Debugger_Location `json:"endLocation,omitempty"`
 }
 
-//Search match for resource.
+// Search match for resource.
 type Debugger_SearchMatch struct {
 	// Line number in resource content.
 	LineNumber float32 `json:"lineNumber"`
