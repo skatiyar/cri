@@ -223,15 +223,17 @@ func (obj *Emulation) SetDefaultBackgroundColorOverride(request *SetDefaultBackg
 
 // Notification sent after the virtual time budget for the current VirtualTimePolicy has run out.
 // NOTE Experimental
-func (obj *Emulation) VirtualTimeBudgetExpired(fn func() bool) {
-
+func (obj *Emulation) VirtualTimeBudgetExpired(fn func(err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Emulation.virtualTimeBudgetExpired", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Emulation.virtualTimeBudgetExpired", closeChn, nil)
-			if !fn() {
+		for {
+
+			readErr := decoder(nil)
+			if !fn(readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -244,15 +246,17 @@ type VirtualTimeAdvancedParams struct {
 
 // Notification sent after the virtual time has advanced.
 // NOTE Experimental
-func (obj *Emulation) VirtualTimeAdvanced(fn func(params *VirtualTimeAdvancedParams) bool) {
-	params := VirtualTimeAdvancedParams{}
+func (obj *Emulation) VirtualTimeAdvanced(fn func(params *VirtualTimeAdvancedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Emulation.virtualTimeAdvanced", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Emulation.virtualTimeAdvanced", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := VirtualTimeAdvancedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -265,15 +269,17 @@ type VirtualTimePausedParams struct {
 
 // Notification sent after the virtual time has paused.
 // NOTE Experimental
-func (obj *Emulation) VirtualTimePaused(fn func(params *VirtualTimePausedParams) bool) {
-	params := VirtualTimePausedParams{}
+func (obj *Emulation) VirtualTimePaused(fn func(params *VirtualTimePausedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Emulation.virtualTimePaused", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Emulation.virtualTimePaused", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := VirtualTimePausedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()

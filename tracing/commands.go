@@ -83,15 +83,17 @@ type DataCollectedParams struct {
 }
 
 // Contains an bucket of collected trace events. When tracing is stopped collected events will be send as a sequence of dataCollected events followed by tracingComplete event.
-func (obj *Tracing) DataCollected(fn func(params *DataCollectedParams) bool) {
-	params := DataCollectedParams{}
+func (obj *Tracing) DataCollected(fn func(params *DataCollectedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Tracing.dataCollected", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Tracing.dataCollected", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := DataCollectedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -103,15 +105,17 @@ type TracingCompleteParams struct {
 }
 
 // Signals that tracing is stopped and there is no trace buffers pending flush, all data were delivered via dataCollected events.
-func (obj *Tracing) TracingComplete(fn func(params *TracingCompleteParams) bool) {
-	params := TracingCompleteParams{}
+func (obj *Tracing) TracingComplete(fn func(params *TracingCompleteParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Tracing.tracingComplete", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Tracing.tracingComplete", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := TracingCompleteParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -126,15 +130,17 @@ type BufferUsageParams struct {
 	Value *float32 `json:"value,omitempty"`
 }
 
-func (obj *Tracing) BufferUsage(fn func(params *BufferUsageParams) bool) {
-	params := BufferUsageParams{}
+func (obj *Tracing) BufferUsage(fn func(params *BufferUsageParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Tracing.bufferUsage", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Tracing.bufferUsage", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := BufferUsageParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()

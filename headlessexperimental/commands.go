@@ -64,30 +64,34 @@ type NeedsBeginFramesChangedParams struct {
 }
 
 // Issued when the target starts or stops needing BeginFrames.
-func (obj *HeadlessExperimental) NeedsBeginFramesChanged(fn func(params *NeedsBeginFramesChangedParams) bool) {
-	params := NeedsBeginFramesChangedParams{}
+func (obj *HeadlessExperimental) NeedsBeginFramesChanged(fn func(params *NeedsBeginFramesChangedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("HeadlessExperimental.needsBeginFramesChanged", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("HeadlessExperimental.needsBeginFramesChanged", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := NeedsBeginFramesChangedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
 }
 
 // Issued when the main frame has first submitted a frame to the browser. May only be fired while a BeginFrame is in flight. Before this event, screenshotting requests may fail.
-func (obj *HeadlessExperimental) MainFrameReadyForScreenshots(fn func() bool) {
-
+func (obj *HeadlessExperimental) MainFrameReadyForScreenshots(fn func(err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("HeadlessExperimental.mainFrameReadyForScreenshots", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("HeadlessExperimental.mainFrameReadyForScreenshots", closeChn, nil)
-			if !fn() {
+		for {
+
+			readErr := decoder(nil)
+			if !fn(readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()

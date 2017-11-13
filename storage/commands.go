@@ -102,15 +102,17 @@ type CacheStorageListUpdatedParams struct {
 }
 
 // A cache has been added/deleted.
-func (obj *Storage) CacheStorageListUpdated(fn func(params *CacheStorageListUpdatedParams) bool) {
-	params := CacheStorageListUpdatedParams{}
+func (obj *Storage) CacheStorageListUpdated(fn func(params *CacheStorageListUpdatedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Storage.cacheStorageListUpdated", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Storage.cacheStorageListUpdated", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := CacheStorageListUpdatedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -124,15 +126,17 @@ type CacheStorageContentUpdatedParams struct {
 }
 
 // A cache's contents have been modified.
-func (obj *Storage) CacheStorageContentUpdated(fn func(params *CacheStorageContentUpdatedParams) bool) {
-	params := CacheStorageContentUpdatedParams{}
+func (obj *Storage) CacheStorageContentUpdated(fn func(params *CacheStorageContentUpdatedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Storage.cacheStorageContentUpdated", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Storage.cacheStorageContentUpdated", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := CacheStorageContentUpdatedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -144,15 +148,17 @@ type IndexedDBListUpdatedParams struct {
 }
 
 // The origin's IndexedDB database list has been modified.
-func (obj *Storage) IndexedDBListUpdated(fn func(params *IndexedDBListUpdatedParams) bool) {
-	params := IndexedDBListUpdatedParams{}
+func (obj *Storage) IndexedDBListUpdated(fn func(params *IndexedDBListUpdatedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Storage.indexedDBListUpdated", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Storage.indexedDBListUpdated", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := IndexedDBListUpdatedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -168,15 +174,17 @@ type IndexedDBContentUpdatedParams struct {
 }
 
 // The origin's IndexedDB object store has been modified.
-func (obj *Storage) IndexedDBContentUpdated(fn func(params *IndexedDBContentUpdatedParams) bool) {
-	params := IndexedDBContentUpdatedParams{}
+func (obj *Storage) IndexedDBContentUpdated(fn func(params *IndexedDBContentUpdatedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Storage.indexedDBContentUpdated", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Storage.indexedDBContentUpdated", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := IndexedDBContentUpdatedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()

@@ -64,15 +64,17 @@ type AddDatabaseParams struct {
 	Database types.Database_Database `json:"database"`
 }
 
-func (obj *Database) AddDatabase(fn func(params *AddDatabaseParams) bool) {
-	params := AddDatabaseParams{}
+func (obj *Database) AddDatabase(fn func(params *AddDatabaseParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Database.addDatabase", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Database.addDatabase", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := AddDatabaseParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()

@@ -128,15 +128,17 @@ type ConsoleProfileStartedParams struct {
 }
 
 // Sent when new profile recording is started using console.profile() call.
-func (obj *Profiler) ConsoleProfileStarted(fn func(params *ConsoleProfileStartedParams) bool) {
-	params := ConsoleProfileStartedParams{}
+func (obj *Profiler) ConsoleProfileStarted(fn func(params *ConsoleProfileStartedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Profiler.consoleProfileStarted", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Profiler.consoleProfileStarted", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := ConsoleProfileStartedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -151,15 +153,17 @@ type ConsoleProfileFinishedParams struct {
 	Title *string `json:"title,omitempty"`
 }
 
-func (obj *Profiler) ConsoleProfileFinished(fn func(params *ConsoleProfileFinishedParams) bool) {
-	params := ConsoleProfileFinishedParams{}
+func (obj *Profiler) ConsoleProfileFinished(fn func(params *ConsoleProfileFinishedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Profiler.consoleProfileFinished", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Profiler.consoleProfileFinished", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := ConsoleProfileFinishedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()

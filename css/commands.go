@@ -336,30 +336,34 @@ func (obj *CSS) StopRuleUsageTracking() (response StopRuleUsageTrackingResponse,
 }
 
 // Fires whenever a MediaQuery result changes (for example, after a browser window has been resized.) The current implementation considers only viewport-dependent media features.
-func (obj *CSS) MediaQueryResultChanged(fn func() bool) {
-
+func (obj *CSS) MediaQueryResultChanged(fn func(err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("CSS.mediaQueryResultChanged", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("CSS.mediaQueryResultChanged", closeChn, nil)
-			if !fn() {
+		for {
+
+			readErr := decoder(nil)
+			if !fn(readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
 }
 
 // Fires whenever a web font gets loaded.
-func (obj *CSS) FontsUpdated(fn func() bool) {
-
+func (obj *CSS) FontsUpdated(fn func(err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("CSS.fontsUpdated", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("CSS.fontsUpdated", closeChn, nil)
-			if !fn() {
+		for {
+
+			readErr := decoder(nil)
+			if !fn(readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -370,15 +374,17 @@ type StyleSheetChangedParams struct {
 }
 
 // Fired whenever a stylesheet is changed as a result of the client operation.
-func (obj *CSS) StyleSheetChanged(fn func(params *StyleSheetChangedParams) bool) {
-	params := StyleSheetChangedParams{}
+func (obj *CSS) StyleSheetChanged(fn func(params *StyleSheetChangedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("CSS.styleSheetChanged", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("CSS.styleSheetChanged", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := StyleSheetChangedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -390,15 +396,17 @@ type StyleSheetAddedParams struct {
 }
 
 // Fired whenever an active document stylesheet is added.
-func (obj *CSS) StyleSheetAdded(fn func(params *StyleSheetAddedParams) bool) {
-	params := StyleSheetAddedParams{}
+func (obj *CSS) StyleSheetAdded(fn func(params *StyleSheetAddedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("CSS.styleSheetAdded", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("CSS.styleSheetAdded", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := StyleSheetAddedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -410,15 +418,17 @@ type StyleSheetRemovedParams struct {
 }
 
 // Fired whenever an active document stylesheet is removed.
-func (obj *CSS) StyleSheetRemoved(fn func(params *StyleSheetRemovedParams) bool) {
-	params := StyleSheetRemovedParams{}
+func (obj *CSS) StyleSheetRemoved(fn func(params *StyleSheetRemovedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("CSS.styleSheetRemoved", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("CSS.styleSheetRemoved", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := StyleSheetRemovedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
