@@ -143,15 +143,17 @@ type AnimationCreatedParams struct {
 }
 
 // Event for each animation that has been created.
-func (obj *Animation) AnimationCreated(fn func(params *AnimationCreatedParams) bool) {
-	params := AnimationCreatedParams{}
+func (obj *Animation) AnimationCreated(fn func(params *AnimationCreatedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Animation.animationCreated", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Animation.animationCreated", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := AnimationCreatedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -163,15 +165,17 @@ type AnimationStartedParams struct {
 }
 
 // Event for animation that has been started.
-func (obj *Animation) AnimationStarted(fn func(params *AnimationStartedParams) bool) {
-	params := AnimationStartedParams{}
+func (obj *Animation) AnimationStarted(fn func(params *AnimationStartedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Animation.animationStarted", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Animation.animationStarted", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := AnimationStartedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -183,15 +187,17 @@ type AnimationCanceledParams struct {
 }
 
 // Event for when an animation has been cancelled.
-func (obj *Animation) AnimationCanceled(fn func(params *AnimationCanceledParams) bool) {
-	params := AnimationCanceledParams{}
+func (obj *Animation) AnimationCanceled(fn func(params *AnimationCanceledParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Animation.animationCanceled", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Animation.animationCanceled", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := AnimationCanceledParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()

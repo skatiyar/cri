@@ -5,10 +5,10 @@
 
 package types
 
-//Unique identifier of the Cache object.
+// Unique identifier of the Cache object.
 type CacheStorage_CacheId string
 
-//Data entry.
+// Data entry.
 type CacheStorage_DataEntry struct {
 	// Request URL.
 	RequestURL string `json:"requestURL"`
@@ -26,7 +26,7 @@ type CacheStorage_DataEntry struct {
 	ResponseHeaders []CacheStorage_Header `json:"responseHeaders"`
 }
 
-//Cache identifier.
+// Cache identifier.
 type CacheStorage_Cache struct {
 	// An opaque unique id of the cache.
 	CacheId CacheStorage_CacheId `json:"cacheId"`
@@ -41,7 +41,7 @@ type CacheStorage_Header struct {
 	Value string `json:"value"`
 }
 
-//Cached response
+// Cached response
 type CacheStorage_CachedResponse struct {
 	// Entry content, base64-encoded.
 	Body string `json:"body"`

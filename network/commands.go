@@ -350,15 +350,17 @@ type ResourceChangedPriorityParams struct {
 
 // Fired when resource loading priority is changed
 // NOTE Experimental
-func (obj *Network) ResourceChangedPriority(fn func(params *ResourceChangedPriorityParams) bool) {
-	params := ResourceChangedPriorityParams{}
+func (obj *Network) ResourceChangedPriority(fn func(params *ResourceChangedPriorityParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Network.resourceChangedPriority", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Network.resourceChangedPriority", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := ResourceChangedPriorityParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -391,15 +393,17 @@ type RequestWillBeSentParams struct {
 }
 
 // Fired when page is about to send HTTP request.
-func (obj *Network) RequestWillBeSent(fn func(params *RequestWillBeSentParams) bool) {
-	params := RequestWillBeSentParams{}
+func (obj *Network) RequestWillBeSent(fn func(params *RequestWillBeSentParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Network.requestWillBeSent", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Network.requestWillBeSent", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := RequestWillBeSentParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -411,15 +415,17 @@ type RequestServedFromCacheParams struct {
 }
 
 // Fired if request ended up loading from cache.
-func (obj *Network) RequestServedFromCache(fn func(params *RequestServedFromCacheParams) bool) {
-	params := RequestServedFromCacheParams{}
+func (obj *Network) RequestServedFromCache(fn func(params *RequestServedFromCacheParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Network.requestServedFromCache", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Network.requestServedFromCache", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := RequestServedFromCacheParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -442,15 +448,17 @@ type ResponseReceivedParams struct {
 }
 
 // Fired when HTTP response is available.
-func (obj *Network) ResponseReceived(fn func(params *ResponseReceivedParams) bool) {
-	params := ResponseReceivedParams{}
+func (obj *Network) ResponseReceived(fn func(params *ResponseReceivedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Network.responseReceived", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Network.responseReceived", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := ResponseReceivedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -468,15 +476,17 @@ type DataReceivedParams struct {
 }
 
 // Fired when data chunk was received over the network.
-func (obj *Network) DataReceived(fn func(params *DataReceivedParams) bool) {
-	params := DataReceivedParams{}
+func (obj *Network) DataReceived(fn func(params *DataReceivedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Network.dataReceived", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Network.dataReceived", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := DataReceivedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -492,15 +502,17 @@ type LoadingFinishedParams struct {
 }
 
 // Fired when HTTP request has finished loading.
-func (obj *Network) LoadingFinished(fn func(params *LoadingFinishedParams) bool) {
-	params := LoadingFinishedParams{}
+func (obj *Network) LoadingFinished(fn func(params *LoadingFinishedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Network.loadingFinished", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Network.loadingFinished", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := LoadingFinishedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -523,15 +535,17 @@ type LoadingFailedParams struct {
 }
 
 // Fired when HTTP request has failed to load.
-func (obj *Network) LoadingFailed(fn func(params *LoadingFailedParams) bool) {
-	params := LoadingFailedParams{}
+func (obj *Network) LoadingFailed(fn func(params *LoadingFailedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Network.loadingFailed", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Network.loadingFailed", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := LoadingFailedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -551,15 +565,17 @@ type WebSocketWillSendHandshakeRequestParams struct {
 
 // Fired when WebSocket is about to initiate handshake.
 // NOTE Experimental
-func (obj *Network) WebSocketWillSendHandshakeRequest(fn func(params *WebSocketWillSendHandshakeRequestParams) bool) {
-	params := WebSocketWillSendHandshakeRequestParams{}
+func (obj *Network) WebSocketWillSendHandshakeRequest(fn func(params *WebSocketWillSendHandshakeRequestParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Network.webSocketWillSendHandshakeRequest", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Network.webSocketWillSendHandshakeRequest", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := WebSocketWillSendHandshakeRequestParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -576,15 +592,17 @@ type WebSocketHandshakeResponseReceivedParams struct {
 
 // Fired when WebSocket handshake response becomes available.
 // NOTE Experimental
-func (obj *Network) WebSocketHandshakeResponseReceived(fn func(params *WebSocketHandshakeResponseReceivedParams) bool) {
-	params := WebSocketHandshakeResponseReceivedParams{}
+func (obj *Network) WebSocketHandshakeResponseReceived(fn func(params *WebSocketHandshakeResponseReceivedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Network.webSocketHandshakeResponseReceived", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Network.webSocketHandshakeResponseReceived", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := WebSocketHandshakeResponseReceivedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -601,15 +619,17 @@ type WebSocketCreatedParams struct {
 
 // Fired upon WebSocket creation.
 // NOTE Experimental
-func (obj *Network) WebSocketCreated(fn func(params *WebSocketCreatedParams) bool) {
-	params := WebSocketCreatedParams{}
+func (obj *Network) WebSocketCreated(fn func(params *WebSocketCreatedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Network.webSocketCreated", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Network.webSocketCreated", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := WebSocketCreatedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -624,15 +644,17 @@ type WebSocketClosedParams struct {
 
 // Fired when WebSocket is closed.
 // NOTE Experimental
-func (obj *Network) WebSocketClosed(fn func(params *WebSocketClosedParams) bool) {
-	params := WebSocketClosedParams{}
+func (obj *Network) WebSocketClosed(fn func(params *WebSocketClosedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Network.webSocketClosed", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Network.webSocketClosed", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := WebSocketClosedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -649,15 +671,17 @@ type WebSocketFrameReceivedParams struct {
 
 // Fired when WebSocket frame is received.
 // NOTE Experimental
-func (obj *Network) WebSocketFrameReceived(fn func(params *WebSocketFrameReceivedParams) bool) {
-	params := WebSocketFrameReceivedParams{}
+func (obj *Network) WebSocketFrameReceived(fn func(params *WebSocketFrameReceivedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Network.webSocketFrameReceived", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Network.webSocketFrameReceived", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := WebSocketFrameReceivedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -674,15 +698,17 @@ type WebSocketFrameErrorParams struct {
 
 // Fired when WebSocket frame error occurs.
 // NOTE Experimental
-func (obj *Network) WebSocketFrameError(fn func(params *WebSocketFrameErrorParams) bool) {
-	params := WebSocketFrameErrorParams{}
+func (obj *Network) WebSocketFrameError(fn func(params *WebSocketFrameErrorParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Network.webSocketFrameError", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Network.webSocketFrameError", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := WebSocketFrameErrorParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -699,15 +725,17 @@ type WebSocketFrameSentParams struct {
 
 // Fired when WebSocket frame is sent.
 // NOTE Experimental
-func (obj *Network) WebSocketFrameSent(fn func(params *WebSocketFrameSentParams) bool) {
-	params := WebSocketFrameSentParams{}
+func (obj *Network) WebSocketFrameSent(fn func(params *WebSocketFrameSentParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Network.webSocketFrameSent", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Network.webSocketFrameSent", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := WebSocketFrameSentParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -728,15 +756,17 @@ type EventSourceMessageReceivedParams struct {
 
 // Fired when EventSource message is received.
 // NOTE Experimental
-func (obj *Network) EventSourceMessageReceived(fn func(params *EventSourceMessageReceivedParams) bool) {
-	params := EventSourceMessageReceivedParams{}
+func (obj *Network) EventSourceMessageReceived(fn func(params *EventSourceMessageReceivedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Network.eventSourceMessageReceived", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Network.eventSourceMessageReceived", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := EventSourceMessageReceivedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -764,15 +794,17 @@ type RequestInterceptedParams struct {
 
 // Details of an intercepted HTTP request, which must be either allowed, blocked, modified or mocked.
 // NOTE Experimental
-func (obj *Network) RequestIntercepted(fn func(params *RequestInterceptedParams) bool) {
-	params := RequestInterceptedParams{}
+func (obj *Network) RequestIntercepted(fn func(params *RequestInterceptedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Network.requestIntercepted", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Network.requestIntercepted", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := RequestInterceptedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()

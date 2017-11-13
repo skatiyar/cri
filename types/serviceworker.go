@@ -5,7 +5,7 @@
 
 package types
 
-//ServiceWorker registration.
+// ServiceWorker registration.
 type ServiceWorker_ServiceWorkerRegistration struct {
 	RegistrationId string `json:"registrationId"`
 	ScopeURL       string `json:"scopeURL"`
@@ -16,7 +16,7 @@ type ServiceWorker_ServiceWorkerVersionRunningStatus string
 
 type ServiceWorker_ServiceWorkerVersionStatus string
 
-//ServiceWorker version.
+// ServiceWorker version.
 type ServiceWorker_ServiceWorkerVersion struct {
 	VersionId      string                                          `json:"versionId"`
 	RegistrationId string                                          `json:"registrationId"`
@@ -31,7 +31,7 @@ type ServiceWorker_ServiceWorkerVersion struct {
 	TargetId           *Target_TargetID  `json:"targetId,omitempty"`
 }
 
-//ServiceWorker error message.
+// ServiceWorker error message.
 type ServiceWorker_ServiceWorkerErrorMessage struct {
 	ErrorMessage   string `json:"errorMessage"`
 	RegistrationId string `json:"registrationId"`

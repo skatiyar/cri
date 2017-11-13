@@ -129,29 +129,33 @@ type AddHeapSnapshotChunkParams struct {
 	Chunk string `json:"chunk"`
 }
 
-func (obj *HeapProfiler) AddHeapSnapshotChunk(fn func(params *AddHeapSnapshotChunkParams) bool) {
-	params := AddHeapSnapshotChunkParams{}
+func (obj *HeapProfiler) AddHeapSnapshotChunk(fn func(params *AddHeapSnapshotChunkParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("HeapProfiler.addHeapSnapshotChunk", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("HeapProfiler.addHeapSnapshotChunk", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := AddHeapSnapshotChunkParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
 }
 
-func (obj *HeapProfiler) ResetProfiles(fn func() bool) {
-
+func (obj *HeapProfiler) ResetProfiles(fn func(err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("HeapProfiler.resetProfiles", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("HeapProfiler.resetProfiles", closeChn, nil)
-			if !fn() {
+		for {
+
+			readErr := decoder(nil)
+			if !fn(readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -163,15 +167,17 @@ type ReportHeapSnapshotProgressParams struct {
 	Finished *bool `json:"finished,omitempty"`
 }
 
-func (obj *HeapProfiler) ReportHeapSnapshotProgress(fn func(params *ReportHeapSnapshotProgressParams) bool) {
-	params := ReportHeapSnapshotProgressParams{}
+func (obj *HeapProfiler) ReportHeapSnapshotProgress(fn func(params *ReportHeapSnapshotProgressParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("HeapProfiler.reportHeapSnapshotProgress", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("HeapProfiler.reportHeapSnapshotProgress", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := ReportHeapSnapshotProgressParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -183,15 +189,17 @@ type LastSeenObjectIdParams struct {
 }
 
 // If heap objects tracking has been started then backend regularly sends a current value for last seen object id and corresponding timestamp. If the were changes in the heap since last event then one or more heapStatsUpdate events will be sent before a new lastSeenObjectId event.
-func (obj *HeapProfiler) LastSeenObjectId(fn func(params *LastSeenObjectIdParams) bool) {
-	params := LastSeenObjectIdParams{}
+func (obj *HeapProfiler) LastSeenObjectId(fn func(params *LastSeenObjectIdParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("HeapProfiler.lastSeenObjectId", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("HeapProfiler.lastSeenObjectId", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := LastSeenObjectIdParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -203,15 +211,17 @@ type HeapStatsUpdateParams struct {
 }
 
 // If heap objects tracking has been started then backend may send update for one or more fragments
-func (obj *HeapProfiler) HeapStatsUpdate(fn func(params *HeapStatsUpdateParams) bool) {
-	params := HeapStatsUpdateParams{}
+func (obj *HeapProfiler) HeapStatsUpdate(fn func(params *HeapStatsUpdateParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("HeapProfiler.heapStatsUpdate", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("HeapProfiler.heapStatsUpdate", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := HeapStatsUpdateParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()

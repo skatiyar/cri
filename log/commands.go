@@ -61,15 +61,17 @@ type EntryAddedParams struct {
 }
 
 // Issued when new message was logged.
-func (obj *Log) EntryAdded(fn func(params *EntryAddedParams) bool) {
-	params := EntryAddedParams{}
+func (obj *Log) EntryAdded(fn func(params *EntryAddedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Log.entryAdded", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Log.entryAdded", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := EntryAddedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()

@@ -5,7 +5,7 @@
 
 package types
 
-//Description of the protocol domain.
+// Description of the protocol domain.
 type Schema_Domain struct {
 	// Domain name.
 	Name string `json:"name"`

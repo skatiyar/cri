@@ -77,15 +77,17 @@ type ApplicationCacheStatusUpdatedParams struct {
 	Status int `json:"status"`
 }
 
-func (obj *ApplicationCache) ApplicationCacheStatusUpdated(fn func(params *ApplicationCacheStatusUpdatedParams) bool) {
-	params := ApplicationCacheStatusUpdatedParams{}
+func (obj *ApplicationCache) ApplicationCacheStatusUpdated(fn func(params *ApplicationCacheStatusUpdatedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("ApplicationCache.applicationCacheStatusUpdated", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("ApplicationCache.applicationCacheStatusUpdated", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := ApplicationCacheStatusUpdatedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -95,15 +97,17 @@ type NetworkStateUpdatedParams struct {
 	IsNowOnline bool `json:"isNowOnline"`
 }
 
-func (obj *ApplicationCache) NetworkStateUpdated(fn func(params *NetworkStateUpdatedParams) bool) {
-	params := NetworkStateUpdatedParams{}
+func (obj *ApplicationCache) NetworkStateUpdated(fn func(params *NetworkStateUpdatedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("ApplicationCache.networkStateUpdated", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("ApplicationCache.networkStateUpdated", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := NetworkStateUpdatedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()

@@ -127,7 +127,7 @@ func transformTypes(d Domain) TypesData {
 			ID: d.Domain + "_" + typs[i].ID,
 		}
 		if len(typs[i].Description) > 0 {
-			typeSpec.Doc = "//" + typs[i].Description
+			typeSpec.Doc = "// " + typs[i].Description
 		}
 
 		if len(typs[i].Enum) != 0 {
@@ -294,9 +294,9 @@ func transformCommands(d Domain) CommandsData {
 		}
 		if len(d.Events[i].Parameters) > 0 {
 			paramsName := strings.Title(d.Events[i].Name) + "Params"
-			eve.EventParams = "params *" + paramsName
+			eve.EventParams = "params *" + paramsName + ", err error"
 			eve.ParamsDecl = "params := " + paramsName + "{}"
-			eve.CallParams = "&params"
+			eve.CallParams = "&params, readErr"
 			properties := make([]string, 0)
 			for j := 0; j < len(d.Events[i].Parameters); j++ {
 				param, paramDeps := transformParameter(d.Events[i].Parameters[j], d.Domain, paramsName, true)
@@ -312,6 +312,8 @@ func transformCommands(d Domain) CommandsData {
 			eve.ParamsValue = "&params"
 		} else {
 			eve.ParamsValue = "nil"
+			eve.EventParams = "err error"
+			eve.CallParams = "readErr"
 		}
 
 		data.Events = append(data.Events, eve)

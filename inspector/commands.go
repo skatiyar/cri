@@ -36,30 +36,34 @@ type DetachedParams struct {
 }
 
 // Fired when remote debugging connection is about to be terminated. Contains detach reason.
-func (obj *Inspector) Detached(fn func(params *DetachedParams) bool) {
-	params := DetachedParams{}
+func (obj *Inspector) Detached(fn func(params *DetachedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Inspector.detached", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Inspector.detached", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := DetachedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
 }
 
 // Fired when debugging target has crashed
-func (obj *Inspector) TargetCrashed(fn func() bool) {
-
+func (obj *Inspector) TargetCrashed(fn func(err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Inspector.targetCrashed", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Inspector.targetCrashed", closeChn, nil)
-			if !fn() {
+		for {
+
+			readErr := decoder(nil)
+			if !fn(readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()

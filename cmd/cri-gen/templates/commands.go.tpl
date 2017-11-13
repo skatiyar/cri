@@ -41,16 +41,18 @@ type {{.ID}} {{.Type}}
 {{end}}
 {{.Doc}}
 func (obj *{{.Domain}}) {{.Name}}(fn func({{.EventParams}}) bool) {
-    {{.ParamsDecl}}
-    closeChn := make(chan struct{})
-    go func() {
-        for closeChn != nil {
-            obj.conn.On({{printf "%q" .Command}}, closeChn, {{.ParamsValue}})
+	closeChn := make(chan struct{})
+	decoder := obj.conn.On({{printf "%q" .Command}}, closeChn)
+	go func() {
+		for {
+            {{.ParamsDecl}}
+			readErr := decoder({{.ParamsValue}})
             if !fn({{.CallParams}}) {
-                closeChn <- struct{}{}
-                close(closeChn)
-            }
-        }
-    }()
+				closeChn <- struct{}{}
+				close(closeChn)
+				break
+			}
+		}
+	}()
 }
 {{end -}}

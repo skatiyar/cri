@@ -5,5 +5,5 @@
 
 package types
 
-//Memory pressure level.
+// Memory pressure level.
 type Memory_PressureLevel string

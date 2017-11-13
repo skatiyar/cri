@@ -5,7 +5,7 @@
 
 package types
 
-//Animation instance.
+// Animation instance.
 type Animation_Animation struct {
 	// <code>Animation</code>'s id.
 	Id string `json:"id"`
@@ -30,7 +30,7 @@ type Animation_Animation struct {
 	CssId *string `json:"cssId,omitempty"`
 }
 
-//AnimationEffect instance
+// AnimationEffect instance
 type Animation_AnimationEffect struct {
 	// <code>AnimationEffect</code>'s delay.
 	Delay float32 `json:"delay"`
@@ -54,7 +54,7 @@ type Animation_AnimationEffect struct {
 	Easing string `json:"easing"`
 }
 
-//Keyframes Rule
+// Keyframes Rule
 type Animation_KeyframesRule struct {
 	// CSS keyframed animation's name.
 	Name *string `json:"name,omitempty"`
@@ -62,7 +62,7 @@ type Animation_KeyframesRule struct {
 	Keyframes []Animation_KeyframeStyle `json:"keyframes"`
 }
 
-//Keyframe Style
+// Keyframe Style
 type Animation_KeyframeStyle struct {
 	// Keyframe's time offset.
 	Offset string `json:"offset"`

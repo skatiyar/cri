@@ -5,7 +5,7 @@
 
 package types
 
-//Configuration data for the highlighting of page elements.
+// Configuration data for the highlighting of page elements.
 type Overlay_HighlightConfig struct {
 	// Whether the node info tooltip should be shown (default: false).
 	ShowInfo *bool `json:"showInfo,omitempty"`

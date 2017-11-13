@@ -49,15 +49,17 @@ type AcceptedParams struct {
 }
 
 // Informs that port was successfully bound and got a specified connection id.
-func (obj *Tethering) Accepted(fn func(params *AcceptedParams) bool) {
-	params := AcceptedParams{}
+func (obj *Tethering) Accepted(fn func(params *AcceptedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Tethering.accepted", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Tethering.accepted", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := AcceptedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()

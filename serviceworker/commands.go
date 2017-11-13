@@ -124,15 +124,17 @@ type WorkerRegistrationUpdatedParams struct {
 	Registrations []types.ServiceWorker_ServiceWorkerRegistration `json:"registrations"`
 }
 
-func (obj *ServiceWorker) WorkerRegistrationUpdated(fn func(params *WorkerRegistrationUpdatedParams) bool) {
-	params := WorkerRegistrationUpdatedParams{}
+func (obj *ServiceWorker) WorkerRegistrationUpdated(fn func(params *WorkerRegistrationUpdatedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("ServiceWorker.workerRegistrationUpdated", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("ServiceWorker.workerRegistrationUpdated", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := WorkerRegistrationUpdatedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -142,15 +144,17 @@ type WorkerVersionUpdatedParams struct {
 	Versions []types.ServiceWorker_ServiceWorkerVersion `json:"versions"`
 }
 
-func (obj *ServiceWorker) WorkerVersionUpdated(fn func(params *WorkerVersionUpdatedParams) bool) {
-	params := WorkerVersionUpdatedParams{}
+func (obj *ServiceWorker) WorkerVersionUpdated(fn func(params *WorkerVersionUpdatedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("ServiceWorker.workerVersionUpdated", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("ServiceWorker.workerVersionUpdated", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := WorkerVersionUpdatedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
@@ -160,15 +164,17 @@ type WorkerErrorReportedParams struct {
 	ErrorMessage types.ServiceWorker_ServiceWorkerErrorMessage `json:"errorMessage"`
 }
 
-func (obj *ServiceWorker) WorkerErrorReported(fn func(params *WorkerErrorReportedParams) bool) {
-	params := WorkerErrorReportedParams{}
+func (obj *ServiceWorker) WorkerErrorReported(fn func(params *WorkerErrorReportedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("ServiceWorker.workerErrorReported", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("ServiceWorker.workerErrorReported", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := WorkerErrorReportedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()

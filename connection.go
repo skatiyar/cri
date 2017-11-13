@@ -131,14 +131,42 @@ func (c *Connection) Send(command string, request, response interface{}) error {
 	return c.cmd(cmd, response)
 }
 
-func (c *Connection) On(event string, closeChn chan struct{}, params interface{}) error {
-	event := EventRequest{
-		Method: event,
-		resChn: make(chan CommandResponse),
+func (c *Connection) On(event string, closeChn chan struct{}) func(params interface{}) error {
+	eve := EventRequest{
+		Method:   event,
+		eventChn: make(chan CommandResponse),
 	}
+	eveMap, eok := c.eventMap.Load(eve.Method)
+	if !eok {
+		c.eventMap.Store(eve.Method, sync.Map{})
+	}
+	if val, ok := eveMap.(sync.Map); ok {
+		val.Store(eve, true)
+		eveMap = val
+	} else {
+		val = sync.Map{}
+		val.Store(eve, true)
+		eveMap = val
+	}
+	c.eventMap.Store(eve.Method, eveMap)
+	defer func() {
+		go func() {
+			<-closeChn
+			if eveMap, eok := c.eventMap.Load(eve.Method); eok {
+				if rmap, rok := eveMap.(sync.Map); rok {
+					rmap.Delete(eve)
+				}
+			}
+		}()
+	}()
 
-	<-closeChn
-	return c.linstener(event, params)
+	return func(params interface{}) error {
+		res := <-eve.eventChn
+		if params != nil {
+			return mapstructure.Decode(res.Result, params)
+		}
+		return nil
+	}
 }
 
 func (c *Connection) Close() error {
@@ -195,10 +223,13 @@ func (c *Connection) reader() {
 			c.responseMap.Delete(data.ID)
 		} else if len(data.Method) > 0 {
 			if val, vok := c.eventMap.Load(data.Method); vok {
-				if eve, eok := val.([]EventRequest); eok {
-					for i := 0; i < len(eve); i++ {
-						eve[i].eventChn <- data
-					}
+				if eve, eok := val.(sync.Map); eok {
+					eve.Range(func(key, val interface{}) bool {
+						if kval, kok := key.(EventRequest); kok {
+							kval.eventChn <- data
+						}
+						return true
+					})
 				}
 			}
 		}

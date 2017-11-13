@@ -5,10 +5,10 @@
 
 package types
 
-//Unique identifier of Database object.
+// Unique identifier of Database object.
 type Database_DatabaseId string
 
-//Database object.
+// Database object.
 type Database_Database struct {
 	// Database ID.
 	Id Database_DatabaseId `json:"id"`
@@ -20,7 +20,7 @@ type Database_Database struct {
 	Version string `json:"version"`
 }
 
-//Database error.
+// Database error.
 type Database_Error struct {
 	// Error message.
 	Message string `json:"message"`

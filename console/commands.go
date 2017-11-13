@@ -44,15 +44,17 @@ type MessageAddedParams struct {
 }
 
 // Issued when new console message is added.
-func (obj *Console) MessageAdded(fn func(params *MessageAddedParams) bool) {
-	params := MessageAddedParams{}
+func (obj *Console) MessageAdded(fn func(params *MessageAddedParams, err error) bool) {
 	closeChn := make(chan struct{})
+	decoder := obj.conn.On("Console.messageAdded", closeChn)
 	go func() {
-		for closeChn != nil {
-			obj.conn.On("Console.messageAdded", closeChn, &params)
-			if !fn(&params) {
+		for {
+			params := MessageAddedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
 				close(closeChn)
+				break
 			}
 		}
 	}()
