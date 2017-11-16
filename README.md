@@ -1,6 +1,4 @@
-# cri
-
-Chrome Remote Interface
+# cri - chrome remote interface
 
 [![GoDoc](https://godoc.org/github.com/SKatiyar/cri?status.svg)](https://godoc.org/github.com/SKatiyar/cri)
 [![Go Report Card](https://goreportcard.com/badge/github.com/SKatiyar/cri)](https://goreportcard.com/report/github.com/SKatiyar/cri)
