@@ -31,13 +31,13 @@ func transformParameter(p Parameter, domain, structName string, notTypes bool) (
 	deps := make([]string, 0)
 
 	if len(p.Description) > 0 {
-		nField = append(nField, "\t// "+strings.Trim(p.Description, "\n"))
+		nField = append(nField, "// "+strings.Trim(p.Description, "\n"))
 	}
 	if p.Experimental {
-		nField = append(nField, "\t// NOTE Experimental")
+		nField = append(nField, "// NOTE Experimental")
 	}
 
-	fieldSpecs := []string{"\t" + strings.Title(p.Name)}
+	fieldSpecs := []string{strings.Title(p.Name)}
 	if len(p.Type) != 0 {
 		if p.Type == "array" {
 			if len(p.Items.Type) > 0 {

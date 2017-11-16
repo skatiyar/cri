@@ -8,13 +8,10 @@ go:
     - 1.6.x
     - 1.5.x
     - 1.4.x
-    - 1.3.x
-    - 1.2.x
-    - 1.1.x
-    - 1.0.x
 
 addons:
     chrome: stable
 
 script:
+    #- google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 &
     - go test -v ./...
