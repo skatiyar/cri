@@ -4,7 +4,6 @@
  */
 
 // Package heapprofiler provides commands and events for HeapProfiler domain.
-
 package heapprofiler
 
 import (

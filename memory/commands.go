@@ -4,7 +4,6 @@
  */
 
 // Package memory provides commands and events for Memory domain.
-
 package memory
 
 import (

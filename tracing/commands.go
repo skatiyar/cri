@@ -4,7 +4,6 @@
  */
 
 // Package tracing provides commands and events for Tracing domain.
-
 package tracing
 
 import (

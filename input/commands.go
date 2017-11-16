@@ -4,7 +4,6 @@
  */
 
 // Package input provides commands and events for Input domain.
-
 package input
 
 import (

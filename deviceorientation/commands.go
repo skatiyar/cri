@@ -4,7 +4,6 @@
  */
 
 // Package deviceorientation provides commands and events for DeviceOrientation domain.
-
 package deviceorientation
 
 import (

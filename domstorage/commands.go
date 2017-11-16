@@ -4,7 +4,6 @@
  */
 
 // Package domstorage provides commands and events for DOMStorage domain.
-// Query and modify DOM storage.
 package domstorage
 
 import (
@@ -12,6 +11,7 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// Query and modify DOM storage.
 type DOMStorage struct {
 	conn cri.Connector
 }

@@ -4,7 +4,6 @@
  */
 
 // Package database provides commands and events for Database domain.
-
 package database
 
 import (

@@ -4,7 +4,6 @@
  */
 
 // Package schema provides commands and events for Schema domain.
-// Provides information about the protocol schema.
 package schema
 
 import (
@@ -12,6 +11,7 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// Provides information about the protocol schema.
 type Schema struct {
 	conn cri.Connector
 }

@@ -4,7 +4,6 @@
  */
 
 // Package browser provides commands and events for Browser domain.
-// The Browser domain defines methods and events for browser managing.
 package browser
 
 import (
@@ -12,6 +11,7 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// The Browser domain defines methods and events for browser managing.
 type Browser struct {
 	conn cri.Connector
 }

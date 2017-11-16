@@ -4,7 +4,6 @@
  */
 
 // Package emulation provides commands and events for Emulation domain.
-// This domain emulates different environments for the page.
 package emulation
 
 import (
@@ -12,6 +11,7 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// This domain emulates different environments for the page.
 type Emulation struct {
 	conn cri.Connector
 }

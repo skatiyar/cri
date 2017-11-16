@@ -4,7 +4,6 @@
  */
 
 // Package log provides commands and events for Log domain.
-// Provides access to log entries.
 package log
 
 import (
@@ -12,6 +11,7 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// Provides access to log entries.
 type Log struct {
 	conn cri.Connector
 }

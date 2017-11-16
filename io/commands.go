@@ -4,7 +4,6 @@
  */
 
 // Package io provides commands and events for IO domain.
-// Input/Output operations for streams produced by DevTools.
 package io
 
 import (
@@ -12,6 +11,7 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// Input/Output operations for streams produced by DevTools.
 type IO struct {
 	conn cri.Connector
 }

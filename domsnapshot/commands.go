@@ -4,7 +4,6 @@
  */
 
 // Package domsnapshot provides commands and events for DOMSnapshot domain.
-// This domain facilitates obtaining document snapshots with DOM, layout, and style information.
 package domsnapshot
 
 import (
@@ -12,6 +11,7 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// This domain facilitates obtaining document snapshots with DOM, layout, and style information.
 type DOMSnapshot struct {
 	conn cri.Connector
 }

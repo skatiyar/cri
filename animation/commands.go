@@ -4,7 +4,6 @@
  */
 
 // Package animation provides commands and events for Animation domain.
-
 package animation
 
 import (

@@ -4,7 +4,6 @@
  */
 
 // Package domdebugger provides commands and events for DOMDebugger domain.
-// DOM debugging allows setting breakpoints on particular DOM operations and events. JavaScript execution will stop on these operations as if there was a regular breakpoint set.
 package domdebugger
 
 import (
@@ -12,6 +11,7 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// DOM debugging allows setting breakpoints on particular DOM operations and events. JavaScript execution will stop on these operations as if there was a regular breakpoint set.
 type DOMDebugger struct {
 	conn cri.Connector
 }
