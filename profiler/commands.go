@@ -4,7 +4,6 @@
  */
 
 // Package profiler provides commands and events for Profiler domain.
-
 package profiler
 
 import (

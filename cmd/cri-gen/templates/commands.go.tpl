@@ -4,7 +4,6 @@
 */
 
 // Package {{.Package}} provides commands and events for {{.Domain}} domain.
-{{.Doc}}
 package {{.Package}}
 
 import (
@@ -14,6 +13,7 @@ import (
 {{end}}
 )
 
+{{.Doc}}
 type {{.Domain}} struct {
 	conn cri.Connector
 }

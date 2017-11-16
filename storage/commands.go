@@ -4,7 +4,6 @@
  */
 
 // Package storage provides commands and events for Storage domain.
-
 package storage
 
 import (

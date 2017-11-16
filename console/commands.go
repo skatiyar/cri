@@ -4,7 +4,6 @@
  */
 
 // Package console provides commands and events for Console domain.
-// This domain is deprecated - use Runtime or Log instead.
 package console
 
 import (
@@ -12,6 +11,7 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// This domain is deprecated - use Runtime or Log instead.
 type Console struct {
 	conn cri.Connector
 }

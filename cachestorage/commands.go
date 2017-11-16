@@ -4,7 +4,6 @@
  */
 
 // Package cachestorage provides commands and events for CacheStorage domain.
-
 package cachestorage
 
 import (

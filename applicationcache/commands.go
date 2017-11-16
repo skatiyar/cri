@@ -4,7 +4,6 @@
  */
 
 // Package applicationcache provides commands and events for ApplicationCache domain.
-
 package applicationcache
 
 import (

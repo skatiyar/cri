@@ -4,7 +4,6 @@
  */
 
 // Package security provides commands and events for Security domain.
-// Security
 package security
 
 import (
@@ -12,6 +11,7 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// Security
 type Security struct {
 	conn cri.Connector
 }

@@ -4,13 +4,13 @@
  */
 
 // Package tethering provides commands and events for Tethering domain.
-// The Tethering domain defines methods and events for browser port binding.
 package tethering
 
 import (
 	"github.com/SKatiyar/cri"
 )
 
+// The Tethering domain defines methods and events for browser port binding.
 type Tethering struct {
 	conn cri.Connector
 }

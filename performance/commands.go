@@ -4,7 +4,6 @@
  */
 
 // Package performance provides commands and events for Performance domain.
-
 package performance
 
 import (

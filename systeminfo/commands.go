@@ -4,7 +4,6 @@
  */
 
 // Package systeminfo provides commands and events for SystemInfo domain.
-// The SystemInfo domain defines methods and events for querying low-level system information.
 package systeminfo
 
 import (
@@ -12,6 +11,7 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// The SystemInfo domain defines methods and events for querying low-level system information.
 type SystemInfo struct {
 	conn cri.Connector
 }

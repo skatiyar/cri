@@ -4,7 +4,6 @@
  */
 
 // Package page provides commands and events for Page domain.
-// Actions and events related to the inspected page belong to the page domain.
 package page
 
 import (
@@ -12,6 +11,7 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// Actions and events related to the inspected page belong to the page domain.
 type Page struct {
 	conn cri.Connector
 }

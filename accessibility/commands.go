@@ -4,7 +4,6 @@
  */
 
 // Package accessibility provides commands and events for Accessibility domain.
-
 package accessibility
 
 import (

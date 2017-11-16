@@ -4,7 +4,6 @@
  */
 
 // Package layertree provides commands and events for LayerTree domain.
-
 package layertree
 
 import (

@@ -4,7 +4,6 @@
  */
 
 // Package inspector provides commands and events for Inspector domain.
-
 package inspector
 
 import (

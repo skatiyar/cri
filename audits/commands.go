@@ -4,7 +4,6 @@
  */
 
 // Package audits provides commands and events for Audits domain.
-// Audits domain allows investigation of page violations and possible improvements.
 package audits
 
 import (
@@ -12,6 +11,7 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// Audits domain allows investigation of page violations and possible improvements.
 type Audits struct {
 	conn cri.Connector
 }

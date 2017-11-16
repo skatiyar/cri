@@ -4,7 +4,6 @@
  */
 
 // Package headlessexperimental provides commands and events for HeadlessExperimental domain.
-// This domain provides experimental commands only supported in headless mode.
 package headlessexperimental
 
 import (
@@ -12,6 +11,7 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// This domain provides experimental commands only supported in headless mode.
 type HeadlessExperimental struct {
 	conn cri.Connector
 }

@@ -4,7 +4,6 @@
  */
 
 // Package debugger provides commands and events for Debugger domain.
-// Debugger domain exposes JavaScript debugging capabilities. It allows setting and removing breakpoints, stepping through execution, exploring stack traces, etc.
 package debugger
 
 import (
@@ -12,6 +11,7 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// Debugger domain exposes JavaScript debugging capabilities. It allows setting and removing breakpoints, stepping through execution, exploring stack traces, etc.
 type Debugger struct {
 	conn cri.Connector
 }

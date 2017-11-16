@@ -4,7 +4,6 @@
  */
 
 // Package target provides commands and events for Target domain.
-// Supports additional targets discovery and allows to attach to them.
 package target
 
 import (
@@ -12,6 +11,7 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// Supports additional targets discovery and allows to attach to them.
 type Target struct {
 	conn cri.Connector
 }

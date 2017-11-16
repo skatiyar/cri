@@ -4,7 +4,6 @@
  */
 
 // Package indexeddb provides commands and events for IndexedDB domain.
-
 package indexeddb
 
 import (
