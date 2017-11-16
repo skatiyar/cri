@@ -1,5 +1,7 @@
 package cri
 
+//go:generate bash cmd/generate.sh
+
 import (
 	"encoding/json"
 	"errors"

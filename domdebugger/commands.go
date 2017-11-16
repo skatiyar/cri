@@ -3,6 +3,7 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
+// Package domdebugger provides commands and events for DOMDebugger domain.
 // DOM debugging allows setting breakpoints on particular DOM operations and events. JavaScript execution will stop on these operations as if there was a regular breakpoint set.
 package domdebugger
 

@@ -3,6 +3,7 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
+// Package systeminfo provides commands and events for SystemInfo domain.
 // The SystemInfo domain defines methods and events for querying low-level system information.
 package systeminfo
 

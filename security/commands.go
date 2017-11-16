@@ -3,6 +3,7 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
+// Package security provides commands and events for Security domain.
 // Security
 package security
 

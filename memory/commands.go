@@ -3,6 +3,8 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
+// Package memory provides commands and events for Memory domain.
+
 package memory
 
 import (

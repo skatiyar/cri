@@ -3,6 +3,7 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
+// Package overlay provides commands and events for Overlay domain.
 // This domain provides various functionality related to drawing atop the inspected page.
 package overlay
 

@@ -3,6 +3,8 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
+// Package input provides commands and events for Input domain.
+
 package input
 
 import (

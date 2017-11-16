@@ -3,6 +3,7 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
+// Package target provides commands and events for Target domain.
 // Supports additional targets discovery and allows to attach to them.
 package target
 

@@ -3,6 +3,7 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
+// Package page provides commands and events for Page domain.
 // Actions and events related to the inspected page belong to the page domain.
 package page
 

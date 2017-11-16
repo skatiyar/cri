@@ -3,6 +3,7 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
 */
 
+// Package {{.Package}} provides commands and events for {{.Domain}} domain.
 {{.Doc}}
 package {{.Package}}
 

@@ -3,6 +3,8 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
+// Package performance provides commands and events for Performance domain.
+
 package performance
 
 import (

@@ -3,6 +3,7 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
+// Package tethering provides commands and events for Tethering domain.
 // The Tethering domain defines methods and events for browser port binding.
 package tethering
 

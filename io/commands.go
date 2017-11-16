@@ -3,6 +3,7 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
+// Package io provides commands and events for IO domain.
 // Input/Output operations for streams produced by DevTools.
 package io
 

@@ -3,6 +3,7 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
+// Package emulation provides commands and events for Emulation domain.
 // This domain emulates different environments for the page.
 package emulation
 
