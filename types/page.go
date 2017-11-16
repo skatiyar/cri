@@ -60,6 +60,14 @@ type Page_FrameResourceTree struct {
 	Resources []Page_FrameResource `json:"resources"`
 }
 
+// Information about the Frame hierarchy.
+type Page_FrameTree struct {
+	// Frame information for this tree item.
+	Frame Page_Frame `json:"frame"`
+	// Child frames.
+	ChildFrames []*Page_FrameTree `json:"childFrames,omitempty"`
+}
+
 // Unique script identifier.
 type Page_ScriptIdentifier string
 
@@ -119,9 +127,6 @@ type Page_AppManifestError struct {
 	// Error column.
 	Column int `json:"column"`
 }
-
-// Proceed: allow the navigation; Cancel: cancel the navigation; CancelAndIgnore: cancels the navigation and makes the requester of the navigation acts like the request was never made.
-type Page_NavigationResponse string
 
 // Layout viewport position and dimensions.
 type Page_LayoutViewport struct {

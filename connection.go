@@ -143,22 +143,23 @@ func (c *Connection) On(event string, closeChn chan struct{}) func(params interf
 	}
 	eveMap, eok := c.eventMap.Load(eve.Method)
 	if !eok {
-		c.eventMap.Store(eve.Method, sync.Map{})
+		eveMap = syncmap.Map{}
 	}
-	if val, ok := eveMap.(sync.Map); ok {
+	if val, ok := eveMap.(syncmap.Map); ok {
 		val.Store(eve, true)
 		eveMap = val
 	} else {
-		val = sync.Map{}
+		val = syncmap.Map{}
 		val.Store(eve, true)
 		eveMap = val
 	}
 	c.eventMap.Store(eve.Method, eveMap)
+
 	defer func() {
 		go func() {
 			<-closeChn
 			if eveMap, eok := c.eventMap.Load(eve.Method); eok {
-				if rmap, rok := eveMap.(sync.Map); rok {
+				if rmap, rok := eveMap.(syncmap.Map); rok {
 					rmap.Delete(eve)
 				}
 			}
@@ -228,7 +229,7 @@ func (c *Connection) reader() {
 			c.responseMap.Delete(data.ID)
 		} else if len(data.Method) > 0 {
 			if val, vok := c.eventMap.Load(data.Method); vok {
-				if eve, eok := val.(sync.Map); eok {
+				if eve, eok := val.(syncmap.Map); eok {
 					eve.Range(func(key, val interface{}) bool {
 						if kval, kok := key.(EventRequest); kok {
 							kval.eventChn <- data

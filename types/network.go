@@ -170,10 +170,8 @@ type Network_Response struct {
 	// Physical connection id that was actually used for this request.
 	ConnectionId float32 `json:"connectionId"`
 	// Remote IP address.
-	// NOTE Experimental
 	RemoteIPAddress *string `json:"remoteIPAddress,omitempty"`
 	// Remote port.
-	// NOTE Experimental
 	RemotePort *int `json:"remotePort,omitempty"`
 	// Specifies that the request was served from the disk cache.
 	FromDiskCache *bool `json:"fromDiskCache,omitempty"`
@@ -315,10 +313,15 @@ type Network_AuthChallengeResponse struct {
 	Password *string `json:"password,omitempty"`
 }
 
+// Stages of the interception to begin intercepting. Request will intercept before the request is sent. Response will intercept after the response is received.
+type Network_InterceptionStage string
+
 // Request pattern for interception.
 type Network_RequestPattern struct {
 	// Wildcards ('*' -> zero or more, '?' -> exactly one) are allowed. Escape character is backslash. Omitting is equivalent to "*".
 	UrlPattern *string `json:"urlPattern,omitempty"`
 	// If set, only requests for matching resource types will be intercepted.
 	ResourceType *Page_ResourceType `json:"resourceType,omitempty"`
+	// Stage at wich to begin intercepting requests. Default is Request.
+	InterceptionStage *Network_InterceptionStage `json:"interceptionStage,omitempty"`
 }

@@ -94,6 +94,17 @@ func (obj *Page) SetAutoAttachToCreatedPages(request *SetAutoAttachToCreatedPage
 	return
 }
 
+type SetLifecycleEventsEnabledRequest struct {
+	// If true, starts emitting lifecycle events.
+	Enabled bool `json:"enabled"`
+}
+
+// Controls whether page will emit lifecycle events.
+func (obj *Page) SetLifecycleEventsEnabled(request *SetLifecycleEventsEnabledRequest) (err error) {
+	err = obj.conn.Send("Page.setLifecycleEventsEnabled", request, nil)
+	return
+}
+
 type ReloadRequest struct {
 	// If true, browser cache is ignored (as if the user pressed Shift+refresh).
 	IgnoreCache *bool `json:"ignoreCache,omitempty"`
@@ -122,17 +133,16 @@ type NavigateRequest struct {
 	// URL to navigate the page to.
 	Url string `json:"url"`
 	// Referrer URL.
-	// NOTE Experimental
 	Referrer *string `json:"referrer,omitempty"`
 	// Intended transition type.
-	// NOTE Experimental
 	TransitionType *types.Page_TransitionType `json:"transitionType,omitempty"`
 }
 
 type NavigateResponse struct {
-	// Frame id that will be navigated.
-	// NOTE Experimental
+	// Frame id that has navigated (or failed to navigate)
 	FrameId types.Page_FrameId `json:"frameId"`
+	// User friendly error message, present if and only if navigation has failed.
+	ErrorText *string `json:"errorText,omitempty"`
 }
 
 // Navigates current page to the given URL.
@@ -203,6 +213,17 @@ type GetResourceTreeResponse struct {
 // Returns present frame / resource tree structure.
 func (obj *Page) GetResourceTree() (response GetResourceTreeResponse, err error) {
 	err = obj.conn.Send("Page.getResourceTree", nil, &response)
+	return
+}
+
+type GetFrameTreeResponse struct {
+	// Present frame tree structure.
+	FrameTree types.Page_FrameTree `json:"frameTree"`
+}
+
+// Returns present frame tree structure.
+func (obj *Page) GetFrameTree() (response GetFrameTreeResponse, err error) {
+	err = obj.conn.Send("Page.getFrameTree", nil, &response)
 	return
 }
 
@@ -363,7 +384,6 @@ type CaptureScreenshotRequest struct {
 	// Compression quality from range [0..100] (jpeg only).
 	Quality *int `json:"quality,omitempty"`
 	// Capture the screenshot of a given region only.
-	// NOTE Experimental
 	Clip *types.Page_Viewport `json:"clip,omitempty"`
 	// Capture the screenshot from the surface, rather than the view. Defaults to true.
 	// NOTE Experimental
@@ -582,7 +602,9 @@ func (obj *Page) LoadEventFired(fn func(params *LoadEventFiredParams, err error)
 
 type LifecycleEventParams struct {
 	// Id of the frame.
-	FrameId   types.Page_FrameId          `json:"frameId"`
+	FrameId types.Page_FrameId `json:"frameId"`
+	// Loader identifier. Empty string if the request is fetched from worker.
+	LoaderId  types.Network_LoaderId      `json:"loaderId"`
 	Name      string                      `json:"name"`
 	Timestamp types.Network_MonotonicTime `json:"timestamp"`
 }
@@ -610,7 +632,6 @@ type FrameAttachedParams struct {
 	// Parent frame identifier.
 	ParentFrameId types.Page_FrameId `json:"parentFrameId"`
 	// JavaScript stack trace of when frame was attached, only set if frame initiated from script.
-	// NOTE Experimental
 	Stack *types.Runtime_StackTrace `json:"stack,omitempty"`
 }
 
@@ -727,10 +748,8 @@ type FrameScheduledNavigationParams struct {
 	// Delay (in seconds) until the navigation is scheduled to begin. The navigation is not guaranteed to start.
 	Delay float32 `json:"delay"`
 	// The reason for the navigation.
-	// NOTE Experimental
 	Reason string `json:"reason"`
 	// The destination URL for the scheduled navigation.
-	// NOTE Experimental
 	Url string `json:"url"`
 }
 
@@ -931,16 +950,15 @@ func (obj *Page) InterstitialHidden(fn func(err error) bool) {
 type WindowOpenParams struct {
 	// The URL for the new window.
 	Url string `json:"url"`
-	// Window name passed to window.open().
+	// Window name.
 	WindowName string `json:"windowName"`
-	// Window features passed to window.open().
-	WindowFeatures string `json:"windowFeatures"`
-	// Whether or not window.open() was triggered by user gesture.
+	// An array of enabled window features.
+	WindowFeatures []string `json:"windowFeatures"`
+	// Whether or not it was triggered by user gesture.
 	UserGesture bool `json:"userGesture"`
 }
 
-// Fired when window.open() was called
-// NOTE Experimental
+// Fired when a new window is going to be opened, via window.open(), link click, form submission, etc.
 func (obj *Page) WindowOpen(fn func(params *WindowOpenParams, err error) bool) {
 	closeChn := make(chan struct{})
 	decoder := obj.conn.On("Page.windowOpen", closeChn)

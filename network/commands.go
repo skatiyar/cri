@@ -340,6 +340,24 @@ func (obj *Network) ContinueInterceptedRequest(request *ContinueInterceptedReque
 	return
 }
 
+type GetResponseBodyForInterceptionRequest struct {
+	// Identifier for the intercepted request to get body for.
+	InterceptionId types.Network_InterceptionId `json:"interceptionId"`
+}
+
+type GetResponseBodyForInterceptionResponse struct {
+	// Response body.
+	Body string `json:"body"`
+	// True, if content was sent as base64.
+	Base64Encoded bool `json:"base64Encoded"`
+}
+
+// Returns content served for the given currently intercepted request.
+func (obj *Network) GetResponseBodyForInterception(request *GetResponseBodyForInterceptionRequest) (response GetResponseBodyForInterceptionResponse, err error) {
+	err = obj.conn.Send("Network.getResponseBodyForInterception", request, &response)
+	return
+}
+
 type ResourceChangedPriorityParams struct {
 	// Request identifier.
 	RequestId types.Network_RequestId `json:"requestId"`
@@ -370,7 +388,7 @@ func (obj *Network) ResourceChangedPriority(fn func(params *ResourceChangedPrior
 type RequestWillBeSentParams struct {
 	// Request identifier.
 	RequestId types.Network_RequestId `json:"requestId"`
-	// Loader identifier. Empty string if the request is fetched form worker.
+	// Loader identifier. Empty string if the request is fetched from worker.
 	LoaderId types.Network_LoaderId `json:"loaderId"`
 	// URL of the document this request is loaded for.
 	DocumentURL string `json:"documentURL"`
@@ -379,17 +397,14 @@ type RequestWillBeSentParams struct {
 	// Timestamp.
 	Timestamp types.Network_MonotonicTime `json:"timestamp"`
 	// Timestamp.
-	// NOTE Experimental
 	WallTime types.Network_TimeSinceEpoch `json:"wallTime"`
 	// Request initiator.
 	Initiator types.Network_Initiator `json:"initiator"`
 	// Redirect response data.
 	RedirectResponse *types.Network_Response `json:"redirectResponse,omitempty"`
 	// Type of this resource.
-	// NOTE Experimental
 	Type *types.Page_ResourceType `json:"type,omitempty"`
 	// Frame identifier.
-	// NOTE Experimental
 	FrameId *types.Page_FrameId `json:"frameId,omitempty"`
 }
 
@@ -435,7 +450,7 @@ func (obj *Network) RequestServedFromCache(fn func(params *RequestServedFromCach
 type ResponseReceivedParams struct {
 	// Request identifier.
 	RequestId types.Network_RequestId `json:"requestId"`
-	// Loader identifier. Empty string if the request is fetched form worker.
+	// Loader identifier. Empty string if the request is fetched from worker.
 	LoaderId types.Network_LoaderId `json:"loaderId"`
 	// Timestamp.
 	Timestamp types.Network_MonotonicTime `json:"timestamp"`
@@ -444,7 +459,6 @@ type ResponseReceivedParams struct {
 	// Response data.
 	Response types.Network_Response `json:"response"`
 	// Frame identifier.
-	// NOTE Experimental
 	FrameId *types.Page_FrameId `json:"frameId,omitempty"`
 }
 
@@ -531,7 +545,6 @@ type LoadingFailedParams struct {
 	// True if loading was canceled.
 	Canceled *bool `json:"canceled,omitempty"`
 	// The reason why loading was blocked, if any.
-	// NOTE Experimental
 	BlockedReason *types.Network_BlockedReason `json:"blockedReason,omitempty"`
 }
 
@@ -558,14 +571,12 @@ type WebSocketWillSendHandshakeRequestParams struct {
 	// Timestamp.
 	Timestamp types.Network_MonotonicTime `json:"timestamp"`
 	// UTC Timestamp.
-	// NOTE Experimental
 	WallTime types.Network_TimeSinceEpoch `json:"wallTime"`
 	// WebSocket request data.
 	Request types.Network_WebSocketRequest `json:"request"`
 }
 
 // Fired when WebSocket is about to initiate handshake.
-// NOTE Experimental
 func (obj *Network) WebSocketWillSendHandshakeRequest(fn func(params *WebSocketWillSendHandshakeRequestParams, err error) bool) {
 	closeChn := make(chan struct{})
 	decoder := obj.conn.On("Network.webSocketWillSendHandshakeRequest", closeChn)
@@ -592,7 +603,6 @@ type WebSocketHandshakeResponseReceivedParams struct {
 }
 
 // Fired when WebSocket handshake response becomes available.
-// NOTE Experimental
 func (obj *Network) WebSocketHandshakeResponseReceived(fn func(params *WebSocketHandshakeResponseReceivedParams, err error) bool) {
 	closeChn := make(chan struct{})
 	decoder := obj.conn.On("Network.webSocketHandshakeResponseReceived", closeChn)
@@ -619,7 +629,6 @@ type WebSocketCreatedParams struct {
 }
 
 // Fired upon WebSocket creation.
-// NOTE Experimental
 func (obj *Network) WebSocketCreated(fn func(params *WebSocketCreatedParams, err error) bool) {
 	closeChn := make(chan struct{})
 	decoder := obj.conn.On("Network.webSocketCreated", closeChn)
@@ -644,7 +653,6 @@ type WebSocketClosedParams struct {
 }
 
 // Fired when WebSocket is closed.
-// NOTE Experimental
 func (obj *Network) WebSocketClosed(fn func(params *WebSocketClosedParams, err error) bool) {
 	closeChn := make(chan struct{})
 	decoder := obj.conn.On("Network.webSocketClosed", closeChn)
@@ -671,7 +679,6 @@ type WebSocketFrameReceivedParams struct {
 }
 
 // Fired when WebSocket frame is received.
-// NOTE Experimental
 func (obj *Network) WebSocketFrameReceived(fn func(params *WebSocketFrameReceivedParams, err error) bool) {
 	closeChn := make(chan struct{})
 	decoder := obj.conn.On("Network.webSocketFrameReceived", closeChn)
@@ -698,7 +705,6 @@ type WebSocketFrameErrorParams struct {
 }
 
 // Fired when WebSocket frame error occurs.
-// NOTE Experimental
 func (obj *Network) WebSocketFrameError(fn func(params *WebSocketFrameErrorParams, err error) bool) {
 	closeChn := make(chan struct{})
 	decoder := obj.conn.On("Network.webSocketFrameError", closeChn)
@@ -725,7 +731,6 @@ type WebSocketFrameSentParams struct {
 }
 
 // Fired when WebSocket frame is sent.
-// NOTE Experimental
 func (obj *Network) WebSocketFrameSent(fn func(params *WebSocketFrameSentParams, err error) bool) {
 	closeChn := make(chan struct{})
 	decoder := obj.conn.On("Network.webSocketFrameSent", closeChn)
@@ -756,7 +761,6 @@ type EventSourceMessageReceivedParams struct {
 }
 
 // Fired when EventSource message is received.
-// NOTE Experimental
 func (obj *Network) EventSourceMessageReceived(fn func(params *EventSourceMessageReceivedParams, err error) bool) {
 	closeChn := make(chan struct{})
 	decoder := obj.conn.On("Network.eventSourceMessageReceived", closeChn)
@@ -783,14 +787,16 @@ type RequestInterceptedParams struct {
 	ResourceType types.Page_ResourceType `json:"resourceType"`
 	// Whether this is a navigation request, which can abort the navigation completely.
 	IsNavigationRequest bool `json:"isNavigationRequest"`
-	// HTTP response headers, only sent if a redirect was intercepted.
-	RedirectHeaders *types.Network_Headers `json:"redirectHeaders,omitempty"`
-	// HTTP response code, only sent if a redirect was intercepted.
-	RedirectStatusCode *int `json:"redirectStatusCode,omitempty"`
 	// Redirect location, only sent if a redirect was intercepted.
 	RedirectUrl *string `json:"redirectUrl,omitempty"`
 	// Details of the Authorization Challenge encountered. If this is set then continueInterceptedRequest must contain an authChallengeResponse.
 	AuthChallenge *types.Network_AuthChallenge `json:"authChallenge,omitempty"`
+	// Response error if intercepted at response stage or if redirect occurred while intercepting request.
+	ResponseErrorReason *types.Network_ErrorReason `json:"responseErrorReason,omitempty"`
+	// Response code if intercepted at response stage or if redirect occurred while intercepting request or auth retry occurred.
+	ResponseStatusCode *int `json:"responseStatusCode,omitempty"`
+	// Response headers if intercepted at the response stage or if redirect occurred while intercepting request or auth retry occurred.
+	ResponseHeaders *types.Network_Headers `json:"responseHeaders,omitempty"`
 }
 
 // Details of an intercepted HTTP request, which must be either allowed, blocked, modified or mocked.

@@ -57,6 +57,16 @@ type DOMSnapshot_DOMNode struct {
 	IsClickable *bool `json:"isClickable,omitempty"`
 }
 
+// Details of post layout rendered text positions. The exact layout should not be regarded as stable and may change between versions.
+type DOMSnapshot_InlineTextBox struct {
+	// The absolute position bounding box.
+	BoundingBox DOM_Rect `json:"boundingBox"`
+	// The starting index in characters, for this post layout textbox substring.
+	StartCharacterIndex int `json:"startCharacterIndex"`
+	// The number of characters in this post layout textbox substring.
+	NumCharacters int `json:"numCharacters"`
+}
+
 // Details of an element in the DOM tree with a LayoutObject.
 type DOMSnapshot_LayoutTreeNode struct {
 	// The index of the related DOM node in the <code>domNodes</code> array returned by <code>getSnapshot</code>.
@@ -66,7 +76,7 @@ type DOMSnapshot_LayoutTreeNode struct {
 	// Contents of the LayoutText, if any.
 	LayoutText *string `json:"layoutText,omitempty"`
 	// The post-layout inline text nodes, if any.
-	InlineTextNodes []CSS_InlineTextBox `json:"inlineTextNodes,omitempty"`
+	InlineTextNodes []DOMSnapshot_InlineTextBox `json:"inlineTextNodes,omitempty"`
 	// Index into the <code>computedStyles</code> array returned by <code>getSnapshot</code>.
 	StyleIndex *int `json:"styleIndex,omitempty"`
 }

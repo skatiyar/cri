@@ -35,10 +35,8 @@ func (obj *DOM) Disable() (err error) {
 
 type GetDocumentRequest struct {
 	// The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
-	// NOTE Experimental
 	Depth *int `json:"depth,omitempty"`
 	// Whether or not iframes and shadow roots should be traversed when returning the subtree (default is false).
-	// NOTE Experimental
 	Pierce *bool `json:"pierce,omitempty"`
 }
 
@@ -55,10 +53,8 @@ func (obj *DOM) GetDocument(request *GetDocumentRequest) (response GetDocumentRe
 
 type GetFlattenedDocumentRequest struct {
 	// The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
-	// NOTE Experimental
 	Depth *int `json:"depth,omitempty"`
 	// Whether or not iframes and shadow roots should be traversed when returning the subtree (default is false).
-	// NOTE Experimental
 	Pierce *bool `json:"pierce,omitempty"`
 }
 
@@ -93,10 +89,8 @@ type RequestChildNodesRequest struct {
 	// Id of the node to get children for.
 	NodeId types.DOM_NodeId `json:"nodeId"`
 	// The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
-	// NOTE Experimental
 	Depth *int `json:"depth,omitempty"`
 	// Whether or not iframes and shadow roots should be traversed when returning the sub-tree (default is false).
-	// NOTE Experimental
 	Pierce *bool `json:"pierce,omitempty"`
 }
 
@@ -264,7 +258,6 @@ type PerformSearchRequest struct {
 	// Plain text or query selector or XPath search query.
 	Query string `json:"query"`
 	// True to search in user agent shadow DOM.
-	// NOTE Experimental
 	IncludeUserAgentShadowDOM *bool `json:"includeUserAgentShadowDOM,omitempty"`
 }
 
@@ -529,7 +522,7 @@ type GetBoxModelResponse struct {
 	Model types.DOM_BoxModel `json:"model"`
 }
 
-// Returns boxes for the currently selected nodes.
+// Returns boxes for the given node.
 func (obj *DOM) GetBoxModel(request *GetBoxModelRequest) (response GetBoxModelResponse, err error) {
 	err = obj.conn.Send("DOM.getBoxModel", request, &response)
 	return
@@ -579,10 +572,8 @@ type DescribeNodeRequest struct {
 	// JavaScript object id of the node wrapper.
 	ObjectId *types.Runtime_RemoteObjectId `json:"objectId,omitempty"`
 	// The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
-	// NOTE Experimental
 	Depth *int `json:"depth,omitempty"`
 	// Whether or not iframes and shadow roots should be traversed when returning the subtree (default is false).
-	// NOTE Experimental
 	Pierce *bool `json:"pierce,omitempty"`
 }
 
