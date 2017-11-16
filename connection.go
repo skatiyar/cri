@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/mitchellh/mapstructure"
@@ -59,8 +60,9 @@ type CommandRequest struct {
 	Method string      `json:"method"`
 	Params interface{} `json:"params"`
 
-	resChn chan CommandResponse
-	errChn chan error
+	resChn     chan CommandResponse
+	errChn     chan error
+	timeoutChn chan bool
 }
 
 type EventRequest struct {
@@ -69,14 +71,58 @@ type EventRequest struct {
 	eventChn chan CommandResponse
 }
 
+type eventsStore struct {
+	sync.RWMutex
+	events map[string]map[EventRequest]bool
+}
+
+func (es *eventsStore) addEvent(ereq EventRequest) {
+	es.Lock()
+	defer es.Unlock()
+	if es.events == nil {
+		es.events = make(map[string]map[EventRequest]bool)
+	}
+	if _, ok := es.events[ereq.Method]; !ok {
+		es.events[ereq.Method] = make(map[EventRequest]bool)
+	}
+	es.events[ereq.Method][ereq] = true
+}
+
+func (es *eventsStore) deleteEvent(ereq EventRequest) {
+	es.Lock()
+	defer es.Unlock()
+	if es.events == nil {
+		return
+	}
+	if _, ok := es.events[ereq.Method]; !ok {
+		return
+	}
+	delete(es.events[ereq.Method], ereq)
+}
+
+func (es *eventsStore) forEvents(cmd string, fn func(EventRequest)) {
+	es.RLock()
+	defer es.RUnlock()
+	if es.events == nil {
+		return
+	}
+	if _, ok := es.events[cmd]; !ok {
+		return
+	}
+	for eve, _ := range es.events[cmd] {
+		go fn(eve)
+	}
+}
+
 type Connection struct {
 	addr, wsAddr string
+	cmdTimeout   time.Duration
 
 	conn   *websocket.Conn
 	reqChn chan CommandRequest
 
 	responseMap syncmap.Map
-	eventMap    syncmap.Map
+	eventMaps   eventsStore
 
 	counter     int
 	counterLock sync.RWMutex
@@ -111,10 +157,11 @@ func NewConnection(opts ...ConnectionOption) (*Connection, error) {
 	}
 
 	instance := &Connection{
-		addr:   opt.Addr,
-		wsAddr: opt.SocketAddr,
-		conn:   conn,
-		reqChn: make(chan CommandRequest),
+		addr:       opt.Addr,
+		wsAddr:     opt.SocketAddr,
+		cmdTimeout: time.Second * 5,
+		conn:       conn,
+		reqChn:     make(chan CommandRequest),
 	}
 	go instance.reader()
 	go instance.writer()
@@ -124,16 +171,41 @@ func NewConnection(opts ...ConnectionOption) (*Connection, error) {
 
 func (c *Connection) Send(command string, request, response interface{}) error {
 	cmd := CommandRequest{
-		ID:     c.id(),
-		Method: command,
-		Params: request,
-		errChn: make(chan error),
-		resChn: make(chan CommandResponse),
+		ID:         c.id(),
+		Method:     command,
+		Params:     request,
+		resChn:     make(chan CommandResponse, 1),
+		errChn:     make(chan error, 1),
+		timeoutChn: make(chan bool, 1),
 	}
-	defer close(cmd.errChn)
-	defer close(cmd.resChn)
 
-	return c.cmd(cmd, response)
+	c.responseMap.Store(cmd.ID, cmd)
+	defer func() {
+		c.responseMap.Delete(cmd.ID)
+	}()
+
+	go func() {
+		time.Sleep(c.cmdTimeout)
+		cmd.timeoutChn <- true
+	}()
+
+	if cmd.Params == nil {
+		cmd.Params = struct{}{}
+	}
+
+	c.reqChn <- cmd
+
+	select {
+	case cmdRes := <-cmd.resChn:
+		if response == nil {
+			return nil
+		}
+		return mapstructure.Decode(cmdRes.Result, response)
+	case resErr := <-cmd.errChn:
+		return resErr
+	case <-cmd.timeoutChn:
+		return errors.New("command response timeout")
+	}
 }
 
 func (c *Connection) On(event string, closeChn chan struct{}) func(params interface{}) error {
@@ -141,28 +213,12 @@ func (c *Connection) On(event string, closeChn chan struct{}) func(params interf
 		Method:   event,
 		eventChn: make(chan CommandResponse),
 	}
-	eveMap, eok := c.eventMap.Load(eve.Method)
-	if !eok {
-		eveMap = syncmap.Map{}
-	}
-	if val, ok := eveMap.(syncmap.Map); ok {
-		val.Store(eve, true)
-		eveMap = val
-	} else {
-		val = syncmap.Map{}
-		val.Store(eve, true)
-		eveMap = val
-	}
-	c.eventMap.Store(eve.Method, eveMap)
+	c.eventMaps.addEvent(eve)
 
 	defer func() {
 		go func() {
 			<-closeChn
-			if eveMap, eok := c.eventMap.Load(eve.Method); eok {
-				if rmap, rok := eveMap.(syncmap.Map); rok {
-					rmap.Delete(eve)
-				}
-			}
+			c.eventMaps.deleteEvent(eve)
 		}()
 	}()
 
@@ -197,11 +253,7 @@ func (c *Connection) writer() {
 		case req := <-c.reqChn:
 			if writeErr := c.conn.WriteJSON(req); writeErr != nil {
 				req.errChn <- writeErr
-				continue
 			}
-
-			req.errChn <- nil
-			c.responseMap.Store(req.ID, req)
 		}
 	}
 }
@@ -214,54 +266,21 @@ func (c *Connection) reader() {
 		}
 
 		if data.ID > 0 {
-			var err error
-
 			if val, vok := c.responseMap.Load(data.ID); vok {
 				if req, rok := val.(CommandRequest); rok {
 					if data.Error != nil {
-						err = errors.New(data.Error.Message)
+						req.errChn <- errors.New(data.Error.Message)
+					} else {
+						req.resChn <- data
 					}
-					req.resChn <- data
-					req.errChn <- err
 				}
 			}
-
-			c.responseMap.Delete(data.ID)
 		} else if len(data.Method) > 0 {
-			if val, vok := c.eventMap.Load(data.Method); vok {
-				if eve, eok := val.(syncmap.Map); eok {
-					eve.Range(func(key, val interface{}) bool {
-						if kval, kok := key.(EventRequest); kok {
-							kval.eventChn <- data
-						}
-						return true
-					})
-				}
-			}
+			c.eventMaps.forEvents(data.Method, func(val EventRequest) {
+				val.eventChn <- data
+			})
 		}
 	}
-}
-
-func (c *Connection) cmd(req CommandRequest, res interface{}) error {
-	if req.Params == nil {
-		req.Params = struct{}{}
-	}
-
-	c.reqChn <- req
-	if reqErr := <-req.errChn; reqErr != nil {
-		return reqErr
-	}
-
-	cmdRes := <-req.resChn
-	if resErr := <-req.errChn; resErr != nil {
-		return resErr
-	}
-
-	if res == nil {
-		return nil
-	}
-
-	return mapstructure.Decode(cmdRes.Result, res)
 }
 
 func checkVersion(addr string) error {
