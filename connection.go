@@ -11,6 +11,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/mitchellh/mapstructure"
+	"golang.org/x/sync/syncmap"
 )
 
 const (
@@ -70,13 +71,15 @@ type EventRequest struct {
 
 type Connection struct {
 	addr, wsAddr string
-	conn         *websocket.Conn
+
+	conn   *websocket.Conn
+	reqChn chan CommandRequest
+
+	responseMap syncmap.Map
+	eventMap    syncmap.Map
 
 	counter     int
 	counterLock sync.RWMutex
-	reqChn      chan CommandRequest
-	responseMap sync.Map
-	eventMap    sync.Map
 }
 
 func NewConnection(opts ...ConnectionOption) (*Connection, error) {
