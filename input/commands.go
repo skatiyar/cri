@@ -59,7 +59,6 @@ type DispatchKeyEventRequest struct {
 	// Whether the event was a system key event (default: false).
 	IsSystemKey *bool `json:"isSystemKey,omitempty"`
 	// Whether the event was from the left or right side of the keyboard. 1=Left, 2=Right (default: 0).
-	// NOTE Experimental
 	Location *int `json:"location,omitempty"`
 }
 

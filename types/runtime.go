@@ -189,3 +189,5 @@ type Runtime_StackTrace struct {
 	// NOTE Experimental
 	PromiseCreationFrame *Runtime_CallFrame `json:"promiseCreationFrame,omitempty"`
 }
+
+type Runtime_AsyncTaskId string

@@ -31,10 +31,8 @@ type DOM_Node struct {
 	// Node identifier that is passed into the rest of the DOM messages as the <code>nodeId</code>. Backend will only push node with given <code>id</code> once. It is aware of all requested nodes and will only fire DOM events for nodes known to the client.
 	NodeId DOM_NodeId `json:"nodeId"`
 	// The id of the parent node if any.
-	// NOTE Experimental
 	ParentId *DOM_NodeId `json:"parentId,omitempty"`
 	// The BackendNodeId for this node.
-	// NOTE Experimental
 	BackendNodeId DOM_BackendNodeId `json:"backendNodeId"`
 	// <code>Node</code>'s nodeType.
 	NodeType int `json:"nodeType"`
@@ -53,7 +51,6 @@ type DOM_Node struct {
 	// Document URL that <code>Document</code> or <code>FrameOwner</code> node points to.
 	DocumentURL *string `json:"documentURL,omitempty"`
 	// Base URL that <code>Document</code> or <code>FrameOwner</code> node uses for URL completion.
-	// NOTE Experimental
 	BaseURL *string `json:"baseURL,omitempty"`
 	// <code>DocumentType</code>'s publicId.
 	PublicId *string `json:"publicId,omitempty"`
@@ -72,26 +69,20 @@ type DOM_Node struct {
 	// Shadow root type.
 	ShadowRootType *DOM_ShadowRootType `json:"shadowRootType,omitempty"`
 	// Frame ID for frame owner elements.
-	// NOTE Experimental
 	FrameId *Page_FrameId `json:"frameId,omitempty"`
 	// Content document for frame owner elements.
 	ContentDocument *DOM_Node `json:"contentDocument,omitempty"`
 	// Shadow root list for given element host.
-	// NOTE Experimental
 	ShadowRoots []*DOM_Node `json:"shadowRoots,omitempty"`
 	// Content document fragment for template elements.
-	// NOTE Experimental
 	TemplateContent *DOM_Node `json:"templateContent,omitempty"`
 	// Pseudo elements associated with this node.
-	// NOTE Experimental
 	PseudoElements []*DOM_Node `json:"pseudoElements,omitempty"`
 	// Import document for the HTMLImport links.
 	ImportedDocument *DOM_Node `json:"importedDocument,omitempty"`
 	// Distributed nodes for given insertion point.
-	// NOTE Experimental
 	DistributedNodes []DOM_BackendNode `json:"distributedNodes,omitempty"`
 	// Whether the node is SVG.
-	// NOTE Experimental
 	IsSVG *bool `json:"isSVG,omitempty"`
 }
 

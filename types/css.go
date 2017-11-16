@@ -77,7 +77,6 @@ type CSS_CSSStyleSheetHeader struct {
 	// Column offset of the stylesheet within the resource (zero based).
 	StartColumn float32 `json:"startColumn"`
 	// Size of the content (in characters).
-	// NOTE Experimental
 	Length float32 `json:"length"`
 }
 
@@ -182,7 +181,6 @@ type CSS_CSSMedia struct {
 	// Identifier of the stylesheet containing this object (if exists).
 	StyleSheetId *CSS_StyleSheetId `json:"styleSheetId,omitempty"`
 	// Array of media queries.
-	// NOTE Experimental
 	MediaList []CSS_MediaQuery `json:"mediaList,omitempty"`
 }
 
@@ -246,14 +244,4 @@ type CSS_StyleDeclarationEdit struct {
 	Range CSS_SourceRange `json:"range"`
 	// New style text.
 	Text string `json:"text"`
-}
-
-// Details of post layout rendered text positions. The exact layout should not be regarded as stable and may change between versions.
-type CSS_InlineTextBox struct {
-	// The absolute position bounding box.
-	BoundingBox DOM_Rect `json:"boundingBox"`
-	// The starting index in characters, for this post layout textbox substring.
-	StartCharacterIndex int `json:"startCharacterIndex"`
-	// The number of characters in this post layout textbox substring.
-	NumCharacters int `json:"numCharacters"`
 }

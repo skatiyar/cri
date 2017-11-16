@@ -147,15 +147,31 @@ func (obj *Debugger) ContinueToLocation(request *ContinueToLocationRequest) (err
 	return
 }
 
+type PauseOnAsyncTaskRequest struct {
+	// Debugger will pause when given async task is started.
+	AsyncTaskId types.Runtime_AsyncTaskId `json:"asyncTaskId"`
+}
+
+func (obj *Debugger) PauseOnAsyncTask(request *PauseOnAsyncTaskRequest) (err error) {
+	err = obj.conn.Send("Debugger.pauseOnAsyncTask", request, nil)
+	return
+}
+
 // Steps over the statement.
 func (obj *Debugger) StepOver() (err error) {
 	err = obj.conn.Send("Debugger.stepOver", nil, nil)
 	return
 }
 
+type StepIntoRequest struct {
+	// Debugger will issue additional Debugger.paused notification if any async task is scheduled before next pause.
+	// NOTE Experimental
+	BreakOnAsyncCall *bool `json:"breakOnAsyncCall,omitempty"`
+}
+
 // Steps into the function call.
-func (obj *Debugger) StepInto() (err error) {
-	err = obj.conn.Send("Debugger.stepInto", nil, nil)
+func (obj *Debugger) StepInto(request *StepIntoRequest) (err error) {
+	err = obj.conn.Send("Debugger.stepInto", request, nil)
 	return
 }
 
@@ -171,7 +187,7 @@ func (obj *Debugger) Pause() (err error) {
 	return
 }
 
-// Steps into next scheduled async task if any is scheduled before next pause. Returns success when async task is actually scheduled, returns error if no task were scheduled or another scheduleStepIntoAsync was called.
+// This method is deprecated - use Debugger.stepInto with breakOnAsyncCall and Debugger.pauseOnAsyncTask instead. Steps into next scheduled async task if any is scheduled before next pause. Returns success when async task is actually scheduled, returns error if no task were scheduled or another scheduleStepIntoAsync was called.
 func (obj *Debugger) ScheduleStepIntoAsync() (err error) {
 	err = obj.conn.Send("Debugger.scheduleStepIntoAsync", nil, nil)
 	return
@@ -324,6 +340,17 @@ type SetVariableValueRequest struct {
 // Changes value of variable in a callframe. Object-based scopes are not supported and must be mutated manually.
 func (obj *Debugger) SetVariableValue(request *SetVariableValueRequest) (err error) {
 	err = obj.conn.Send("Debugger.setVariableValue", request, nil)
+	return
+}
+
+type SetReturnValueRequest struct {
+	// New return value.
+	NewValue types.Runtime_CallArgument `json:"newValue"`
+}
+
+// Changes return value in top frame. Available only at return break position.
+func (obj *Debugger) SetReturnValue(request *SetReturnValueRequest) (err error) {
+	err = obj.conn.Send("Debugger.setReturnValue", request, nil)
 	return
 }
 
@@ -503,6 +530,9 @@ type PausedParams struct {
 	HitBreakpoints []string `json:"hitBreakpoints,omitempty"`
 	// Async stack trace, if any.
 	AsyncStackTrace *types.Runtime_StackTrace `json:"asyncStackTrace,omitempty"`
+	// Scheduled async task id.
+	// NOTE Experimental
+	ScheduledAsyncTaskId *types.Runtime_AsyncTaskId `json:"scheduledAsyncTaskId,omitempty"`
 }
 
 // Fired when the virtual machine stopped on breakpoint or exception or any other stop criteria.

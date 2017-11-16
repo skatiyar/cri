@@ -126,6 +126,16 @@ func (obj *HeapProfiler) StopSampling() (response StopSamplingResponse, err erro
 	return
 }
 
+type GetSamplingProfileResponse struct {
+	// Return the sampling profile being collected.
+	Profile types.HeapProfiler_SamplingHeapProfile `json:"profile"`
+}
+
+func (obj *HeapProfiler) GetSamplingProfile() (response GetSamplingProfileResponse, err error) {
+	err = obj.conn.Send("HeapProfiler.getSamplingProfile", nil, &response)
+	return
+}
+
 type AddHeapSnapshotChunkParams struct {
 	Chunk string `json:"chunk"`
 }
