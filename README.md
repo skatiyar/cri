@@ -12,6 +12,8 @@ The `types` package conatins all the primitives required by the protocol. A fat 
 
 The base package contains the methods to connect to a devtools instance.
 
+Works with go1.4 and above.
+
 ### Install
 
 ```
