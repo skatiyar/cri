@@ -3,6 +3,8 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
+// Package serviceworker provides commands and events for ServiceWorker domain.
+
 package serviceworker
 
 import (

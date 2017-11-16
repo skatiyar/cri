@@ -3,6 +3,7 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
+// Package headlessexperimental provides commands and events for HeadlessExperimental domain.
 // This domain provides experimental commands only supported in headless mode.
 package headlessexperimental
 

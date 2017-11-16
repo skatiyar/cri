@@ -3,6 +3,8 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
+// Package cachestorage provides commands and events for CacheStorage domain.
+
 package cachestorage
 
 import (

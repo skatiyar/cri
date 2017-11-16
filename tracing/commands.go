@@ -3,6 +3,8 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
+// Package tracing provides commands and events for Tracing domain.
+
 package tracing
 
 import (

@@ -3,6 +3,7 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
+// Package browser provides commands and events for Browser domain.
 // The Browser domain defines methods and events for browser managing.
 package browser
 

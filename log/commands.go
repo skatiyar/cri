@@ -3,6 +3,7 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
+// Package log provides commands and events for Log domain.
 // Provides access to log entries.
 package log
 

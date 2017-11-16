@@ -3,6 +3,8 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
+// Package deviceorientation provides commands and events for DeviceOrientation domain.
+
 package deviceorientation
 
 import (

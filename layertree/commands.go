@@ -3,6 +3,8 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
+// Package layertree provides commands and events for LayerTree domain.
+
 package layertree
 
 import (

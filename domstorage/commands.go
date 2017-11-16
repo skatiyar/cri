@@ -3,6 +3,7 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
+// Package domstorage provides commands and events for DOMStorage domain.
 // Query and modify DOM storage.
 package domstorage
 

@@ -3,6 +3,7 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
+// Package audits provides commands and events for Audits domain.
 // Audits domain allows investigation of page violations and possible improvements.
 package audits
 

@@ -3,6 +3,8 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
+// Package storage provides commands and events for Storage domain.
+
 package storage
 
 import (

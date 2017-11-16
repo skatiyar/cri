@@ -3,6 +3,8 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
+// Package database provides commands and events for Database domain.
+
 package database
 
 import (

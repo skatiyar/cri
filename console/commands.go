@@ -3,6 +3,7 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
+// Package console provides commands and events for Console domain.
 // This domain is deprecated - use Runtime or Log instead.
 package console
 

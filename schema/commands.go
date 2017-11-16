@@ -3,6 +3,7 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
+// Package schema provides commands and events for Schema domain.
 // Provides information about the protocol schema.
 package schema
 

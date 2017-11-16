@@ -3,6 +3,7 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
+// Package domsnapshot provides commands and events for DOMSnapshot domain.
 // This domain facilitates obtaining document snapshots with DOM, layout, and style information.
 package domsnapshot
 

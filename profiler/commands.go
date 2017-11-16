@@ -3,6 +3,8 @@
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
+// Package profiler provides commands and events for Profiler domain.
+
 package profiler
 
 import (
