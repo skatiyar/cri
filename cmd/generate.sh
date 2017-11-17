@@ -12,4 +12,7 @@ curl -s "$base/v8/v8/+/master/src/inspector/js_protocol.json?format=TEXT" | base
 cd $basedir/cri-gen
 go run createFiles.go jsonDefinitions.go main.go
 cd - > /dev/null 2>&1
-gofmt -s -w ./..
+gofmt -s -w .
+
+branch_name="$(git rev-parse --symbolic-full-name --abbrev-ref HEAD)"
+sed -i -e "s/branch=[^) ]*)/branch=$branch_name)/g" README.md
