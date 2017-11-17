@@ -53,6 +53,28 @@ func (obj *Network) SetUserAgentOverride(request *SetUserAgentOverrideRequest) (
 	return
 }
 
+type SearchInResponseBodyRequest struct {
+	// Identifier of the network response to search.
+	RequestId types.Network_RequestId `json:"requestId"`
+	// String to search for.
+	Query string `json:"query"`
+	// If true, search is case sensitive.
+	CaseSensitive *bool `json:"caseSensitive,omitempty"`
+	// If true, treats string parameter as regex.
+	IsRegex *bool `json:"isRegex,omitempty"`
+}
+
+type SearchInResponseBodyResponse struct {
+	// List of search matches.
+	Result []types.Debugger_SearchMatch `json:"result"`
+}
+
+// Searches for given string in response content.
+func (obj *Network) SearchInResponseBody(request *SearchInResponseBodyRequest) (response SearchInResponseBodyResponse, err error) {
+	err = obj.conn.Send("Network.searchInResponseBody", request, &response)
+	return
+}
+
 type SetExtraHTTPHeadersRequest struct {
 	// Map with extra HTTP headers.
 	Headers types.Network_Headers `json:"headers"`
