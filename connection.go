@@ -49,6 +49,7 @@ type CommandResponse struct {
 	ID     int                    `json:"id"`
 	Method string                 `json:"method"`
 	Result map[string]interface{} `json:"result"`
+	Params map[string]interface{} `json:"params"`
 	Error  *struct {
 		Message string `json:"message"`
 		Code    int    `json:"code"`
@@ -109,7 +110,7 @@ func (es *eventsStore) forEvents(cmd string, fn func(EventRequest)) {
 	if _, ok := es.events[cmd]; !ok {
 		return
 	}
-	for eve, _ := range es.events[cmd] {
+	for eve := range es.events[cmd] {
 		go fn(eve)
 	}
 }
@@ -225,7 +226,7 @@ func (c *Connection) On(event string, closeChn chan struct{}) func(params interf
 	return func(params interface{}) error {
 		res := <-eve.eventChn
 		if params != nil {
-			return mapstructure.Decode(res.Result, params)
+			return mapstructure.Decode(res.Params, params)
 		}
 		return nil
 	}
