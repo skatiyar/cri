@@ -50,7 +50,7 @@ type Accessibility_AXRelatedNode struct {
 
 type Accessibility_AXProperty struct {
 	// The name of this property.
-	Name string `json:"name"`
+	Name Accessibility_AXPropertyName `json:"name"`
 	// The value of this property.
 	Value Accessibility_AXValue `json:"value"`
 }
@@ -67,20 +67,8 @@ type Accessibility_AXValue struct {
 	Sources []Accessibility_AXValueSource `json:"sources,omitempty"`
 }
 
-// States which apply to every AX node.
-type Accessibility_AXGlobalStates string
-
-// Attributes which apply to nodes in live regions.
-type Accessibility_AXLiveRegionAttributes string
-
-// Attributes which apply to widgets.
-type Accessibility_AXWidgetAttributes string
-
-// States which apply to widgets.
-type Accessibility_AXWidgetStates string
-
-// Relationships between elements other than parent/child/sibling.
-type Accessibility_AXRelationshipAttributes string
+// Values of AXProperty name: from 'busy' to 'roledescription' - states which apply to every AX node, from 'live' to 'root' - attributes which apply to nodes in live regions, from 'autocomplete' to 'valuetext' - attributes which apply to widgets, from 'checked' to 'selected' - states which apply to widgets, from 'activedescendant' to 'owns' - relationships between elements other than parent/child/sibling.
+type Accessibility_AXPropertyName string
 
 // A node in the accessibility tree.
 type Accessibility_AXNode struct {

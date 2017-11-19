@@ -1,7 +1,5 @@
 package cri
 
-//go:generate bash cmd/generate.sh
-
 import (
 	"encoding/json"
 	"errors"
@@ -15,10 +13,10 @@ import (
 	"golang.org/x/sync/syncmap"
 )
 
-const (
-	MaxIntValue    = 1<<31 - 1
-	DefaultAddress = "http://127.0.0.1:9222"
-)
+// DefaultAddress for remote debugging protocol
+const DefaultAddress = "http://127.0.0.1:9222"
+
+const maxIntValue = 1<<31 - 1
 
 type ConnectionOption func(*ConnectionOpts)
 
@@ -45,31 +43,10 @@ func SetSocketAddress(addr string) ConnectionOption {
 	}
 }
 
-type CommandResponse struct {
-	ID     int                    `json:"id"`
-	Method string                 `json:"method"`
-	Result map[string]interface{} `json:"result"`
-	Params map[string]interface{} `json:"params"`
-	Error  *struct {
-		Message string `json:"message"`
-		Code    int    `json:"code"`
-	} `json:"error"`
-}
-
-type CommandRequest struct {
-	ID     int         `json:"id"`
-	Method string      `json:"method"`
-	Params interface{} `json:"params"`
-
-	resChn     chan CommandResponse
-	errChn     chan error
-	timeoutChn chan bool
-}
-
-type EventRequest struct {
+type eventRequest struct {
 	Method string
 
-	eventChn chan CommandResponse
+	eventChn chan commandResponse
 }
 
 type eventsStore struct {
@@ -115,15 +92,19 @@ func (es *eventsStore) forEvents(cmd string, fn func(EventRequest)) {
 	}
 }
 
+// Connection represents a connection to remote target.
+// Connection is thread safe can be called from multiple go routines.
+// Connection can be used to send commands or listen to events from target.
+// This satisfies the Connector interface required by protocols to work.
 type Connection struct {
 	addr, wsAddr string
 	cmdTimeout   time.Duration
 
 	conn   *websocket.Conn
-	reqChn chan CommandRequest
+	reqChn chan commandRequest
 
 	responseMap syncmap.Map
-	eventMaps   eventsStore
+	eventMap    eventsStore
 
 	counter     int
 	counterLock sync.RWMutex
@@ -162,7 +143,7 @@ func NewConnection(opts ...ConnectionOption) (*Connection, error) {
 		wsAddr:     opt.SocketAddr,
 		cmdTimeout: time.Second * 5,
 		conn:       conn,
-		reqChn:     make(chan CommandRequest),
+		reqChn:     make(chan commandRequest),
 	}
 	go instance.reader()
 	go instance.writer()
@@ -170,12 +151,36 @@ func NewConnection(opts ...ConnectionOption) (*Connection, error) {
 	return instance, nil
 }
 
+type commandResponse struct {
+	ID     int                    `json:"id"`
+	Method string                 `json:"method"`
+	Result map[string]interface{} `json:"result"`
+	Params map[string]interface{} `json:"params"`
+	Error  *struct {
+		Message string `json:"message"`
+		Code    int    `json:"code"`
+	} `json:"error"`
+}
+
+// commandRequest
+type commandRequest struct {
+	ID     int         `json:"id"`     // id of the command request, should be greater than 0
+	Method string      `json:"method"` // method takes
+	Params interface{} `json:"params"` // params contains parameters taken by command
+
+	resChn     chan commandResponse
+	errChn     chan error
+	timeoutChn chan bool
+}
+
+// Send sends a command and associated parameters to the target and waits for the response
+// and decodes the respose back in location provided
 func (c *Connection) Send(command string, request, response interface{}) error {
-	cmd := CommandRequest{
+	cmd := commandRequest{
 		ID:         c.id(),
 		Method:     command,
 		Params:     request,
-		resChn:     make(chan CommandResponse, 1),
+		resChn:     make(chan commandResponse, 1),
 		errChn:     make(chan error, 1),
 		timeoutChn: make(chan bool, 1),
 	}
@@ -212,14 +217,14 @@ func (c *Connection) Send(command string, request, response interface{}) error {
 func (c *Connection) On(event string, closeChn chan struct{}) func(params interface{}) error {
 	eve := EventRequest{
 		Method:   event,
-		eventChn: make(chan CommandResponse),
+		eventChn: make(chan commandResponse, 1),
 	}
-	c.eventMaps.addEvent(eve)
+	c.eventMap.addEvent(eve)
 
 	defer func() {
 		go func() {
 			<-closeChn
-			c.eventMaps.deleteEvent(eve)
+			c.eventMap.deleteEvent(eve)
 		}()
 	}()
 
@@ -233,6 +238,10 @@ func (c *Connection) On(event string, closeChn chan struct{}) func(params interf
 }
 
 func (c *Connection) Close() error {
+	if closeErr := c.conn.Close(); closeErr != nil {
+		return closeErr
+	}
+
 	return nil
 }
 
@@ -240,7 +249,7 @@ func (c *Connection) id() int {
 	c.counterLock.Lock()
 	defer c.counterLock.Unlock()
 	nextCount := c.counter + 1
-	if nextCount == MaxIntValue {
+	if nextCount == maxIntValue {
 		c.counter = 1
 	} else {
 		c.counter = nextCount
@@ -261,14 +270,14 @@ func (c *Connection) writer() {
 
 func (c *Connection) reader() {
 	for {
-		var data CommandResponse
+		var data commandResponse
 		if decodeErr := c.conn.ReadJSON(&data); decodeErr != nil {
 			fmt.Println(decodeErr.Error())
 		}
 
 		if data.ID > 0 {
 			if val, vok := c.responseMap.Load(data.ID); vok {
-				if req, rok := val.(CommandRequest); rok {
+				if req, rok := val.(commandRequest); rok {
 					if data.Error != nil {
 						req.errChn <- errors.New(data.Error.Message)
 					} else {
@@ -277,7 +286,7 @@ func (c *Connection) reader() {
 				}
 			}
 		} else if len(data.Method) > 0 {
-			c.eventMaps.forEvents(data.Method, func(val EventRequest) {
+			c.eventMap.forEvents(data.Method, func(val EventRequest) {
 				val.eventChn <- data
 			})
 		}

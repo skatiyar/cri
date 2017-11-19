@@ -189,14 +189,19 @@ func (obj *Emulation) CanEmulate() (response CanEmulateResponse, err error) {
 type SetVirtualTimePolicyRequest struct {
 	Policy types.Emulation_VirtualTimePolicy `json:"policy"`
 	// If set, after this many virtual milliseconds have elapsed virtual time will be paused and a virtualTimeBudgetExpired event is sent.
-	Budget *int `json:"budget,omitempty"`
+	Budget *float32 `json:"budget,omitempty"`
 	// If set this specifies the maximum number of tasks that can be run before virtual is forced forwards to prevent deadlock.
 	MaxVirtualTimeTaskStarvationCount *int `json:"maxVirtualTimeTaskStarvationCount,omitempty"`
 }
 
+type SetVirtualTimePolicyResponse struct {
+	// Absolute timestamp at which virtual time was first enabled (milliseconds since epoch).
+	VirtualTimeBase types.Runtime_Timestamp `json:"virtualTimeBase"`
+}
+
 // Turns on virtual time for all frames (replacing real-time with a synthetic time source) and sets the current virtual time policy.  Note this supersedes any previous time budget.
-func (obj *Emulation) SetVirtualTimePolicy(request *SetVirtualTimePolicyRequest) (err error) {
-	err = obj.conn.Send("Emulation.setVirtualTimePolicy", request, nil)
+func (obj *Emulation) SetVirtualTimePolicy(request *SetVirtualTimePolicyRequest) (response SetVirtualTimePolicyResponse, err error) {
+	err = obj.conn.Send("Emulation.setVirtualTimePolicy", request, &response)
 	return
 }
 
@@ -242,7 +247,7 @@ func (obj *Emulation) VirtualTimeBudgetExpired(fn func(err error) bool) {
 
 type VirtualTimeAdvancedParams struct {
 	// The amount of virtual time that has elapsed in milliseconds since virtual time was first enabled.
-	VirtualTimeElapsed int `json:"virtualTimeElapsed"`
+	VirtualTimeElapsed float32 `json:"virtualTimeElapsed"`
 }
 
 // Notification sent after the virtual time has advanced.
@@ -265,7 +270,7 @@ func (obj *Emulation) VirtualTimeAdvanced(fn func(params *VirtualTimeAdvancedPar
 
 type VirtualTimePausedParams struct {
 	// The amount of virtual time that has elapsed in milliseconds since virtual time was first enabled.
-	VirtualTimeElapsed int `json:"virtualTimeElapsed"`
+	VirtualTimeElapsed float32 `json:"virtualTimeElapsed"`
 }
 
 // Notification sent after the virtual time has paused.
