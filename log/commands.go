@@ -11,6 +11,20 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in Log domain
+const (
+	Enable                = "Log.enable"
+	Disable               = "Log.disable"
+	Clear                 = "Log.clear"
+	StartViolationsReport = "Log.startViolationsReport"
+	StopViolationsReport  = "Log.stopViolationsReport"
+)
+
+// List of events in Log domain
+const (
+	EntryAdded = "Log.entryAdded"
+)
+
 // Provides access to log entries.
 type Log struct {
 	conn cri.Connector
@@ -23,19 +37,19 @@ func New(conn cri.Connector) *Log {
 
 // Enables log domain, sends the entries collected so far to the client by means of the <code>entryAdded</code> notification.
 func (obj *Log) Enable() (err error) {
-	err = obj.conn.Send("Log.enable", nil, nil)
+	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 
 // Disables log domain, prevents further log entries from being reported to the client.
 func (obj *Log) Disable() (err error) {
-	err = obj.conn.Send("Log.disable", nil, nil)
+	err = obj.conn.Send(Disable, nil, nil)
 	return
 }
 
 // Clears the log.
 func (obj *Log) Clear() (err error) {
-	err = obj.conn.Send("Log.clear", nil, nil)
+	err = obj.conn.Send(Clear, nil, nil)
 	return
 }
 
@@ -46,13 +60,13 @@ type StartViolationsReportRequest struct {
 
 // start violation reporting.
 func (obj *Log) StartViolationsReport(request *StartViolationsReportRequest) (err error) {
-	err = obj.conn.Send("Log.startViolationsReport", request, nil)
+	err = obj.conn.Send(StartViolationsReport, request, nil)
 	return
 }
 
 // Stop violation reporting.
 func (obj *Log) StopViolationsReport() (err error) {
-	err = obj.conn.Send("Log.stopViolationsReport", nil, nil)
+	err = obj.conn.Send(StopViolationsReport, nil, nil)
 	return
 }
 
@@ -64,7 +78,7 @@ type EntryAddedParams struct {
 // Issued when new message was logged.
 func (obj *Log) EntryAdded(fn func(params *EntryAddedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Log.entryAdded", closeChn)
+	decoder := obj.conn.On(EntryAdded, closeChn)
 	go func() {
 		for {
 			params := EntryAddedParams{}

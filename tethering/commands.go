@@ -10,6 +10,17 @@ import (
 	"github.com/SKatiyar/cri"
 )
 
+// List of commands in Tethering domain
+const (
+	Bind   = "Tethering.bind"
+	Unbind = "Tethering.unbind"
+)
+
+// List of events in Tethering domain
+const (
+	Accepted = "Tethering.accepted"
+)
+
 // The Tethering domain defines methods and events for browser port binding.
 type Tethering struct {
 	conn cri.Connector
@@ -27,7 +38,7 @@ type BindRequest struct {
 
 // Request browser port binding.
 func (obj *Tethering) Bind(request *BindRequest) (err error) {
-	err = obj.conn.Send("Tethering.bind", request, nil)
+	err = obj.conn.Send(Bind, request, nil)
 	return
 }
 
@@ -38,7 +49,7 @@ type UnbindRequest struct {
 
 // Request browser port unbinding.
 func (obj *Tethering) Unbind(request *UnbindRequest) (err error) {
-	err = obj.conn.Send("Tethering.unbind", request, nil)
+	err = obj.conn.Send(Unbind, request, nil)
 	return
 }
 
@@ -52,7 +63,7 @@ type AcceptedParams struct {
 // Informs that port was successfully bound and got a specified connection id.
 func (obj *Tethering) Accepted(fn func(params *AcceptedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Tethering.accepted", closeChn)
+	decoder := obj.conn.On(Accepted, closeChn)
 	go func() {
 		for {
 			params := AcceptedParams{}

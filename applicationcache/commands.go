@@ -11,6 +11,20 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in ApplicationCache domain
+const (
+	GetFramesWithManifests      = "ApplicationCache.getFramesWithManifests"
+	Enable                      = "ApplicationCache.enable"
+	GetManifestForFrame         = "ApplicationCache.getManifestForFrame"
+	GetApplicationCacheForFrame = "ApplicationCache.getApplicationCacheForFrame"
+)
+
+// List of events in ApplicationCache domain
+const (
+	ApplicationCacheStatusUpdated = "ApplicationCache.applicationCacheStatusUpdated"
+	NetworkStateUpdated           = "ApplicationCache.networkStateUpdated"
+)
+
 type ApplicationCache struct {
 	conn cri.Connector
 }
@@ -27,13 +41,13 @@ type GetFramesWithManifestsResponse struct {
 
 // Returns array of frame identifiers with manifest urls for each frame containing a document associated with some application cache.
 func (obj *ApplicationCache) GetFramesWithManifests() (response GetFramesWithManifestsResponse, err error) {
-	err = obj.conn.Send("ApplicationCache.getFramesWithManifests", nil, &response)
+	err = obj.conn.Send(GetFramesWithManifests, nil, &response)
 	return
 }
 
 // Enables application cache domain notifications.
 func (obj *ApplicationCache) Enable() (err error) {
-	err = obj.conn.Send("ApplicationCache.enable", nil, nil)
+	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 
@@ -49,7 +63,7 @@ type GetManifestForFrameResponse struct {
 
 // Returns manifest URL for document in the given frame.
 func (obj *ApplicationCache) GetManifestForFrame(request *GetManifestForFrameRequest) (response GetManifestForFrameResponse, err error) {
-	err = obj.conn.Send("ApplicationCache.getManifestForFrame", request, &response)
+	err = obj.conn.Send(GetManifestForFrame, request, &response)
 	return
 }
 
@@ -65,7 +79,7 @@ type GetApplicationCacheForFrameResponse struct {
 
 // Returns relevant application cache data for the document in given frame.
 func (obj *ApplicationCache) GetApplicationCacheForFrame(request *GetApplicationCacheForFrameRequest) (response GetApplicationCacheForFrameResponse, err error) {
-	err = obj.conn.Send("ApplicationCache.getApplicationCacheForFrame", request, &response)
+	err = obj.conn.Send(GetApplicationCacheForFrame, request, &response)
 	return
 }
 
@@ -80,7 +94,7 @@ type ApplicationCacheStatusUpdatedParams struct {
 
 func (obj *ApplicationCache) ApplicationCacheStatusUpdated(fn func(params *ApplicationCacheStatusUpdatedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("ApplicationCache.applicationCacheStatusUpdated", closeChn)
+	decoder := obj.conn.On(ApplicationCacheStatusUpdated, closeChn)
 	go func() {
 		for {
 			params := ApplicationCacheStatusUpdatedParams{}
@@ -99,7 +113,7 @@ type NetworkStateUpdatedParams struct {
 
 func (obj *ApplicationCache) NetworkStateUpdated(fn func(params *NetworkStateUpdatedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("ApplicationCache.networkStateUpdated", closeChn)
+	decoder := obj.conn.On(NetworkStateUpdated, closeChn)
 	go func() {
 		for {
 			params := NetworkStateUpdatedParams{}

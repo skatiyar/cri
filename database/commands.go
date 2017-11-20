@@ -11,6 +11,19 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in Database domain
+const (
+	Enable                = "Database.enable"
+	Disable               = "Database.disable"
+	GetDatabaseTableNames = "Database.getDatabaseTableNames"
+	ExecuteSQL            = "Database.executeSQL"
+)
+
+// List of events in Database domain
+const (
+	AddDatabase = "Database.addDatabase"
+)
+
 type Database struct {
 	conn cri.Connector
 }
@@ -22,13 +35,13 @@ func New(conn cri.Connector) *Database {
 
 // Enables database tracking, database events will now be delivered to the client.
 func (obj *Database) Enable() (err error) {
-	err = obj.conn.Send("Database.enable", nil, nil)
+	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 
 // Disables database tracking, prevents database events from being sent to the client.
 func (obj *Database) Disable() (err error) {
-	err = obj.conn.Send("Database.disable", nil, nil)
+	err = obj.conn.Send(Disable, nil, nil)
 	return
 }
 
@@ -41,7 +54,7 @@ type GetDatabaseTableNamesResponse struct {
 }
 
 func (obj *Database) GetDatabaseTableNames(request *GetDatabaseTableNamesRequest) (response GetDatabaseTableNamesResponse, err error) {
-	err = obj.conn.Send("Database.getDatabaseTableNames", request, &response)
+	err = obj.conn.Send(GetDatabaseTableNames, request, &response)
 	return
 }
 
@@ -57,7 +70,7 @@ type ExecuteSQLResponse struct {
 }
 
 func (obj *Database) ExecuteSQL(request *ExecuteSQLRequest) (response ExecuteSQLResponse, err error) {
-	err = obj.conn.Send("Database.executeSQL", request, &response)
+	err = obj.conn.Send(ExecuteSQL, request, &response)
 	return
 }
 
@@ -67,7 +80,7 @@ type AddDatabaseParams struct {
 
 func (obj *Database) AddDatabase(fn func(params *AddDatabaseParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Database.addDatabase", closeChn)
+	decoder := obj.conn.On(AddDatabase, closeChn)
 	go func() {
 		for {
 			params := AddDatabaseParams{}

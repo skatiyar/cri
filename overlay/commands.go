@@ -11,6 +11,33 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in Overlay domain
+const (
+	Enable                       = "Overlay.enable"
+	Disable                      = "Overlay.disable"
+	SetShowPaintRects            = "Overlay.setShowPaintRects"
+	SetShowDebugBorders          = "Overlay.setShowDebugBorders"
+	SetShowFPSCounter            = "Overlay.setShowFPSCounter"
+	SetShowScrollBottleneckRects = "Overlay.setShowScrollBottleneckRects"
+	SetShowViewportSizeOnResize  = "Overlay.setShowViewportSizeOnResize"
+	SetPausedInDebuggerMessage   = "Overlay.setPausedInDebuggerMessage"
+	SetSuspended                 = "Overlay.setSuspended"
+	SetInspectMode               = "Overlay.setInspectMode"
+	HighlightRect                = "Overlay.highlightRect"
+	HighlightQuad                = "Overlay.highlightQuad"
+	HighlightNode                = "Overlay.highlightNode"
+	HighlightFrame               = "Overlay.highlightFrame"
+	HideHighlight                = "Overlay.hideHighlight"
+	GetHighlightObjectForTest    = "Overlay.getHighlightObjectForTest"
+)
+
+// List of events in Overlay domain
+const (
+	NodeHighlightRequested = "Overlay.nodeHighlightRequested"
+	InspectNodeRequested   = "Overlay.inspectNodeRequested"
+	ScreenshotRequested    = "Overlay.screenshotRequested"
+)
+
 // This domain provides various functionality related to drawing atop the inspected page.
 type Overlay struct {
 	conn cri.Connector
@@ -23,13 +50,13 @@ func New(conn cri.Connector) *Overlay {
 
 // Enables domain notifications.
 func (obj *Overlay) Enable() (err error) {
-	err = obj.conn.Send("Overlay.enable", nil, nil)
+	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 
 // Disables domain notifications.
 func (obj *Overlay) Disable() (err error) {
-	err = obj.conn.Send("Overlay.disable", nil, nil)
+	err = obj.conn.Send(Disable, nil, nil)
 	return
 }
 
@@ -40,7 +67,7 @@ type SetShowPaintRectsRequest struct {
 
 // Requests that backend shows paint rectangles
 func (obj *Overlay) SetShowPaintRects(request *SetShowPaintRectsRequest) (err error) {
-	err = obj.conn.Send("Overlay.setShowPaintRects", request, nil)
+	err = obj.conn.Send(SetShowPaintRects, request, nil)
 	return
 }
 
@@ -51,7 +78,7 @@ type SetShowDebugBordersRequest struct {
 
 // Requests that backend shows debug borders on layers
 func (obj *Overlay) SetShowDebugBorders(request *SetShowDebugBordersRequest) (err error) {
-	err = obj.conn.Send("Overlay.setShowDebugBorders", request, nil)
+	err = obj.conn.Send(SetShowDebugBorders, request, nil)
 	return
 }
 
@@ -62,7 +89,7 @@ type SetShowFPSCounterRequest struct {
 
 // Requests that backend shows the FPS counter
 func (obj *Overlay) SetShowFPSCounter(request *SetShowFPSCounterRequest) (err error) {
-	err = obj.conn.Send("Overlay.setShowFPSCounter", request, nil)
+	err = obj.conn.Send(SetShowFPSCounter, request, nil)
 	return
 }
 
@@ -73,7 +100,7 @@ type SetShowScrollBottleneckRectsRequest struct {
 
 // Requests that backend shows scroll bottleneck rects
 func (obj *Overlay) SetShowScrollBottleneckRects(request *SetShowScrollBottleneckRectsRequest) (err error) {
-	err = obj.conn.Send("Overlay.setShowScrollBottleneckRects", request, nil)
+	err = obj.conn.Send(SetShowScrollBottleneckRects, request, nil)
 	return
 }
 
@@ -84,7 +111,7 @@ type SetShowViewportSizeOnResizeRequest struct {
 
 // Paints viewport size upon main frame resize.
 func (obj *Overlay) SetShowViewportSizeOnResize(request *SetShowViewportSizeOnResizeRequest) (err error) {
-	err = obj.conn.Send("Overlay.setShowViewportSizeOnResize", request, nil)
+	err = obj.conn.Send(SetShowViewportSizeOnResize, request, nil)
 	return
 }
 
@@ -94,7 +121,7 @@ type SetPausedInDebuggerMessageRequest struct {
 }
 
 func (obj *Overlay) SetPausedInDebuggerMessage(request *SetPausedInDebuggerMessageRequest) (err error) {
-	err = obj.conn.Send("Overlay.setPausedInDebuggerMessage", request, nil)
+	err = obj.conn.Send(SetPausedInDebuggerMessage, request, nil)
 	return
 }
 
@@ -104,7 +131,7 @@ type SetSuspendedRequest struct {
 }
 
 func (obj *Overlay) SetSuspended(request *SetSuspendedRequest) (err error) {
-	err = obj.conn.Send("Overlay.setSuspended", request, nil)
+	err = obj.conn.Send(SetSuspended, request, nil)
 	return
 }
 
@@ -117,7 +144,7 @@ type SetInspectModeRequest struct {
 
 // Enters the 'inspect' mode. In this mode, elements that user is hovering over are highlighted. Backend then generates 'inspectNodeRequested' event upon element selection.
 func (obj *Overlay) SetInspectMode(request *SetInspectModeRequest) (err error) {
-	err = obj.conn.Send("Overlay.setInspectMode", request, nil)
+	err = obj.conn.Send(SetInspectMode, request, nil)
 	return
 }
 
@@ -138,7 +165,7 @@ type HighlightRectRequest struct {
 
 // Highlights given rectangle. Coordinates are absolute with respect to the main frame viewport.
 func (obj *Overlay) HighlightRect(request *HighlightRectRequest) (err error) {
-	err = obj.conn.Send("Overlay.highlightRect", request, nil)
+	err = obj.conn.Send(HighlightRect, request, nil)
 	return
 }
 
@@ -153,7 +180,7 @@ type HighlightQuadRequest struct {
 
 // Highlights given quad. Coordinates are absolute with respect to the main frame viewport.
 func (obj *Overlay) HighlightQuad(request *HighlightQuadRequest) (err error) {
-	err = obj.conn.Send("Overlay.highlightQuad", request, nil)
+	err = obj.conn.Send(HighlightQuad, request, nil)
 	return
 }
 
@@ -170,7 +197,7 @@ type HighlightNodeRequest struct {
 
 // Highlights DOM node with given id or with the given JavaScript object wrapper. Either nodeId or objectId must be specified.
 func (obj *Overlay) HighlightNode(request *HighlightNodeRequest) (err error) {
-	err = obj.conn.Send("Overlay.highlightNode", request, nil)
+	err = obj.conn.Send(HighlightNode, request, nil)
 	return
 }
 
@@ -185,13 +212,13 @@ type HighlightFrameRequest struct {
 
 // Highlights owner element of the frame with given id.
 func (obj *Overlay) HighlightFrame(request *HighlightFrameRequest) (err error) {
-	err = obj.conn.Send("Overlay.highlightFrame", request, nil)
+	err = obj.conn.Send(HighlightFrame, request, nil)
 	return
 }
 
 // Hides any highlight.
 func (obj *Overlay) HideHighlight() (err error) {
-	err = obj.conn.Send("Overlay.hideHighlight", nil, nil)
+	err = obj.conn.Send(HideHighlight, nil, nil)
 	return
 }
 
@@ -207,7 +234,7 @@ type GetHighlightObjectForTestResponse struct {
 
 // For testing.
 func (obj *Overlay) GetHighlightObjectForTest(request *GetHighlightObjectForTestRequest) (response GetHighlightObjectForTestResponse, err error) {
-	err = obj.conn.Send("Overlay.getHighlightObjectForTest", request, &response)
+	err = obj.conn.Send(GetHighlightObjectForTest, request, &response)
 	return
 }
 
@@ -218,7 +245,7 @@ type NodeHighlightRequestedParams struct {
 // Fired when the node should be highlighted. This happens after call to <code>setInspectMode</code>.
 func (obj *Overlay) NodeHighlightRequested(fn func(params *NodeHighlightRequestedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Overlay.nodeHighlightRequested", closeChn)
+	decoder := obj.conn.On(NodeHighlightRequested, closeChn)
 	go func() {
 		for {
 			params := NodeHighlightRequestedParams{}
@@ -239,7 +266,7 @@ type InspectNodeRequestedParams struct {
 // Fired when the node should be inspected. This happens after call to <code>setInspectMode</code> or when user manually inspects an element.
 func (obj *Overlay) InspectNodeRequested(fn func(params *InspectNodeRequestedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Overlay.inspectNodeRequested", closeChn)
+	decoder := obj.conn.On(InspectNodeRequested, closeChn)
 	go func() {
 		for {
 			params := InspectNodeRequestedParams{}
@@ -260,7 +287,7 @@ type ScreenshotRequestedParams struct {
 // Fired when user asks to capture screenshot of some area on the page.
 func (obj *Overlay) ScreenshotRequested(fn func(params *ScreenshotRequestedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Overlay.screenshotRequested", closeChn)
+	decoder := obj.conn.On(ScreenshotRequested, closeChn)
 	go func() {
 		for {
 			params := ScreenshotRequestedParams{}

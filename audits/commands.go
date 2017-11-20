@@ -11,6 +11,11 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in Audits domain
+const (
+	GetEncodedResponse = "Audits.getEncodedResponse"
+)
+
 // Audits domain allows investigation of page violations and possible improvements.
 type Audits struct {
 	conn cri.Connector
@@ -43,6 +48,6 @@ type GetEncodedResponseResponse struct {
 
 // Returns the response body and size if it were re-encoded with the specified settings. Only applies to images.
 func (obj *Audits) GetEncodedResponse(request *GetEncodedResponseRequest) (response GetEncodedResponseResponse, err error) {
-	err = obj.conn.Send("Audits.getEncodedResponse", request, &response)
+	err = obj.conn.Send(GetEncodedResponse, request, &response)
 	return
 }

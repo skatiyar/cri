@@ -11,6 +11,15 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in CacheStorage domain
+const (
+	RequestCacheNames     = "CacheStorage.requestCacheNames"
+	RequestEntries        = "CacheStorage.requestEntries"
+	DeleteCache           = "CacheStorage.deleteCache"
+	DeleteEntry           = "CacheStorage.deleteEntry"
+	RequestCachedResponse = "CacheStorage.requestCachedResponse"
+)
+
 type CacheStorage struct {
 	conn cri.Connector
 }
@@ -32,7 +41,7 @@ type RequestCacheNamesResponse struct {
 
 // Requests cache names.
 func (obj *CacheStorage) RequestCacheNames(request *RequestCacheNamesRequest) (response RequestCacheNamesResponse, err error) {
-	err = obj.conn.Send("CacheStorage.requestCacheNames", request, &response)
+	err = obj.conn.Send(RequestCacheNames, request, &response)
 	return
 }
 
@@ -54,7 +63,7 @@ type RequestEntriesResponse struct {
 
 // Requests data from cache.
 func (obj *CacheStorage) RequestEntries(request *RequestEntriesRequest) (response RequestEntriesResponse, err error) {
-	err = obj.conn.Send("CacheStorage.requestEntries", request, &response)
+	err = obj.conn.Send(RequestEntries, request, &response)
 	return
 }
 
@@ -65,7 +74,7 @@ type DeleteCacheRequest struct {
 
 // Deletes a cache.
 func (obj *CacheStorage) DeleteCache(request *DeleteCacheRequest) (err error) {
-	err = obj.conn.Send("CacheStorage.deleteCache", request, nil)
+	err = obj.conn.Send(DeleteCache, request, nil)
 	return
 }
 
@@ -78,7 +87,7 @@ type DeleteEntryRequest struct {
 
 // Deletes a cache entry.
 func (obj *CacheStorage) DeleteEntry(request *DeleteEntryRequest) (err error) {
-	err = obj.conn.Send("CacheStorage.deleteEntry", request, nil)
+	err = obj.conn.Send(DeleteEntry, request, nil)
 	return
 }
 
@@ -96,6 +105,6 @@ type RequestCachedResponseResponse struct {
 
 // Fetches cache entry.
 func (obj *CacheStorage) RequestCachedResponse(request *RequestCachedResponseRequest) (response RequestCachedResponseResponse, err error) {
-	err = obj.conn.Send("CacheStorage.requestCachedResponse", request, &response)
+	err = obj.conn.Send(RequestCachedResponse, request, &response)
 	return
 }

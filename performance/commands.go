@@ -11,6 +11,18 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in Performance domain
+const (
+	Enable     = "Performance.enable"
+	Disable    = "Performance.disable"
+	GetMetrics = "Performance.getMetrics"
+)
+
+// List of events in Performance domain
+const (
+	Metrics = "Performance.metrics"
+)
+
 type Performance struct {
 	conn cri.Connector
 }
@@ -22,13 +34,13 @@ func New(conn cri.Connector) *Performance {
 
 // Enable collecting and reporting metrics.
 func (obj *Performance) Enable() (err error) {
-	err = obj.conn.Send("Performance.enable", nil, nil)
+	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 
 // Disable collecting and reporting metrics.
 func (obj *Performance) Disable() (err error) {
-	err = obj.conn.Send("Performance.disable", nil, nil)
+	err = obj.conn.Send(Disable, nil, nil)
 	return
 }
 
@@ -39,7 +51,7 @@ type GetMetricsResponse struct {
 
 // Retrieve current values of run-time metrics.
 func (obj *Performance) GetMetrics() (response GetMetricsResponse, err error) {
-	err = obj.conn.Send("Performance.getMetrics", nil, &response)
+	err = obj.conn.Send(GetMetrics, nil, &response)
 	return
 }
 
@@ -53,7 +65,7 @@ type MetricsParams struct {
 // Current values of the metrics.
 func (obj *Performance) Metrics(fn func(params *MetricsParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Performance.metrics", closeChn)
+	decoder := obj.conn.On(Metrics, closeChn)
 	go func() {
 		for {
 			params := MetricsParams{}

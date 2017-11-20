@@ -10,6 +10,18 @@ import (
 	"github.com/SKatiyar/cri"
 )
 
+// List of commands in Inspector domain
+const (
+	Enable  = "Inspector.enable"
+	Disable = "Inspector.disable"
+)
+
+// List of events in Inspector domain
+const (
+	Detached      = "Inspector.detached"
+	TargetCrashed = "Inspector.targetCrashed"
+)
+
 type Inspector struct {
 	conn cri.Connector
 }
@@ -21,13 +33,13 @@ func New(conn cri.Connector) *Inspector {
 
 // Enables inspector domain notifications.
 func (obj *Inspector) Enable() (err error) {
-	err = obj.conn.Send("Inspector.enable", nil, nil)
+	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 
 // Disables inspector domain notifications.
 func (obj *Inspector) Disable() (err error) {
-	err = obj.conn.Send("Inspector.disable", nil, nil)
+	err = obj.conn.Send(Disable, nil, nil)
 	return
 }
 
@@ -39,7 +51,7 @@ type DetachedParams struct {
 // Fired when remote debugging connection is about to be terminated. Contains detach reason.
 func (obj *Inspector) Detached(fn func(params *DetachedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Inspector.detached", closeChn)
+	decoder := obj.conn.On(Detached, closeChn)
 	go func() {
 		for {
 			params := DetachedParams{}
@@ -55,7 +67,7 @@ func (obj *Inspector) Detached(fn func(params *DetachedParams, err error) bool) 
 // Fired when debugging target has crashed
 func (obj *Inspector) TargetCrashed(fn func(err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Inspector.targetCrashed", closeChn)
+	decoder := obj.conn.On(TargetCrashed, closeChn)
 	go func() {
 		for {
 

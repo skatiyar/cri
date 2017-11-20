@@ -11,6 +11,67 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in DOM domain
+const (
+	Enable                          = "DOM.enable"
+	Disable                         = "DOM.disable"
+	GetDocument                     = "DOM.getDocument"
+	GetFlattenedDocument            = "DOM.getFlattenedDocument"
+	CollectClassNamesFromSubtree    = "DOM.collectClassNamesFromSubtree"
+	RequestChildNodes               = "DOM.requestChildNodes"
+	QuerySelector                   = "DOM.querySelector"
+	QuerySelectorAll                = "DOM.querySelectorAll"
+	SetNodeName                     = "DOM.setNodeName"
+	SetNodeValue                    = "DOM.setNodeValue"
+	RemoveNode                      = "DOM.removeNode"
+	SetAttributeValue               = "DOM.setAttributeValue"
+	SetAttributesAsText             = "DOM.setAttributesAsText"
+	RemoveAttribute                 = "DOM.removeAttribute"
+	GetOuterHTML                    = "DOM.getOuterHTML"
+	SetOuterHTML                    = "DOM.setOuterHTML"
+	PerformSearch                   = "DOM.performSearch"
+	GetSearchResults                = "DOM.getSearchResults"
+	DiscardSearchResults            = "DOM.discardSearchResults"
+	RequestNode                     = "DOM.requestNode"
+	HighlightRect                   = "DOM.highlightRect"
+	HighlightNode                   = "DOM.highlightNode"
+	HideHighlight                   = "DOM.hideHighlight"
+	PushNodeByPathToFrontend        = "DOM.pushNodeByPathToFrontend"
+	PushNodesByBackendIdsToFrontend = "DOM.pushNodesByBackendIdsToFrontend"
+	SetInspectedNode                = "DOM.setInspectedNode"
+	ResolveNode                     = "DOM.resolveNode"
+	GetAttributes                   = "DOM.getAttributes"
+	CopyTo                          = "DOM.copyTo"
+	MoveTo                          = "DOM.moveTo"
+	Undo                            = "DOM.undo"
+	Redo                            = "DOM.redo"
+	MarkUndoableState               = "DOM.markUndoableState"
+	Focus                           = "DOM.focus"
+	SetFileInputFiles               = "DOM.setFileInputFiles"
+	GetBoxModel                     = "DOM.getBoxModel"
+	GetNodeForLocation              = "DOM.getNodeForLocation"
+	GetRelayoutBoundary             = "DOM.getRelayoutBoundary"
+	DescribeNode                    = "DOM.describeNode"
+)
+
+// List of events in DOM domain
+const (
+	DocumentUpdated         = "DOM.documentUpdated"
+	SetChildNodes           = "DOM.setChildNodes"
+	AttributeModified       = "DOM.attributeModified"
+	AttributeRemoved        = "DOM.attributeRemoved"
+	InlineStyleInvalidated  = "DOM.inlineStyleInvalidated"
+	CharacterDataModified   = "DOM.characterDataModified"
+	ChildNodeCountUpdated   = "DOM.childNodeCountUpdated"
+	ChildNodeInserted       = "DOM.childNodeInserted"
+	ChildNodeRemoved        = "DOM.childNodeRemoved"
+	ShadowRootPushed        = "DOM.shadowRootPushed"
+	ShadowRootPopped        = "DOM.shadowRootPopped"
+	PseudoElementAdded      = "DOM.pseudoElementAdded"
+	PseudoElementRemoved    = "DOM.pseudoElementRemoved"
+	DistributedNodesUpdated = "DOM.distributedNodesUpdated"
+)
+
 // This domain exposes DOM read/write operations. Each DOM Node is represented with its mirror object that has an <code>id</code>. This <code>id</code> can be used to get additional information on the Node, resolve it into the JavaScript object wrapper, etc. It is important that client receives DOM events only for the nodes that are known to the client. Backend keeps track of the nodes that were sent to the client and never sends the same node twice. It is client's responsibility to collect information about the nodes that were sent to the client.<p>Note that <code>iframe</code> owner elements will return corresponding document elements as their child nodes.</p>
 type DOM struct {
 	conn cri.Connector
@@ -23,13 +84,13 @@ func New(conn cri.Connector) *DOM {
 
 // Enables DOM agent for the given page.
 func (obj *DOM) Enable() (err error) {
-	err = obj.conn.Send("DOM.enable", nil, nil)
+	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 
 // Disables DOM agent for the given page.
 func (obj *DOM) Disable() (err error) {
-	err = obj.conn.Send("DOM.disable", nil, nil)
+	err = obj.conn.Send(Disable, nil, nil)
 	return
 }
 
@@ -47,7 +108,7 @@ type GetDocumentResponse struct {
 
 // Returns the root DOM node (and optionally the subtree) to the caller.
 func (obj *DOM) GetDocument(request *GetDocumentRequest) (response GetDocumentResponse, err error) {
-	err = obj.conn.Send("DOM.getDocument", request, &response)
+	err = obj.conn.Send(GetDocument, request, &response)
 	return
 }
 
@@ -65,7 +126,7 @@ type GetFlattenedDocumentResponse struct {
 
 // Returns the root DOM node (and optionally the subtree) to the caller.
 func (obj *DOM) GetFlattenedDocument(request *GetFlattenedDocumentRequest) (response GetFlattenedDocumentResponse, err error) {
-	err = obj.conn.Send("DOM.getFlattenedDocument", request, &response)
+	err = obj.conn.Send(GetFlattenedDocument, request, &response)
 	return
 }
 
@@ -81,7 +142,7 @@ type CollectClassNamesFromSubtreeResponse struct {
 
 // Collects class names for the node with given id and all of it's child nodes.
 func (obj *DOM) CollectClassNamesFromSubtree(request *CollectClassNamesFromSubtreeRequest) (response CollectClassNamesFromSubtreeResponse, err error) {
-	err = obj.conn.Send("DOM.collectClassNamesFromSubtree", request, &response)
+	err = obj.conn.Send(CollectClassNamesFromSubtree, request, &response)
 	return
 }
 
@@ -96,7 +157,7 @@ type RequestChildNodesRequest struct {
 
 // Requests that children of the node with given id are returned to the caller in form of <code>setChildNodes</code> events where not only immediate children are retrieved, but all children down to the specified depth.
 func (obj *DOM) RequestChildNodes(request *RequestChildNodesRequest) (err error) {
-	err = obj.conn.Send("DOM.requestChildNodes", request, nil)
+	err = obj.conn.Send(RequestChildNodes, request, nil)
 	return
 }
 
@@ -114,7 +175,7 @@ type QuerySelectorResponse struct {
 
 // Executes <code>querySelector</code> on a given node.
 func (obj *DOM) QuerySelector(request *QuerySelectorRequest) (response QuerySelectorResponse, err error) {
-	err = obj.conn.Send("DOM.querySelector", request, &response)
+	err = obj.conn.Send(QuerySelector, request, &response)
 	return
 }
 
@@ -132,7 +193,7 @@ type QuerySelectorAllResponse struct {
 
 // Executes <code>querySelectorAll</code> on a given node.
 func (obj *DOM) QuerySelectorAll(request *QuerySelectorAllRequest) (response QuerySelectorAllResponse, err error) {
-	err = obj.conn.Send("DOM.querySelectorAll", request, &response)
+	err = obj.conn.Send(QuerySelectorAll, request, &response)
 	return
 }
 
@@ -150,7 +211,7 @@ type SetNodeNameResponse struct {
 
 // Sets node name for a node with given id.
 func (obj *DOM) SetNodeName(request *SetNodeNameRequest) (response SetNodeNameResponse, err error) {
-	err = obj.conn.Send("DOM.setNodeName", request, &response)
+	err = obj.conn.Send(SetNodeName, request, &response)
 	return
 }
 
@@ -163,7 +224,7 @@ type SetNodeValueRequest struct {
 
 // Sets node value for a node with given id.
 func (obj *DOM) SetNodeValue(request *SetNodeValueRequest) (err error) {
-	err = obj.conn.Send("DOM.setNodeValue", request, nil)
+	err = obj.conn.Send(SetNodeValue, request, nil)
 	return
 }
 
@@ -174,7 +235,7 @@ type RemoveNodeRequest struct {
 
 // Removes node with given id.
 func (obj *DOM) RemoveNode(request *RemoveNodeRequest) (err error) {
-	err = obj.conn.Send("DOM.removeNode", request, nil)
+	err = obj.conn.Send(RemoveNode, request, nil)
 	return
 }
 
@@ -189,7 +250,7 @@ type SetAttributeValueRequest struct {
 
 // Sets attribute for an element with given id.
 func (obj *DOM) SetAttributeValue(request *SetAttributeValueRequest) (err error) {
-	err = obj.conn.Send("DOM.setAttributeValue", request, nil)
+	err = obj.conn.Send(SetAttributeValue, request, nil)
 	return
 }
 
@@ -204,7 +265,7 @@ type SetAttributesAsTextRequest struct {
 
 // Sets attributes on element with given id. This method is useful when user edits some existing attribute value and types in several attribute name/value pairs.
 func (obj *DOM) SetAttributesAsText(request *SetAttributesAsTextRequest) (err error) {
-	err = obj.conn.Send("DOM.setAttributesAsText", request, nil)
+	err = obj.conn.Send(SetAttributesAsText, request, nil)
 	return
 }
 
@@ -217,7 +278,7 @@ type RemoveAttributeRequest struct {
 
 // Removes attribute with given name from an element with given id.
 func (obj *DOM) RemoveAttribute(request *RemoveAttributeRequest) (err error) {
-	err = obj.conn.Send("DOM.removeAttribute", request, nil)
+	err = obj.conn.Send(RemoveAttribute, request, nil)
 	return
 }
 
@@ -237,7 +298,7 @@ type GetOuterHTMLResponse struct {
 
 // Returns node's HTML markup.
 func (obj *DOM) GetOuterHTML(request *GetOuterHTMLRequest) (response GetOuterHTMLResponse, err error) {
-	err = obj.conn.Send("DOM.getOuterHTML", request, &response)
+	err = obj.conn.Send(GetOuterHTML, request, &response)
 	return
 }
 
@@ -250,7 +311,7 @@ type SetOuterHTMLRequest struct {
 
 // Sets node HTML markup, returns new node id.
 func (obj *DOM) SetOuterHTML(request *SetOuterHTMLRequest) (err error) {
-	err = obj.conn.Send("DOM.setOuterHTML", request, nil)
+	err = obj.conn.Send(SetOuterHTML, request, nil)
 	return
 }
 
@@ -270,7 +331,7 @@ type PerformSearchResponse struct {
 
 // Searches for a given string in the DOM tree. Use <code>getSearchResults</code> to access search results or <code>cancelSearch</code> to end this search session.
 func (obj *DOM) PerformSearch(request *PerformSearchRequest) (response PerformSearchResponse, err error) {
-	err = obj.conn.Send("DOM.performSearch", request, &response)
+	err = obj.conn.Send(PerformSearch, request, &response)
 	return
 }
 
@@ -290,7 +351,7 @@ type GetSearchResultsResponse struct {
 
 // Returns search results from given <code>fromIndex</code> to given <code>toIndex</code> from the search with the given identifier.
 func (obj *DOM) GetSearchResults(request *GetSearchResultsRequest) (response GetSearchResultsResponse, err error) {
-	err = obj.conn.Send("DOM.getSearchResults", request, &response)
+	err = obj.conn.Send(GetSearchResults, request, &response)
 	return
 }
 
@@ -301,7 +362,7 @@ type DiscardSearchResultsRequest struct {
 
 // Discards search results from the session with the given id. <code>getSearchResults</code> should no longer be called for that search.
 func (obj *DOM) DiscardSearchResults(request *DiscardSearchResultsRequest) (err error) {
-	err = obj.conn.Send("DOM.discardSearchResults", request, nil)
+	err = obj.conn.Send(DiscardSearchResults, request, nil)
 	return
 }
 
@@ -317,25 +378,25 @@ type RequestNodeResponse struct {
 
 // Requests that the node is sent to the caller given the JavaScript node object reference. All nodes that form the path from the node to the root are also sent to the client as a series of <code>setChildNodes</code> notifications.
 func (obj *DOM) RequestNode(request *RequestNodeRequest) (response RequestNodeResponse, err error) {
-	err = obj.conn.Send("DOM.requestNode", request, &response)
+	err = obj.conn.Send(RequestNode, request, &response)
 	return
 }
 
 // Highlights given rectangle.
 func (obj *DOM) HighlightRect() (err error) {
-	err = obj.conn.Send("DOM.highlightRect", nil, nil)
+	err = obj.conn.Send(HighlightRect, nil, nil)
 	return
 }
 
 // Highlights DOM node.
 func (obj *DOM) HighlightNode() (err error) {
-	err = obj.conn.Send("DOM.highlightNode", nil, nil)
+	err = obj.conn.Send(HighlightNode, nil, nil)
 	return
 }
 
 // Hides any highlight.
 func (obj *DOM) HideHighlight() (err error) {
-	err = obj.conn.Send("DOM.hideHighlight", nil, nil)
+	err = obj.conn.Send(HideHighlight, nil, nil)
 	return
 }
 
@@ -351,7 +412,7 @@ type PushNodeByPathToFrontendResponse struct {
 
 // Requests that the node is sent to the caller given its path. // FIXME, use XPath
 func (obj *DOM) PushNodeByPathToFrontend(request *PushNodeByPathToFrontendRequest) (response PushNodeByPathToFrontendResponse, err error) {
-	err = obj.conn.Send("DOM.pushNodeByPathToFrontend", request, &response)
+	err = obj.conn.Send(PushNodeByPathToFrontend, request, &response)
 	return
 }
 
@@ -367,7 +428,7 @@ type PushNodesByBackendIdsToFrontendResponse struct {
 
 // Requests that a batch of nodes is sent to the caller given their backend node ids.
 func (obj *DOM) PushNodesByBackendIdsToFrontend(request *PushNodesByBackendIdsToFrontendRequest) (response PushNodesByBackendIdsToFrontendResponse, err error) {
-	err = obj.conn.Send("DOM.pushNodesByBackendIdsToFrontend", request, &response)
+	err = obj.conn.Send(PushNodesByBackendIdsToFrontend, request, &response)
 	return
 }
 
@@ -378,7 +439,7 @@ type SetInspectedNodeRequest struct {
 
 // Enables console to refer to the node with given id via $x (see Command Line API for more details $x functions).
 func (obj *DOM) SetInspectedNode(request *SetInspectedNodeRequest) (err error) {
-	err = obj.conn.Send("DOM.setInspectedNode", request, nil)
+	err = obj.conn.Send(SetInspectedNode, request, nil)
 	return
 }
 
@@ -398,7 +459,7 @@ type ResolveNodeResponse struct {
 
 // Resolves the JavaScript node object for a given NodeId or BackendNodeId.
 func (obj *DOM) ResolveNode(request *ResolveNodeRequest) (response ResolveNodeResponse, err error) {
-	err = obj.conn.Send("DOM.resolveNode", request, &response)
+	err = obj.conn.Send(ResolveNode, request, &response)
 	return
 }
 
@@ -414,7 +475,7 @@ type GetAttributesResponse struct {
 
 // Returns attributes for the specified node.
 func (obj *DOM) GetAttributes(request *GetAttributesRequest) (response GetAttributesResponse, err error) {
-	err = obj.conn.Send("DOM.getAttributes", request, &response)
+	err = obj.conn.Send(GetAttributes, request, &response)
 	return
 }
 
@@ -434,7 +495,7 @@ type CopyToResponse struct {
 
 // Creates a deep copy of the specified node and places it into the target container before the given anchor.
 func (obj *DOM) CopyTo(request *CopyToRequest) (response CopyToResponse, err error) {
-	err = obj.conn.Send("DOM.copyTo", request, &response)
+	err = obj.conn.Send(CopyTo, request, &response)
 	return
 }
 
@@ -454,25 +515,25 @@ type MoveToResponse struct {
 
 // Moves node into the new container, places it before the given anchor.
 func (obj *DOM) MoveTo(request *MoveToRequest) (response MoveToResponse, err error) {
-	err = obj.conn.Send("DOM.moveTo", request, &response)
+	err = obj.conn.Send(MoveTo, request, &response)
 	return
 }
 
 // Undoes the last performed action.
 func (obj *DOM) Undo() (err error) {
-	err = obj.conn.Send("DOM.undo", nil, nil)
+	err = obj.conn.Send(Undo, nil, nil)
 	return
 }
 
 // Re-does the last undone action.
 func (obj *DOM) Redo() (err error) {
-	err = obj.conn.Send("DOM.redo", nil, nil)
+	err = obj.conn.Send(Redo, nil, nil)
 	return
 }
 
 // Marks last undoable state.
 func (obj *DOM) MarkUndoableState() (err error) {
-	err = obj.conn.Send("DOM.markUndoableState", nil, nil)
+	err = obj.conn.Send(MarkUndoableState, nil, nil)
 	return
 }
 
@@ -487,7 +548,7 @@ type FocusRequest struct {
 
 // Focuses the given element.
 func (obj *DOM) Focus(request *FocusRequest) (err error) {
-	err = obj.conn.Send("DOM.focus", request, nil)
+	err = obj.conn.Send(Focus, request, nil)
 	return
 }
 
@@ -504,7 +565,7 @@ type SetFileInputFilesRequest struct {
 
 // Sets files for the given file input element.
 func (obj *DOM) SetFileInputFiles(request *SetFileInputFilesRequest) (err error) {
-	err = obj.conn.Send("DOM.setFileInputFiles", request, nil)
+	err = obj.conn.Send(SetFileInputFiles, request, nil)
 	return
 }
 
@@ -524,7 +585,7 @@ type GetBoxModelResponse struct {
 
 // Returns boxes for the given node.
 func (obj *DOM) GetBoxModel(request *GetBoxModelRequest) (response GetBoxModelResponse, err error) {
-	err = obj.conn.Send("DOM.getBoxModel", request, &response)
+	err = obj.conn.Send(GetBoxModel, request, &response)
 	return
 }
 
@@ -544,7 +605,7 @@ type GetNodeForLocationResponse struct {
 
 // Returns node id at given location.
 func (obj *DOM) GetNodeForLocation(request *GetNodeForLocationRequest) (response GetNodeForLocationResponse, err error) {
-	err = obj.conn.Send("DOM.getNodeForLocation", request, &response)
+	err = obj.conn.Send(GetNodeForLocation, request, &response)
 	return
 }
 
@@ -560,7 +621,7 @@ type GetRelayoutBoundaryResponse struct {
 
 // Returns the id of the nearest ancestor that is a relayout boundary.
 func (obj *DOM) GetRelayoutBoundary(request *GetRelayoutBoundaryRequest) (response GetRelayoutBoundaryResponse, err error) {
-	err = obj.conn.Send("DOM.getRelayoutBoundary", request, &response)
+	err = obj.conn.Send(GetRelayoutBoundary, request, &response)
 	return
 }
 
@@ -584,14 +645,14 @@ type DescribeNodeResponse struct {
 
 // Describes node given its id, does not require domain to be enabled. Does not start tracking any objects, can be used for automation.
 func (obj *DOM) DescribeNode(request *DescribeNodeRequest) (response DescribeNodeResponse, err error) {
-	err = obj.conn.Send("DOM.describeNode", request, &response)
+	err = obj.conn.Send(DescribeNode, request, &response)
 	return
 }
 
 // Fired when <code>Document</code> has been totally updated. Node ids are no longer valid.
 func (obj *DOM) DocumentUpdated(fn func(err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("DOM.documentUpdated", closeChn)
+	decoder := obj.conn.On(DocumentUpdated, closeChn)
 	go func() {
 		for {
 
@@ -614,7 +675,7 @@ type SetChildNodesParams struct {
 // Fired when backend wants to provide client with the missing DOM structure. This happens upon most of the calls requesting node ids.
 func (obj *DOM) SetChildNodes(fn func(params *SetChildNodesParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("DOM.setChildNodes", closeChn)
+	decoder := obj.conn.On(SetChildNodes, closeChn)
 	go func() {
 		for {
 			params := SetChildNodesParams{}
@@ -639,7 +700,7 @@ type AttributeModifiedParams struct {
 // Fired when <code>Element</code>'s attribute is modified.
 func (obj *DOM) AttributeModified(fn func(params *AttributeModifiedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("DOM.attributeModified", closeChn)
+	decoder := obj.conn.On(AttributeModified, closeChn)
 	go func() {
 		for {
 			params := AttributeModifiedParams{}
@@ -662,7 +723,7 @@ type AttributeRemovedParams struct {
 // Fired when <code>Element</code>'s attribute is removed.
 func (obj *DOM) AttributeRemoved(fn func(params *AttributeRemovedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("DOM.attributeRemoved", closeChn)
+	decoder := obj.conn.On(AttributeRemoved, closeChn)
 	go func() {
 		for {
 			params := AttributeRemovedParams{}
@@ -684,7 +745,7 @@ type InlineStyleInvalidatedParams struct {
 // NOTE Experimental
 func (obj *DOM) InlineStyleInvalidated(fn func(params *InlineStyleInvalidatedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("DOM.inlineStyleInvalidated", closeChn)
+	decoder := obj.conn.On(InlineStyleInvalidated, closeChn)
 	go func() {
 		for {
 			params := InlineStyleInvalidatedParams{}
@@ -707,7 +768,7 @@ type CharacterDataModifiedParams struct {
 // Mirrors <code>DOMCharacterDataModified</code> event.
 func (obj *DOM) CharacterDataModified(fn func(params *CharacterDataModifiedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("DOM.characterDataModified", closeChn)
+	decoder := obj.conn.On(CharacterDataModified, closeChn)
 	go func() {
 		for {
 			params := CharacterDataModifiedParams{}
@@ -730,7 +791,7 @@ type ChildNodeCountUpdatedParams struct {
 // Fired when <code>Container</code>'s child node count has changed.
 func (obj *DOM) ChildNodeCountUpdated(fn func(params *ChildNodeCountUpdatedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("DOM.childNodeCountUpdated", closeChn)
+	decoder := obj.conn.On(ChildNodeCountUpdated, closeChn)
 	go func() {
 		for {
 			params := ChildNodeCountUpdatedParams{}
@@ -755,7 +816,7 @@ type ChildNodeInsertedParams struct {
 // Mirrors <code>DOMNodeInserted</code> event.
 func (obj *DOM) ChildNodeInserted(fn func(params *ChildNodeInsertedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("DOM.childNodeInserted", closeChn)
+	decoder := obj.conn.On(ChildNodeInserted, closeChn)
 	go func() {
 		for {
 			params := ChildNodeInsertedParams{}
@@ -778,7 +839,7 @@ type ChildNodeRemovedParams struct {
 // Mirrors <code>DOMNodeRemoved</code> event.
 func (obj *DOM) ChildNodeRemoved(fn func(params *ChildNodeRemovedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("DOM.childNodeRemoved", closeChn)
+	decoder := obj.conn.On(ChildNodeRemoved, closeChn)
 	go func() {
 		for {
 			params := ChildNodeRemovedParams{}
@@ -802,7 +863,7 @@ type ShadowRootPushedParams struct {
 // NOTE Experimental
 func (obj *DOM) ShadowRootPushed(fn func(params *ShadowRootPushedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("DOM.shadowRootPushed", closeChn)
+	decoder := obj.conn.On(ShadowRootPushed, closeChn)
 	go func() {
 		for {
 			params := ShadowRootPushedParams{}
@@ -826,7 +887,7 @@ type ShadowRootPoppedParams struct {
 // NOTE Experimental
 func (obj *DOM) ShadowRootPopped(fn func(params *ShadowRootPoppedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("DOM.shadowRootPopped", closeChn)
+	decoder := obj.conn.On(ShadowRootPopped, closeChn)
 	go func() {
 		for {
 			params := ShadowRootPoppedParams{}
@@ -850,7 +911,7 @@ type PseudoElementAddedParams struct {
 // NOTE Experimental
 func (obj *DOM) PseudoElementAdded(fn func(params *PseudoElementAddedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("DOM.pseudoElementAdded", closeChn)
+	decoder := obj.conn.On(PseudoElementAdded, closeChn)
 	go func() {
 		for {
 			params := PseudoElementAddedParams{}
@@ -874,7 +935,7 @@ type PseudoElementRemovedParams struct {
 // NOTE Experimental
 func (obj *DOM) PseudoElementRemoved(fn func(params *PseudoElementRemovedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("DOM.pseudoElementRemoved", closeChn)
+	decoder := obj.conn.On(PseudoElementRemoved, closeChn)
 	go func() {
 		for {
 			params := PseudoElementRemovedParams{}
@@ -898,7 +959,7 @@ type DistributedNodesUpdatedParams struct {
 // NOTE Experimental
 func (obj *DOM) DistributedNodesUpdated(fn func(params *DistributedNodesUpdatedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("DOM.distributedNodesUpdated", closeChn)
+	decoder := obj.conn.On(DistributedNodesUpdated, closeChn)
 	go func() {
 		for {
 			params := DistributedNodesUpdatedParams{}

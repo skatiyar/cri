@@ -11,6 +11,31 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in HeapProfiler domain
+const (
+	Enable                   = "HeapProfiler.enable"
+	Disable                  = "HeapProfiler.disable"
+	StartTrackingHeapObjects = "HeapProfiler.startTrackingHeapObjects"
+	StopTrackingHeapObjects  = "HeapProfiler.stopTrackingHeapObjects"
+	TakeHeapSnapshot         = "HeapProfiler.takeHeapSnapshot"
+	CollectGarbage           = "HeapProfiler.collectGarbage"
+	GetObjectByHeapObjectId  = "HeapProfiler.getObjectByHeapObjectId"
+	AddInspectedHeapObject   = "HeapProfiler.addInspectedHeapObject"
+	GetHeapObjectId          = "HeapProfiler.getHeapObjectId"
+	StartSampling            = "HeapProfiler.startSampling"
+	StopSampling             = "HeapProfiler.stopSampling"
+	GetSamplingProfile       = "HeapProfiler.getSamplingProfile"
+)
+
+// List of events in HeapProfiler domain
+const (
+	AddHeapSnapshotChunk       = "HeapProfiler.addHeapSnapshotChunk"
+	ResetProfiles              = "HeapProfiler.resetProfiles"
+	ReportHeapSnapshotProgress = "HeapProfiler.reportHeapSnapshotProgress"
+	LastSeenObjectId           = "HeapProfiler.lastSeenObjectId"
+	HeapStatsUpdate            = "HeapProfiler.heapStatsUpdate"
+)
+
 type HeapProfiler struct {
 	conn cri.Connector
 }
@@ -21,12 +46,12 @@ func New(conn cri.Connector) *HeapProfiler {
 }
 
 func (obj *HeapProfiler) Enable() (err error) {
-	err = obj.conn.Send("HeapProfiler.enable", nil, nil)
+	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 
 func (obj *HeapProfiler) Disable() (err error) {
-	err = obj.conn.Send("HeapProfiler.disable", nil, nil)
+	err = obj.conn.Send(Disable, nil, nil)
 	return
 }
 
@@ -35,7 +60,7 @@ type StartTrackingHeapObjectsRequest struct {
 }
 
 func (obj *HeapProfiler) StartTrackingHeapObjects(request *StartTrackingHeapObjectsRequest) (err error) {
-	err = obj.conn.Send("HeapProfiler.startTrackingHeapObjects", request, nil)
+	err = obj.conn.Send(StartTrackingHeapObjects, request, nil)
 	return
 }
 
@@ -45,7 +70,7 @@ type StopTrackingHeapObjectsRequest struct {
 }
 
 func (obj *HeapProfiler) StopTrackingHeapObjects(request *StopTrackingHeapObjectsRequest) (err error) {
-	err = obj.conn.Send("HeapProfiler.stopTrackingHeapObjects", request, nil)
+	err = obj.conn.Send(StopTrackingHeapObjects, request, nil)
 	return
 }
 
@@ -55,12 +80,12 @@ type TakeHeapSnapshotRequest struct {
 }
 
 func (obj *HeapProfiler) TakeHeapSnapshot(request *TakeHeapSnapshotRequest) (err error) {
-	err = obj.conn.Send("HeapProfiler.takeHeapSnapshot", request, nil)
+	err = obj.conn.Send(TakeHeapSnapshot, request, nil)
 	return
 }
 
 func (obj *HeapProfiler) CollectGarbage() (err error) {
-	err = obj.conn.Send("HeapProfiler.collectGarbage", nil, nil)
+	err = obj.conn.Send(CollectGarbage, nil, nil)
 	return
 }
 
@@ -76,7 +101,7 @@ type GetObjectByHeapObjectIdResponse struct {
 }
 
 func (obj *HeapProfiler) GetObjectByHeapObjectId(request *GetObjectByHeapObjectIdRequest) (response GetObjectByHeapObjectIdResponse, err error) {
-	err = obj.conn.Send("HeapProfiler.getObjectByHeapObjectId", request, &response)
+	err = obj.conn.Send(GetObjectByHeapObjectId, request, &response)
 	return
 }
 
@@ -87,7 +112,7 @@ type AddInspectedHeapObjectRequest struct {
 
 // Enables console to refer to the node with given id via $x (see Command Line API for more details $x functions).
 func (obj *HeapProfiler) AddInspectedHeapObject(request *AddInspectedHeapObjectRequest) (err error) {
-	err = obj.conn.Send("HeapProfiler.addInspectedHeapObject", request, nil)
+	err = obj.conn.Send(AddInspectedHeapObject, request, nil)
 	return
 }
 
@@ -102,7 +127,7 @@ type GetHeapObjectIdResponse struct {
 }
 
 func (obj *HeapProfiler) GetHeapObjectId(request *GetHeapObjectIdRequest) (response GetHeapObjectIdResponse, err error) {
-	err = obj.conn.Send("HeapProfiler.getHeapObjectId", request, &response)
+	err = obj.conn.Send(GetHeapObjectId, request, &response)
 	return
 }
 
@@ -112,7 +137,7 @@ type StartSamplingRequest struct {
 }
 
 func (obj *HeapProfiler) StartSampling(request *StartSamplingRequest) (err error) {
-	err = obj.conn.Send("HeapProfiler.startSampling", request, nil)
+	err = obj.conn.Send(StartSampling, request, nil)
 	return
 }
 
@@ -122,7 +147,7 @@ type StopSamplingResponse struct {
 }
 
 func (obj *HeapProfiler) StopSampling() (response StopSamplingResponse, err error) {
-	err = obj.conn.Send("HeapProfiler.stopSampling", nil, &response)
+	err = obj.conn.Send(StopSampling, nil, &response)
 	return
 }
 
@@ -132,7 +157,7 @@ type GetSamplingProfileResponse struct {
 }
 
 func (obj *HeapProfiler) GetSamplingProfile() (response GetSamplingProfileResponse, err error) {
-	err = obj.conn.Send("HeapProfiler.getSamplingProfile", nil, &response)
+	err = obj.conn.Send(GetSamplingProfile, nil, &response)
 	return
 }
 
@@ -142,7 +167,7 @@ type AddHeapSnapshotChunkParams struct {
 
 func (obj *HeapProfiler) AddHeapSnapshotChunk(fn func(params *AddHeapSnapshotChunkParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("HeapProfiler.addHeapSnapshotChunk", closeChn)
+	decoder := obj.conn.On(AddHeapSnapshotChunk, closeChn)
 	go func() {
 		for {
 			params := AddHeapSnapshotChunkParams{}
@@ -157,7 +182,7 @@ func (obj *HeapProfiler) AddHeapSnapshotChunk(fn func(params *AddHeapSnapshotChu
 
 func (obj *HeapProfiler) ResetProfiles(fn func(err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("HeapProfiler.resetProfiles", closeChn)
+	decoder := obj.conn.On(ResetProfiles, closeChn)
 	go func() {
 		for {
 
@@ -178,7 +203,7 @@ type ReportHeapSnapshotProgressParams struct {
 
 func (obj *HeapProfiler) ReportHeapSnapshotProgress(fn func(params *ReportHeapSnapshotProgressParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("HeapProfiler.reportHeapSnapshotProgress", closeChn)
+	decoder := obj.conn.On(ReportHeapSnapshotProgress, closeChn)
 	go func() {
 		for {
 			params := ReportHeapSnapshotProgressParams{}
@@ -199,7 +224,7 @@ type LastSeenObjectIdParams struct {
 // If heap objects tracking has been started then backend regularly sends a current value for last seen object id and corresponding timestamp. If the were changes in the heap since last event then one or more heapStatsUpdate events will be sent before a new lastSeenObjectId event.
 func (obj *HeapProfiler) LastSeenObjectId(fn func(params *LastSeenObjectIdParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("HeapProfiler.lastSeenObjectId", closeChn)
+	decoder := obj.conn.On(LastSeenObjectId, closeChn)
 	go func() {
 		for {
 			params := LastSeenObjectIdParams{}
@@ -220,7 +245,7 @@ type HeapStatsUpdateParams struct {
 // If heap objects tracking has been started then backend may send update for one or more fragments
 func (obj *HeapProfiler) HeapStatsUpdate(fn func(params *HeapStatsUpdateParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("HeapProfiler.heapStatsUpdate", closeChn)
+	decoder := obj.conn.On(HeapStatsUpdate, closeChn)
 	go func() {
 		for {
 			params := HeapStatsUpdateParams{}

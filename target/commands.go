@@ -11,6 +11,34 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in Target domain
+const (
+	SetDiscoverTargets    = "Target.setDiscoverTargets"
+	SetAutoAttach         = "Target.setAutoAttach"
+	SetAttachToFrames     = "Target.setAttachToFrames"
+	SetRemoteLocations    = "Target.setRemoteLocations"
+	SendMessageToTarget   = "Target.sendMessageToTarget"
+	GetTargetInfo         = "Target.getTargetInfo"
+	ActivateTarget        = "Target.activateTarget"
+	CloseTarget           = "Target.closeTarget"
+	AttachToTarget        = "Target.attachToTarget"
+	DetachFromTarget      = "Target.detachFromTarget"
+	CreateBrowserContext  = "Target.createBrowserContext"
+	DisposeBrowserContext = "Target.disposeBrowserContext"
+	CreateTarget          = "Target.createTarget"
+	GetTargets            = "Target.getTargets"
+)
+
+// List of events in Target domain
+const (
+	TargetCreated             = "Target.targetCreated"
+	TargetInfoChanged         = "Target.targetInfoChanged"
+	TargetDestroyed           = "Target.targetDestroyed"
+	AttachedToTarget          = "Target.attachedToTarget"
+	DetachedFromTarget        = "Target.detachedFromTarget"
+	ReceivedMessageFromTarget = "Target.receivedMessageFromTarget"
+)
+
 // Supports additional targets discovery and allows to attach to them.
 type Target struct {
 	conn cri.Connector
@@ -28,7 +56,7 @@ type SetDiscoverTargetsRequest struct {
 
 // Controls whether to discover available targets and notify via <code>targetCreated/targetInfoChanged/targetDestroyed</code> events.
 func (obj *Target) SetDiscoverTargets(request *SetDiscoverTargetsRequest) (err error) {
-	err = obj.conn.Send("Target.setDiscoverTargets", request, nil)
+	err = obj.conn.Send(SetDiscoverTargets, request, nil)
 	return
 }
 
@@ -41,7 +69,7 @@ type SetAutoAttachRequest struct {
 
 // Controls whether to automatically attach to new targets which are considered to be related to this one. When turned on, attaches to all existing related targets as well. When turned off, automatically detaches from all currently attached targets.
 func (obj *Target) SetAutoAttach(request *SetAutoAttachRequest) (err error) {
-	err = obj.conn.Send("Target.setAutoAttach", request, nil)
+	err = obj.conn.Send(SetAutoAttach, request, nil)
 	return
 }
 
@@ -51,7 +79,7 @@ type SetAttachToFramesRequest struct {
 }
 
 func (obj *Target) SetAttachToFrames(request *SetAttachToFramesRequest) (err error) {
-	err = obj.conn.Send("Target.setAttachToFrames", request, nil)
+	err = obj.conn.Send(SetAttachToFrames, request, nil)
 	return
 }
 
@@ -62,7 +90,7 @@ type SetRemoteLocationsRequest struct {
 
 // Enables target discovery for the specified locations, when <code>setDiscoverTargets</code> was set to <code>true</code>.
 func (obj *Target) SetRemoteLocations(request *SetRemoteLocationsRequest) (err error) {
-	err = obj.conn.Send("Target.setRemoteLocations", request, nil)
+	err = obj.conn.Send(SetRemoteLocations, request, nil)
 	return
 }
 
@@ -76,7 +104,7 @@ type SendMessageToTargetRequest struct {
 
 // Sends protocol message over session with given id.
 func (obj *Target) SendMessageToTarget(request *SendMessageToTargetRequest) (err error) {
-	err = obj.conn.Send("Target.sendMessageToTarget", request, nil)
+	err = obj.conn.Send(SendMessageToTarget, request, nil)
 	return
 }
 
@@ -90,7 +118,7 @@ type GetTargetInfoResponse struct {
 
 // Returns information about a target.
 func (obj *Target) GetTargetInfo(request *GetTargetInfoRequest) (response GetTargetInfoResponse, err error) {
-	err = obj.conn.Send("Target.getTargetInfo", request, &response)
+	err = obj.conn.Send(GetTargetInfo, request, &response)
 	return
 }
 
@@ -100,7 +128,7 @@ type ActivateTargetRequest struct {
 
 // Activates (focuses) the target.
 func (obj *Target) ActivateTarget(request *ActivateTargetRequest) (err error) {
-	err = obj.conn.Send("Target.activateTarget", request, nil)
+	err = obj.conn.Send(ActivateTarget, request, nil)
 	return
 }
 
@@ -114,7 +142,7 @@ type CloseTargetResponse struct {
 
 // Closes the target. If the target is a page that gets closed too.
 func (obj *Target) CloseTarget(request *CloseTargetRequest) (response CloseTargetResponse, err error) {
-	err = obj.conn.Send("Target.closeTarget", request, &response)
+	err = obj.conn.Send(CloseTarget, request, &response)
 	return
 }
 
@@ -129,7 +157,7 @@ type AttachToTargetResponse struct {
 
 // Attaches to the target with given id.
 func (obj *Target) AttachToTarget(request *AttachToTargetRequest) (response AttachToTargetResponse, err error) {
-	err = obj.conn.Send("Target.attachToTarget", request, &response)
+	err = obj.conn.Send(AttachToTarget, request, &response)
 	return
 }
 
@@ -142,7 +170,7 @@ type DetachFromTargetRequest struct {
 
 // Detaches session with given id.
 func (obj *Target) DetachFromTarget(request *DetachFromTargetRequest) (err error) {
-	err = obj.conn.Send("Target.detachFromTarget", request, nil)
+	err = obj.conn.Send(DetachFromTarget, request, nil)
 	return
 }
 
@@ -153,7 +181,7 @@ type CreateBrowserContextResponse struct {
 
 // Creates a new empty BrowserContext. Similar to an incognito profile but you can have more than one.
 func (obj *Target) CreateBrowserContext() (response CreateBrowserContextResponse, err error) {
-	err = obj.conn.Send("Target.createBrowserContext", nil, &response)
+	err = obj.conn.Send(CreateBrowserContext, nil, &response)
 	return
 }
 
@@ -167,7 +195,7 @@ type DisposeBrowserContextResponse struct {
 
 // Deletes a BrowserContext, will fail of any open page uses it.
 func (obj *Target) DisposeBrowserContext(request *DisposeBrowserContextRequest) (response DisposeBrowserContextResponse, err error) {
-	err = obj.conn.Send("Target.disposeBrowserContext", request, &response)
+	err = obj.conn.Send(DisposeBrowserContext, request, &response)
 	return
 }
 
@@ -192,7 +220,7 @@ type CreateTargetResponse struct {
 
 // Creates a new page.
 func (obj *Target) CreateTarget(request *CreateTargetRequest) (response CreateTargetResponse, err error) {
-	err = obj.conn.Send("Target.createTarget", request, &response)
+	err = obj.conn.Send(CreateTarget, request, &response)
 	return
 }
 
@@ -203,7 +231,7 @@ type GetTargetsResponse struct {
 
 // Retrieves a list of available targets.
 func (obj *Target) GetTargets() (response GetTargetsResponse, err error) {
-	err = obj.conn.Send("Target.getTargets", nil, &response)
+	err = obj.conn.Send(GetTargets, nil, &response)
 	return
 }
 
@@ -214,7 +242,7 @@ type TargetCreatedParams struct {
 // Issued when a possible inspection target is created.
 func (obj *Target) TargetCreated(fn func(params *TargetCreatedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Target.targetCreated", closeChn)
+	decoder := obj.conn.On(TargetCreated, closeChn)
 	go func() {
 		for {
 			params := TargetCreatedParams{}
@@ -234,7 +262,7 @@ type TargetInfoChangedParams struct {
 // Issued when some information about a target has changed. This only happens between <code>targetCreated</code> and <code>targetDestroyed</code>.
 func (obj *Target) TargetInfoChanged(fn func(params *TargetInfoChangedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Target.targetInfoChanged", closeChn)
+	decoder := obj.conn.On(TargetInfoChanged, closeChn)
 	go func() {
 		for {
 			params := TargetInfoChangedParams{}
@@ -254,7 +282,7 @@ type TargetDestroyedParams struct {
 // Issued when a target is destroyed.
 func (obj *Target) TargetDestroyed(fn func(params *TargetDestroyedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Target.targetDestroyed", closeChn)
+	decoder := obj.conn.On(TargetDestroyed, closeChn)
 	go func() {
 		for {
 			params := TargetDestroyedParams{}
@@ -277,7 +305,7 @@ type AttachedToTargetParams struct {
 // Issued when attached to target because of auto-attach or <code>attachToTarget</code> command.
 func (obj *Target) AttachedToTarget(fn func(params *AttachedToTargetParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Target.attachedToTarget", closeChn)
+	decoder := obj.conn.On(AttachedToTarget, closeChn)
 	go func() {
 		for {
 			params := AttachedToTargetParams{}
@@ -300,7 +328,7 @@ type DetachedFromTargetParams struct {
 // Issued when detached from target for any reason (including <code>detachFromTarget</code> command). Can be issued multiple times per target if multiple sessions have been attached to it.
 func (obj *Target) DetachedFromTarget(fn func(params *DetachedFromTargetParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Target.detachedFromTarget", closeChn)
+	decoder := obj.conn.On(DetachedFromTarget, closeChn)
 	go func() {
 		for {
 			params := DetachedFromTargetParams{}
@@ -324,7 +352,7 @@ type ReceivedMessageFromTargetParams struct {
 // Notifies about a new protocol message received from the session (as reported in <code>attachedToTarget</code> event).
 func (obj *Target) ReceivedMessageFromTarget(fn func(params *ReceivedMessageFromTargetParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Target.receivedMessageFromTarget", closeChn)
+	decoder := obj.conn.On(ReceivedMessageFromTarget, closeChn)
 	go func() {
 		for {
 			params := ReceivedMessageFromTargetParams{}

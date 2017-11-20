@@ -13,6 +13,22 @@ import (
 {{end}}
 )
 
+// List of commands in {{.Domain}} domain
+const (
+{{- range .Commands}}
+    {{.Name}} = {{printf "%q" .Command -}}
+{{end}}
+)
+
+{{- if ne (len .Events) 0}}
+// List of events in {{.Domain}} domain
+const (
+{{- range .Events}}
+    {{.Name}} = {{printf "%q" .Command -}}
+{{end}}
+)
+{{end}}
+
 {{.Doc}}
 type {{.Domain}} struct {
 	conn cri.Connector
@@ -30,7 +46,7 @@ type {{.ID}} {{.Type}}
 {{end}}
 {{.Doc}}
 func (obj *{{.Domain}}) {{.Name}}({{.RequestName}}) ({{.ResponseName}}) {
-	err = obj.conn.Send({{printf "%q" .Command}}, {{.RequestValue}}, {{.ResponseValue}})
+	err = obj.conn.Send({{.Name}}, {{.RequestValue}}, {{.ResponseValue}})
 	return
 }
 {{end -}}
@@ -43,7 +59,7 @@ type {{.ID}} {{.Type}}
 {{.Doc}}
 func (obj *{{.Domain}}) {{.Name}}(fn func({{.EventParams}}) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On({{printf "%q" .Command}}, closeChn)
+	decoder := obj.conn.On({{.Name}}, closeChn)
 	go func() {
 		for {
             {{.ParamsDecl}}

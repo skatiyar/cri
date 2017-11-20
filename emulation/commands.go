@@ -11,6 +11,33 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in Emulation domain
+const (
+	SetDeviceMetricsOverride          = "Emulation.setDeviceMetricsOverride"
+	ClearDeviceMetricsOverride        = "Emulation.clearDeviceMetricsOverride"
+	ResetPageScaleFactor              = "Emulation.resetPageScaleFactor"
+	SetPageScaleFactor                = "Emulation.setPageScaleFactor"
+	SetVisibleSize                    = "Emulation.setVisibleSize"
+	SetScriptExecutionDisabled        = "Emulation.setScriptExecutionDisabled"
+	SetGeolocationOverride            = "Emulation.setGeolocationOverride"
+	ClearGeolocationOverride          = "Emulation.clearGeolocationOverride"
+	SetTouchEmulationEnabled          = "Emulation.setTouchEmulationEnabled"
+	SetEmitTouchEventsForMouse        = "Emulation.setEmitTouchEventsForMouse"
+	SetEmulatedMedia                  = "Emulation.setEmulatedMedia"
+	SetCPUThrottlingRate              = "Emulation.setCPUThrottlingRate"
+	CanEmulate                        = "Emulation.canEmulate"
+	SetVirtualTimePolicy              = "Emulation.setVirtualTimePolicy"
+	SetNavigatorOverrides             = "Emulation.setNavigatorOverrides"
+	SetDefaultBackgroundColorOverride = "Emulation.setDefaultBackgroundColorOverride"
+)
+
+// List of events in Emulation domain
+const (
+	VirtualTimeBudgetExpired = "Emulation.virtualTimeBudgetExpired"
+	VirtualTimeAdvanced      = "Emulation.virtualTimeAdvanced"
+	VirtualTimePaused        = "Emulation.virtualTimePaused"
+)
+
 // This domain emulates different environments for the page.
 type Emulation struct {
 	conn cri.Connector
@@ -56,19 +83,19 @@ type SetDeviceMetricsOverrideRequest struct {
 
 // Overrides the values of device screen dimensions (window.screen.width, window.screen.height, window.innerWidth, window.innerHeight, and "device-width"/"device-height"-related CSS media query results).
 func (obj *Emulation) SetDeviceMetricsOverride(request *SetDeviceMetricsOverrideRequest) (err error) {
-	err = obj.conn.Send("Emulation.setDeviceMetricsOverride", request, nil)
+	err = obj.conn.Send(SetDeviceMetricsOverride, request, nil)
 	return
 }
 
 // Clears the overriden device metrics.
 func (obj *Emulation) ClearDeviceMetricsOverride() (err error) {
-	err = obj.conn.Send("Emulation.clearDeviceMetricsOverride", nil, nil)
+	err = obj.conn.Send(ClearDeviceMetricsOverride, nil, nil)
 	return
 }
 
 // Requests that page scale factor is reset to initial values.
 func (obj *Emulation) ResetPageScaleFactor() (err error) {
-	err = obj.conn.Send("Emulation.resetPageScaleFactor", nil, nil)
+	err = obj.conn.Send(ResetPageScaleFactor, nil, nil)
 	return
 }
 
@@ -79,7 +106,7 @@ type SetPageScaleFactorRequest struct {
 
 // Sets a specified page scale factor.
 func (obj *Emulation) SetPageScaleFactor(request *SetPageScaleFactorRequest) (err error) {
-	err = obj.conn.Send("Emulation.setPageScaleFactor", request, nil)
+	err = obj.conn.Send(SetPageScaleFactor, request, nil)
 	return
 }
 
@@ -92,7 +119,7 @@ type SetVisibleSizeRequest struct {
 
 // Resizes the frame/viewport of the page. Note that this does not affect the frame's container (e.g. browser window). Can be used to produce screenshots of the specified size. Not supported on Android.
 func (obj *Emulation) SetVisibleSize(request *SetVisibleSizeRequest) (err error) {
-	err = obj.conn.Send("Emulation.setVisibleSize", request, nil)
+	err = obj.conn.Send(SetVisibleSize, request, nil)
 	return
 }
 
@@ -103,7 +130,7 @@ type SetScriptExecutionDisabledRequest struct {
 
 // Switches script execution in the page.
 func (obj *Emulation) SetScriptExecutionDisabled(request *SetScriptExecutionDisabledRequest) (err error) {
-	err = obj.conn.Send("Emulation.setScriptExecutionDisabled", request, nil)
+	err = obj.conn.Send(SetScriptExecutionDisabled, request, nil)
 	return
 }
 
@@ -118,13 +145,13 @@ type SetGeolocationOverrideRequest struct {
 
 // Overrides the Geolocation Position or Error. Omitting any of the parameters emulates position unavailable.
 func (obj *Emulation) SetGeolocationOverride(request *SetGeolocationOverrideRequest) (err error) {
-	err = obj.conn.Send("Emulation.setGeolocationOverride", request, nil)
+	err = obj.conn.Send(SetGeolocationOverride, request, nil)
 	return
 }
 
 // Clears the overriden Geolocation Position and Error.
 func (obj *Emulation) ClearGeolocationOverride() (err error) {
-	err = obj.conn.Send("Emulation.clearGeolocationOverride", nil, nil)
+	err = obj.conn.Send(ClearGeolocationOverride, nil, nil)
 	return
 }
 
@@ -137,7 +164,7 @@ type SetTouchEmulationEnabledRequest struct {
 
 // Enables touch on platforms which do not support them.
 func (obj *Emulation) SetTouchEmulationEnabled(request *SetTouchEmulationEnabledRequest) (err error) {
-	err = obj.conn.Send("Emulation.setTouchEmulationEnabled", request, nil)
+	err = obj.conn.Send(SetTouchEmulationEnabled, request, nil)
 	return
 }
 
@@ -149,7 +176,7 @@ type SetEmitTouchEventsForMouseRequest struct {
 }
 
 func (obj *Emulation) SetEmitTouchEventsForMouse(request *SetEmitTouchEventsForMouseRequest) (err error) {
-	err = obj.conn.Send("Emulation.setEmitTouchEventsForMouse", request, nil)
+	err = obj.conn.Send(SetEmitTouchEventsForMouse, request, nil)
 	return
 }
 
@@ -160,7 +187,7 @@ type SetEmulatedMediaRequest struct {
 
 // Emulates the given media for CSS media queries.
 func (obj *Emulation) SetEmulatedMedia(request *SetEmulatedMediaRequest) (err error) {
-	err = obj.conn.Send("Emulation.setEmulatedMedia", request, nil)
+	err = obj.conn.Send(SetEmulatedMedia, request, nil)
 	return
 }
 
@@ -171,7 +198,7 @@ type SetCPUThrottlingRateRequest struct {
 
 // Enables CPU throttling to emulate slow CPUs.
 func (obj *Emulation) SetCPUThrottlingRate(request *SetCPUThrottlingRateRequest) (err error) {
-	err = obj.conn.Send("Emulation.setCPUThrottlingRate", request, nil)
+	err = obj.conn.Send(SetCPUThrottlingRate, request, nil)
 	return
 }
 
@@ -182,7 +209,7 @@ type CanEmulateResponse struct {
 
 // Tells whether emulation is supported.
 func (obj *Emulation) CanEmulate() (response CanEmulateResponse, err error) {
-	err = obj.conn.Send("Emulation.canEmulate", nil, &response)
+	err = obj.conn.Send(CanEmulate, nil, &response)
 	return
 }
 
@@ -201,7 +228,7 @@ type SetVirtualTimePolicyResponse struct {
 
 // Turns on virtual time for all frames (replacing real-time with a synthetic time source) and sets the current virtual time policy.  Note this supersedes any previous time budget.
 func (obj *Emulation) SetVirtualTimePolicy(request *SetVirtualTimePolicyRequest) (response SetVirtualTimePolicyResponse, err error) {
-	err = obj.conn.Send("Emulation.setVirtualTimePolicy", request, &response)
+	err = obj.conn.Send(SetVirtualTimePolicy, request, &response)
 	return
 }
 
@@ -212,7 +239,7 @@ type SetNavigatorOverridesRequest struct {
 
 // Overrides value returned by the javascript navigator object.
 func (obj *Emulation) SetNavigatorOverrides(request *SetNavigatorOverridesRequest) (err error) {
-	err = obj.conn.Send("Emulation.setNavigatorOverrides", request, nil)
+	err = obj.conn.Send(SetNavigatorOverrides, request, nil)
 	return
 }
 
@@ -223,7 +250,7 @@ type SetDefaultBackgroundColorOverrideRequest struct {
 
 // Sets or clears an override of the default background color of the frame. This override is used if the content does not specify one.
 func (obj *Emulation) SetDefaultBackgroundColorOverride(request *SetDefaultBackgroundColorOverrideRequest) (err error) {
-	err = obj.conn.Send("Emulation.setDefaultBackgroundColorOverride", request, nil)
+	err = obj.conn.Send(SetDefaultBackgroundColorOverride, request, nil)
 	return
 }
 
@@ -231,7 +258,7 @@ func (obj *Emulation) SetDefaultBackgroundColorOverride(request *SetDefaultBackg
 // NOTE Experimental
 func (obj *Emulation) VirtualTimeBudgetExpired(fn func(err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Emulation.virtualTimeBudgetExpired", closeChn)
+	decoder := obj.conn.On(VirtualTimeBudgetExpired, closeChn)
 	go func() {
 		for {
 
@@ -253,7 +280,7 @@ type VirtualTimeAdvancedParams struct {
 // NOTE Experimental
 func (obj *Emulation) VirtualTimeAdvanced(fn func(params *VirtualTimeAdvancedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Emulation.virtualTimeAdvanced", closeChn)
+	decoder := obj.conn.On(VirtualTimeAdvanced, closeChn)
 	go func() {
 		for {
 			params := VirtualTimeAdvancedParams{}
@@ -275,7 +302,7 @@ type VirtualTimePausedParams struct {
 // NOTE Experimental
 func (obj *Emulation) VirtualTimePaused(fn func(params *VirtualTimePausedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Emulation.virtualTimePaused", closeChn)
+	decoder := obj.conn.On(VirtualTimePaused, closeChn)
 	go func() {
 		for {
 			params := VirtualTimePausedParams{}

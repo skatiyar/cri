@@ -11,6 +11,17 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in IndexedDB domain
+const (
+	Enable               = "IndexedDB.enable"
+	Disable              = "IndexedDB.disable"
+	RequestDatabaseNames = "IndexedDB.requestDatabaseNames"
+	RequestDatabase      = "IndexedDB.requestDatabase"
+	RequestData          = "IndexedDB.requestData"
+	ClearObjectStore     = "IndexedDB.clearObjectStore"
+	DeleteDatabase       = "IndexedDB.deleteDatabase"
+)
+
 type IndexedDB struct {
 	conn cri.Connector
 }
@@ -22,13 +33,13 @@ func New(conn cri.Connector) *IndexedDB {
 
 // Enables events from backend.
 func (obj *IndexedDB) Enable() (err error) {
-	err = obj.conn.Send("IndexedDB.enable", nil, nil)
+	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 
 // Disables events from backend.
 func (obj *IndexedDB) Disable() (err error) {
-	err = obj.conn.Send("IndexedDB.disable", nil, nil)
+	err = obj.conn.Send(Disable, nil, nil)
 	return
 }
 
@@ -44,7 +55,7 @@ type RequestDatabaseNamesResponse struct {
 
 // Requests database names for given security origin.
 func (obj *IndexedDB) RequestDatabaseNames(request *RequestDatabaseNamesRequest) (response RequestDatabaseNamesResponse, err error) {
-	err = obj.conn.Send("IndexedDB.requestDatabaseNames", request, &response)
+	err = obj.conn.Send(RequestDatabaseNames, request, &response)
 	return
 }
 
@@ -62,7 +73,7 @@ type RequestDatabaseResponse struct {
 
 // Requests database with given name in given frame.
 func (obj *IndexedDB) RequestDatabase(request *RequestDatabaseRequest) (response RequestDatabaseResponse, err error) {
-	err = obj.conn.Send("IndexedDB.requestDatabase", request, &response)
+	err = obj.conn.Send(RequestDatabase, request, &response)
 	return
 }
 
@@ -92,7 +103,7 @@ type RequestDataResponse struct {
 
 // Requests data from object store or index.
 func (obj *IndexedDB) RequestData(request *RequestDataRequest) (response RequestDataResponse, err error) {
-	err = obj.conn.Send("IndexedDB.requestData", request, &response)
+	err = obj.conn.Send(RequestData, request, &response)
 	return
 }
 
@@ -107,7 +118,7 @@ type ClearObjectStoreRequest struct {
 
 // Clears all entries from an object store.
 func (obj *IndexedDB) ClearObjectStore(request *ClearObjectStoreRequest) (err error) {
-	err = obj.conn.Send("IndexedDB.clearObjectStore", request, nil)
+	err = obj.conn.Send(ClearObjectStore, request, nil)
 	return
 }
 
@@ -120,6 +131,6 @@ type DeleteDatabaseRequest struct {
 
 // Deletes a database.
 func (obj *IndexedDB) DeleteDatabase(request *DeleteDatabaseRequest) (err error) {
-	err = obj.conn.Send("IndexedDB.deleteDatabase", request, nil)
+	err = obj.conn.Send(DeleteDatabase, request, nil)
 	return
 }

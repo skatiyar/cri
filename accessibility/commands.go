@@ -11,6 +11,11 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in Accessibility domain
+const (
+	GetPartialAXTree = "Accessibility.getPartialAXTree"
+)
+
 type Accessibility struct {
 	conn cri.Connector
 }
@@ -34,6 +39,6 @@ type GetPartialAXTreeResponse struct {
 
 // Fetches the accessibility node and partial accessibility tree for this DOM node, if it exists.
 func (obj *Accessibility) GetPartialAXTree(request *GetPartialAXTreeRequest) (response GetPartialAXTreeResponse, err error) {
-	err = obj.conn.Send("Accessibility.getPartialAXTree", request, &response)
+	err = obj.conn.Send(GetPartialAXTree, request, &response)
 	return
 }

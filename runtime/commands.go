@@ -11,6 +11,36 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in Runtime domain
+const (
+	Evaluate                        = "Runtime.evaluate"
+	AwaitPromise                    = "Runtime.awaitPromise"
+	CallFunctionOn                  = "Runtime.callFunctionOn"
+	GetProperties                   = "Runtime.getProperties"
+	ReleaseObject                   = "Runtime.releaseObject"
+	ReleaseObjectGroup              = "Runtime.releaseObjectGroup"
+	RunIfWaitingForDebugger         = "Runtime.runIfWaitingForDebugger"
+	Enable                          = "Runtime.enable"
+	Disable                         = "Runtime.disable"
+	DiscardConsoleEntries           = "Runtime.discardConsoleEntries"
+	SetCustomObjectFormatterEnabled = "Runtime.setCustomObjectFormatterEnabled"
+	CompileScript                   = "Runtime.compileScript"
+	RunScript                       = "Runtime.runScript"
+	QueryObjects                    = "Runtime.queryObjects"
+	GlobalLexicalScopeNames         = "Runtime.globalLexicalScopeNames"
+)
+
+// List of events in Runtime domain
+const (
+	ExecutionContextCreated   = "Runtime.executionContextCreated"
+	ExecutionContextDestroyed = "Runtime.executionContextDestroyed"
+	ExecutionContextsCleared  = "Runtime.executionContextsCleared"
+	ExceptionThrown           = "Runtime.exceptionThrown"
+	ExceptionRevoked          = "Runtime.exceptionRevoked"
+	ConsoleAPICalled          = "Runtime.consoleAPICalled"
+	InspectRequested          = "Runtime.inspectRequested"
+)
+
 // Runtime domain exposes JavaScript runtime by means of remote evaluation and mirror objects. Evaluation results are returned as mirror object that expose object type, string representation and unique identifier that can be used for further object reference. Original objects are maintained in memory unless they are either explicitly released or are released along with the other objects in their object group.
 type Runtime struct {
 	conn cri.Connector
@@ -53,7 +83,7 @@ type EvaluateResponse struct {
 
 // Evaluates expression on global object.
 func (obj *Runtime) Evaluate(request *EvaluateRequest) (response EvaluateResponse, err error) {
-	err = obj.conn.Send("Runtime.evaluate", request, &response)
+	err = obj.conn.Send(Evaluate, request, &response)
 	return
 }
 
@@ -75,7 +105,7 @@ type AwaitPromiseResponse struct {
 
 // Add handler to promise with given promise object id.
 func (obj *Runtime) AwaitPromise(request *AwaitPromiseRequest) (response AwaitPromiseResponse, err error) {
-	err = obj.conn.Send("Runtime.awaitPromise", request, &response)
+	err = obj.conn.Send(AwaitPromise, request, &response)
 	return
 }
 
@@ -113,7 +143,7 @@ type CallFunctionOnResponse struct {
 
 // Calls function with given declaration on the given object. Object group of the result is inherited from the target object.
 func (obj *Runtime) CallFunctionOn(request *CallFunctionOnRequest) (response CallFunctionOnResponse, err error) {
-	err = obj.conn.Send("Runtime.callFunctionOn", request, &response)
+	err = obj.conn.Send(CallFunctionOn, request, &response)
 	return
 }
 
@@ -141,7 +171,7 @@ type GetPropertiesResponse struct {
 
 // Returns properties of a given object. Object group of the result is inherited from the target object.
 func (obj *Runtime) GetProperties(request *GetPropertiesRequest) (response GetPropertiesResponse, err error) {
-	err = obj.conn.Send("Runtime.getProperties", request, &response)
+	err = obj.conn.Send(GetProperties, request, &response)
 	return
 }
 
@@ -152,7 +182,7 @@ type ReleaseObjectRequest struct {
 
 // Releases remote object with given id.
 func (obj *Runtime) ReleaseObject(request *ReleaseObjectRequest) (err error) {
-	err = obj.conn.Send("Runtime.releaseObject", request, nil)
+	err = obj.conn.Send(ReleaseObject, request, nil)
 	return
 }
 
@@ -163,31 +193,31 @@ type ReleaseObjectGroupRequest struct {
 
 // Releases all remote objects that belong to a given group.
 func (obj *Runtime) ReleaseObjectGroup(request *ReleaseObjectGroupRequest) (err error) {
-	err = obj.conn.Send("Runtime.releaseObjectGroup", request, nil)
+	err = obj.conn.Send(ReleaseObjectGroup, request, nil)
 	return
 }
 
 // Tells inspected instance to run if it was waiting for debugger to attach.
 func (obj *Runtime) RunIfWaitingForDebugger() (err error) {
-	err = obj.conn.Send("Runtime.runIfWaitingForDebugger", nil, nil)
+	err = obj.conn.Send(RunIfWaitingForDebugger, nil, nil)
 	return
 }
 
 // Enables reporting of execution contexts creation by means of <code>executionContextCreated</code> event. When the reporting gets enabled the event will be sent immediately for each existing execution context.
 func (obj *Runtime) Enable() (err error) {
-	err = obj.conn.Send("Runtime.enable", nil, nil)
+	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 
 // Disables reporting of execution contexts creation.
 func (obj *Runtime) Disable() (err error) {
-	err = obj.conn.Send("Runtime.disable", nil, nil)
+	err = obj.conn.Send(Disable, nil, nil)
 	return
 }
 
 // Discards collected exceptions and console API calls.
 func (obj *Runtime) DiscardConsoleEntries() (err error) {
-	err = obj.conn.Send("Runtime.discardConsoleEntries", nil, nil)
+	err = obj.conn.Send(DiscardConsoleEntries, nil, nil)
 	return
 }
 
@@ -196,7 +226,7 @@ type SetCustomObjectFormatterEnabledRequest struct {
 }
 
 func (obj *Runtime) SetCustomObjectFormatterEnabled(request *SetCustomObjectFormatterEnabledRequest) (err error) {
-	err = obj.conn.Send("Runtime.setCustomObjectFormatterEnabled", request, nil)
+	err = obj.conn.Send(SetCustomObjectFormatterEnabled, request, nil)
 	return
 }
 
@@ -220,7 +250,7 @@ type CompileScriptResponse struct {
 
 // Compiles expression.
 func (obj *Runtime) CompileScript(request *CompileScriptRequest) (response CompileScriptResponse, err error) {
-	err = obj.conn.Send("Runtime.compileScript", request, &response)
+	err = obj.conn.Send(CompileScript, request, &response)
 	return
 }
 
@@ -252,7 +282,7 @@ type RunScriptResponse struct {
 
 // Runs script with given id in a given context.
 func (obj *Runtime) RunScript(request *RunScriptRequest) (response RunScriptResponse, err error) {
-	err = obj.conn.Send("Runtime.runScript", request, &response)
+	err = obj.conn.Send(RunScript, request, &response)
 	return
 }
 
@@ -267,7 +297,7 @@ type QueryObjectsResponse struct {
 }
 
 func (obj *Runtime) QueryObjects(request *QueryObjectsRequest) (response QueryObjectsResponse, err error) {
-	err = obj.conn.Send("Runtime.queryObjects", request, &response)
+	err = obj.conn.Send(QueryObjects, request, &response)
 	return
 }
 
@@ -282,7 +312,7 @@ type GlobalLexicalScopeNamesResponse struct {
 
 // Returns all let, const and class variables from global scope.
 func (obj *Runtime) GlobalLexicalScopeNames(request *GlobalLexicalScopeNamesRequest) (response GlobalLexicalScopeNamesResponse, err error) {
-	err = obj.conn.Send("Runtime.globalLexicalScopeNames", request, &response)
+	err = obj.conn.Send(GlobalLexicalScopeNames, request, &response)
 	return
 }
 
@@ -294,7 +324,7 @@ type ExecutionContextCreatedParams struct {
 // Issued when new execution context is created.
 func (obj *Runtime) ExecutionContextCreated(fn func(params *ExecutionContextCreatedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Runtime.executionContextCreated", closeChn)
+	decoder := obj.conn.On(ExecutionContextCreated, closeChn)
 	go func() {
 		for {
 			params := ExecutionContextCreatedParams{}
@@ -315,7 +345,7 @@ type ExecutionContextDestroyedParams struct {
 // Issued when execution context is destroyed.
 func (obj *Runtime) ExecutionContextDestroyed(fn func(params *ExecutionContextDestroyedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Runtime.executionContextDestroyed", closeChn)
+	decoder := obj.conn.On(ExecutionContextDestroyed, closeChn)
 	go func() {
 		for {
 			params := ExecutionContextDestroyedParams{}
@@ -331,7 +361,7 @@ func (obj *Runtime) ExecutionContextDestroyed(fn func(params *ExecutionContextDe
 // Issued when all executionContexts were cleared in browser
 func (obj *Runtime) ExecutionContextsCleared(fn func(err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Runtime.executionContextsCleared", closeChn)
+	decoder := obj.conn.On(ExecutionContextsCleared, closeChn)
 	go func() {
 		for {
 
@@ -353,7 +383,7 @@ type ExceptionThrownParams struct {
 // Issued when exception was thrown and unhandled.
 func (obj *Runtime) ExceptionThrown(fn func(params *ExceptionThrownParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Runtime.exceptionThrown", closeChn)
+	decoder := obj.conn.On(ExceptionThrown, closeChn)
 	go func() {
 		for {
 			params := ExceptionThrownParams{}
@@ -376,7 +406,7 @@ type ExceptionRevokedParams struct {
 // Issued when unhandled exception was revoked.
 func (obj *Runtime) ExceptionRevoked(fn func(params *ExceptionRevokedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Runtime.exceptionRevoked", closeChn)
+	decoder := obj.conn.On(ExceptionRevoked, closeChn)
 	go func() {
 		for {
 			params := ExceptionRevokedParams{}
@@ -408,7 +438,7 @@ type ConsoleAPICalledParams struct {
 // Issued when console API was called.
 func (obj *Runtime) ConsoleAPICalled(fn func(params *ConsoleAPICalledParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Runtime.consoleAPICalled", closeChn)
+	decoder := obj.conn.On(ConsoleAPICalled, closeChn)
 	go func() {
 		for {
 			params := ConsoleAPICalledParams{}
@@ -429,7 +459,7 @@ type InspectRequestedParams struct {
 // Issued when object should be inspected (for example, as a result of inspect() command line API call).
 func (obj *Runtime) InspectRequested(fn func(params *InspectRequestedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Runtime.inspectRequested", closeChn)
+	decoder := obj.conn.On(InspectRequested, closeChn)
 	go func() {
 		for {
 			params := InspectRequestedParams{}

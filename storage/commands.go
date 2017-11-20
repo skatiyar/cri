@@ -11,6 +11,24 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in Storage domain
+const (
+	ClearDataForOrigin           = "Storage.clearDataForOrigin"
+	GetUsageAndQuota             = "Storage.getUsageAndQuota"
+	TrackCacheStorageForOrigin   = "Storage.trackCacheStorageForOrigin"
+	UntrackCacheStorageForOrigin = "Storage.untrackCacheStorageForOrigin"
+	TrackIndexedDBForOrigin      = "Storage.trackIndexedDBForOrigin"
+	UntrackIndexedDBForOrigin    = "Storage.untrackIndexedDBForOrigin"
+)
+
+// List of events in Storage domain
+const (
+	CacheStorageListUpdated    = "Storage.cacheStorageListUpdated"
+	CacheStorageContentUpdated = "Storage.cacheStorageContentUpdated"
+	IndexedDBListUpdated       = "Storage.indexedDBListUpdated"
+	IndexedDBContentUpdated    = "Storage.indexedDBContentUpdated"
+)
+
 type Storage struct {
 	conn cri.Connector
 }
@@ -29,7 +47,7 @@ type ClearDataForOriginRequest struct {
 
 // Clears storage for origin.
 func (obj *Storage) ClearDataForOrigin(request *ClearDataForOriginRequest) (err error) {
-	err = obj.conn.Send("Storage.clearDataForOrigin", request, nil)
+	err = obj.conn.Send(ClearDataForOrigin, request, nil)
 	return
 }
 
@@ -49,7 +67,7 @@ type GetUsageAndQuotaResponse struct {
 
 // Returns usage and quota in bytes.
 func (obj *Storage) GetUsageAndQuota(request *GetUsageAndQuotaRequest) (response GetUsageAndQuotaResponse, err error) {
-	err = obj.conn.Send("Storage.getUsageAndQuota", request, &response)
+	err = obj.conn.Send(GetUsageAndQuota, request, &response)
 	return
 }
 
@@ -60,7 +78,7 @@ type TrackCacheStorageForOriginRequest struct {
 
 // Registers origin to be notified when an update occurs to its cache storage list.
 func (obj *Storage) TrackCacheStorageForOrigin(request *TrackCacheStorageForOriginRequest) (err error) {
-	err = obj.conn.Send("Storage.trackCacheStorageForOrigin", request, nil)
+	err = obj.conn.Send(TrackCacheStorageForOrigin, request, nil)
 	return
 }
 
@@ -71,7 +89,7 @@ type UntrackCacheStorageForOriginRequest struct {
 
 // Unregisters origin from receiving notifications for cache storage.
 func (obj *Storage) UntrackCacheStorageForOrigin(request *UntrackCacheStorageForOriginRequest) (err error) {
-	err = obj.conn.Send("Storage.untrackCacheStorageForOrigin", request, nil)
+	err = obj.conn.Send(UntrackCacheStorageForOrigin, request, nil)
 	return
 }
 
@@ -82,7 +100,7 @@ type TrackIndexedDBForOriginRequest struct {
 
 // Registers origin to be notified when an update occurs to its IndexedDB.
 func (obj *Storage) TrackIndexedDBForOrigin(request *TrackIndexedDBForOriginRequest) (err error) {
-	err = obj.conn.Send("Storage.trackIndexedDBForOrigin", request, nil)
+	err = obj.conn.Send(TrackIndexedDBForOrigin, request, nil)
 	return
 }
 
@@ -93,7 +111,7 @@ type UntrackIndexedDBForOriginRequest struct {
 
 // Unregisters origin from receiving notifications for IndexedDB.
 func (obj *Storage) UntrackIndexedDBForOrigin(request *UntrackIndexedDBForOriginRequest) (err error) {
-	err = obj.conn.Send("Storage.untrackIndexedDBForOrigin", request, nil)
+	err = obj.conn.Send(UntrackIndexedDBForOrigin, request, nil)
 	return
 }
 
@@ -105,7 +123,7 @@ type CacheStorageListUpdatedParams struct {
 // A cache has been added/deleted.
 func (obj *Storage) CacheStorageListUpdated(fn func(params *CacheStorageListUpdatedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Storage.cacheStorageListUpdated", closeChn)
+	decoder := obj.conn.On(CacheStorageListUpdated, closeChn)
 	go func() {
 		for {
 			params := CacheStorageListUpdatedParams{}
@@ -128,7 +146,7 @@ type CacheStorageContentUpdatedParams struct {
 // A cache's contents have been modified.
 func (obj *Storage) CacheStorageContentUpdated(fn func(params *CacheStorageContentUpdatedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Storage.cacheStorageContentUpdated", closeChn)
+	decoder := obj.conn.On(CacheStorageContentUpdated, closeChn)
 	go func() {
 		for {
 			params := CacheStorageContentUpdatedParams{}
@@ -149,7 +167,7 @@ type IndexedDBListUpdatedParams struct {
 // The origin's IndexedDB database list has been modified.
 func (obj *Storage) IndexedDBListUpdated(fn func(params *IndexedDBListUpdatedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Storage.indexedDBListUpdated", closeChn)
+	decoder := obj.conn.On(IndexedDBListUpdated, closeChn)
 	go func() {
 		for {
 			params := IndexedDBListUpdatedParams{}
@@ -174,7 +192,7 @@ type IndexedDBContentUpdatedParams struct {
 // The origin's IndexedDB object store has been modified.
 func (obj *Storage) IndexedDBContentUpdated(fn func(params *IndexedDBContentUpdatedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Storage.indexedDBContentUpdated", closeChn)
+	decoder := obj.conn.On(IndexedDBContentUpdated, closeChn)
 	go func() {
 		for {
 			params := IndexedDBContentUpdatedParams{}

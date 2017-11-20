@@ -11,6 +11,14 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in Memory domain
+const (
+	GetDOMCounters                     = "Memory.getDOMCounters"
+	PrepareForLeakDetection            = "Memory.prepareForLeakDetection"
+	SetPressureNotificationsSuppressed = "Memory.setPressureNotificationsSuppressed"
+	SimulatePressureNotification       = "Memory.simulatePressureNotification"
+)
+
 type Memory struct {
 	conn cri.Connector
 }
@@ -27,12 +35,12 @@ type GetDOMCountersResponse struct {
 }
 
 func (obj *Memory) GetDOMCounters() (response GetDOMCountersResponse, err error) {
-	err = obj.conn.Send("Memory.getDOMCounters", nil, &response)
+	err = obj.conn.Send(GetDOMCounters, nil, &response)
 	return
 }
 
 func (obj *Memory) PrepareForLeakDetection() (err error) {
-	err = obj.conn.Send("Memory.prepareForLeakDetection", nil, nil)
+	err = obj.conn.Send(PrepareForLeakDetection, nil, nil)
 	return
 }
 
@@ -43,7 +51,7 @@ type SetPressureNotificationsSuppressedRequest struct {
 
 // Enable/disable suppressing memory pressure notifications in all processes.
 func (obj *Memory) SetPressureNotificationsSuppressed(request *SetPressureNotificationsSuppressedRequest) (err error) {
-	err = obj.conn.Send("Memory.setPressureNotificationsSuppressed", request, nil)
+	err = obj.conn.Send(SetPressureNotificationsSuppressed, request, nil)
 	return
 }
 
@@ -54,6 +62,6 @@ type SimulatePressureNotificationRequest struct {
 
 // Simulate a memory pressure notification in all processes.
 func (obj *Memory) SimulatePressureNotification(request *SimulatePressureNotificationRequest) (err error) {
-	err = obj.conn.Send("Memory.simulatePressureNotification", request, nil)
+	err = obj.conn.Send(SimulatePressureNotification, request, nil)
 	return
 }

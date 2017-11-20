@@ -11,6 +11,19 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in HeadlessExperimental domain
+const (
+	Enable     = "HeadlessExperimental.enable"
+	Disable    = "HeadlessExperimental.disable"
+	BeginFrame = "HeadlessExperimental.beginFrame"
+)
+
+// List of events in HeadlessExperimental domain
+const (
+	NeedsBeginFramesChanged      = "HeadlessExperimental.needsBeginFramesChanged"
+	MainFrameReadyForScreenshots = "HeadlessExperimental.mainFrameReadyForScreenshots"
+)
+
 // This domain provides experimental commands only supported in headless mode.
 type HeadlessExperimental struct {
 	conn cri.Connector
@@ -23,13 +36,13 @@ func New(conn cri.Connector) *HeadlessExperimental {
 
 // Enables headless events for the target.
 func (obj *HeadlessExperimental) Enable() (err error) {
-	err = obj.conn.Send("HeadlessExperimental.enable", nil, nil)
+	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 
 // Disables headless events for the target.
 func (obj *HeadlessExperimental) Disable() (err error) {
-	err = obj.conn.Send("HeadlessExperimental.disable", nil, nil)
+	err = obj.conn.Send(Disable, nil, nil)
 	return
 }
 
@@ -55,7 +68,7 @@ type BeginFrameResponse struct {
 
 // Sends a BeginFrame to the target and returns when the frame was completed. Optionally captures a screenshot from the resulting frame. Requires that the target was created with enabled BeginFrameControl.
 func (obj *HeadlessExperimental) BeginFrame(request *BeginFrameRequest) (response BeginFrameResponse, err error) {
-	err = obj.conn.Send("HeadlessExperimental.beginFrame", request, &response)
+	err = obj.conn.Send(BeginFrame, request, &response)
 	return
 }
 
@@ -67,7 +80,7 @@ type NeedsBeginFramesChangedParams struct {
 // Issued when the target starts or stops needing BeginFrames.
 func (obj *HeadlessExperimental) NeedsBeginFramesChanged(fn func(params *NeedsBeginFramesChangedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("HeadlessExperimental.needsBeginFramesChanged", closeChn)
+	decoder := obj.conn.On(NeedsBeginFramesChanged, closeChn)
 	go func() {
 		for {
 			params := NeedsBeginFramesChangedParams{}
@@ -83,7 +96,7 @@ func (obj *HeadlessExperimental) NeedsBeginFramesChanged(fn func(params *NeedsBe
 // Issued when the main frame has first submitted a frame to the browser. May only be fired while a BeginFrame is in flight. Before this event, screenshotting requests may fail.
 func (obj *HeadlessExperimental) MainFrameReadyForScreenshots(fn func(err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("HeadlessExperimental.mainFrameReadyForScreenshots", closeChn)
+	decoder := obj.conn.On(MainFrameReadyForScreenshots, closeChn)
 	go func() {
 		for {
 

@@ -11,6 +11,24 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in DOMStorage domain
+const (
+	Enable               = "DOMStorage.enable"
+	Disable              = "DOMStorage.disable"
+	Clear                = "DOMStorage.clear"
+	GetDOMStorageItems   = "DOMStorage.getDOMStorageItems"
+	SetDOMStorageItem    = "DOMStorage.setDOMStorageItem"
+	RemoveDOMStorageItem = "DOMStorage.removeDOMStorageItem"
+)
+
+// List of events in DOMStorage domain
+const (
+	DomStorageItemsCleared = "DOMStorage.domStorageItemsCleared"
+	DomStorageItemRemoved  = "DOMStorage.domStorageItemRemoved"
+	DomStorageItemAdded    = "DOMStorage.domStorageItemAdded"
+	DomStorageItemUpdated  = "DOMStorage.domStorageItemUpdated"
+)
+
 // Query and modify DOM storage.
 type DOMStorage struct {
 	conn cri.Connector
@@ -23,13 +41,13 @@ func New(conn cri.Connector) *DOMStorage {
 
 // Enables storage tracking, storage events will now be delivered to the client.
 func (obj *DOMStorage) Enable() (err error) {
-	err = obj.conn.Send("DOMStorage.enable", nil, nil)
+	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 
 // Disables storage tracking, prevents storage events from being sent to the client.
 func (obj *DOMStorage) Disable() (err error) {
-	err = obj.conn.Send("DOMStorage.disable", nil, nil)
+	err = obj.conn.Send(Disable, nil, nil)
 	return
 }
 
@@ -38,7 +56,7 @@ type ClearRequest struct {
 }
 
 func (obj *DOMStorage) Clear(request *ClearRequest) (err error) {
-	err = obj.conn.Send("DOMStorage.clear", request, nil)
+	err = obj.conn.Send(Clear, request, nil)
 	return
 }
 
@@ -51,7 +69,7 @@ type GetDOMStorageItemsResponse struct {
 }
 
 func (obj *DOMStorage) GetDOMStorageItems(request *GetDOMStorageItemsRequest) (response GetDOMStorageItemsResponse, err error) {
-	err = obj.conn.Send("DOMStorage.getDOMStorageItems", request, &response)
+	err = obj.conn.Send(GetDOMStorageItems, request, &response)
 	return
 }
 
@@ -62,7 +80,7 @@ type SetDOMStorageItemRequest struct {
 }
 
 func (obj *DOMStorage) SetDOMStorageItem(request *SetDOMStorageItemRequest) (err error) {
-	err = obj.conn.Send("DOMStorage.setDOMStorageItem", request, nil)
+	err = obj.conn.Send(SetDOMStorageItem, request, nil)
 	return
 }
 
@@ -72,7 +90,7 @@ type RemoveDOMStorageItemRequest struct {
 }
 
 func (obj *DOMStorage) RemoveDOMStorageItem(request *RemoveDOMStorageItemRequest) (err error) {
-	err = obj.conn.Send("DOMStorage.removeDOMStorageItem", request, nil)
+	err = obj.conn.Send(RemoveDOMStorageItem, request, nil)
 	return
 }
 
@@ -82,7 +100,7 @@ type DomStorageItemsClearedParams struct {
 
 func (obj *DOMStorage) DomStorageItemsCleared(fn func(params *DomStorageItemsClearedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("DOMStorage.domStorageItemsCleared", closeChn)
+	decoder := obj.conn.On(DomStorageItemsCleared, closeChn)
 	go func() {
 		for {
 			params := DomStorageItemsClearedParams{}
@@ -102,7 +120,7 @@ type DomStorageItemRemovedParams struct {
 
 func (obj *DOMStorage) DomStorageItemRemoved(fn func(params *DomStorageItemRemovedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("DOMStorage.domStorageItemRemoved", closeChn)
+	decoder := obj.conn.On(DomStorageItemRemoved, closeChn)
 	go func() {
 		for {
 			params := DomStorageItemRemovedParams{}
@@ -123,7 +141,7 @@ type DomStorageItemAddedParams struct {
 
 func (obj *DOMStorage) DomStorageItemAdded(fn func(params *DomStorageItemAddedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("DOMStorage.domStorageItemAdded", closeChn)
+	decoder := obj.conn.On(DomStorageItemAdded, closeChn)
 	go func() {
 		for {
 			params := DomStorageItemAddedParams{}
@@ -145,7 +163,7 @@ type DomStorageItemUpdatedParams struct {
 
 func (obj *DOMStorage) DomStorageItemUpdated(fn func(params *DomStorageItemUpdatedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("DOMStorage.domStorageItemUpdated", closeChn)
+	decoder := obj.conn.On(DomStorageItemUpdated, closeChn)
 	go func() {
 		for {
 			params := DomStorageItemUpdatedParams{}
