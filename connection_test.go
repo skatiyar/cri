@@ -1,6 +1,7 @@
 package cri_test
 
 import (
+	"crypto/tls"
 	"testing"
 
 	"github.com/SKatiyar/cri"
@@ -24,5 +25,6 @@ func ExampleNewConnection() {
 	// override the remote address
 	cri.NewConnection(cri.SetAddress("192.168.0.7:1290"))
 	// select a target with ssl connection
+	config := &tls.Config{ /* ...params */ }
 	cri.NewConnection(cri.SetAddress("192.168.0.7:1290"), cri.SetTargetID("<target-id>"), cri.SetTLSConfig(config))
 }
