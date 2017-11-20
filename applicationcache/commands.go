@@ -87,7 +87,6 @@ func (obj *ApplicationCache) ApplicationCacheStatusUpdated(fn func(params *Appli
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -107,7 +106,6 @@ func (obj *ApplicationCache) NetworkStateUpdated(fn func(params *NetworkStateUpd
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}

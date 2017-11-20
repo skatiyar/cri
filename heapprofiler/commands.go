@@ -149,7 +149,6 @@ func (obj *HeapProfiler) AddHeapSnapshotChunk(fn func(params *AddHeapSnapshotChu
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -165,7 +164,6 @@ func (obj *HeapProfiler) ResetProfiles(fn func(err error) bool) {
 			readErr := decoder(nil)
 			if !fn(readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -187,7 +185,6 @@ func (obj *HeapProfiler) ReportHeapSnapshotProgress(fn func(params *ReportHeapSn
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -209,7 +206,6 @@ func (obj *HeapProfiler) LastSeenObjectId(fn func(params *LastSeenObjectIdParams
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -231,7 +227,6 @@ func (obj *HeapProfiler) HeapStatsUpdate(fn func(params *HeapStatsUpdateParams, 
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}

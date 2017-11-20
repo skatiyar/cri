@@ -573,7 +573,6 @@ func (obj *Page) DomContentEventFired(fn func(params *DomContentEventFiredParams
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -593,7 +592,6 @@ func (obj *Page) LoadEventFired(fn func(params *LoadEventFiredParams, err error)
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -619,7 +617,6 @@ func (obj *Page) LifecycleEvent(fn func(params *LifecycleEventParams, err error)
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -645,7 +642,6 @@ func (obj *Page) FrameAttached(fn func(params *FrameAttachedParams, err error) b
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -667,7 +663,6 @@ func (obj *Page) FrameNavigated(fn func(params *FrameNavigatedParams, err error)
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -689,7 +684,6 @@ func (obj *Page) FrameDetached(fn func(params *FrameDetachedParams, err error) b
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -712,7 +706,6 @@ func (obj *Page) FrameStartedLoading(fn func(params *FrameStartedLoadingParams, 
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -735,7 +728,6 @@ func (obj *Page) FrameStoppedLoading(fn func(params *FrameStoppedLoadingParams, 
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -764,7 +756,6 @@ func (obj *Page) FrameScheduledNavigation(fn func(params *FrameScheduledNavigati
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -787,7 +778,6 @@ func (obj *Page) FrameClearedScheduledNavigation(fn func(params *FrameClearedSch
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -804,7 +794,6 @@ func (obj *Page) FrameResized(fn func(err error) bool) {
 			readErr := decoder(nil)
 			if !fn(readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -832,7 +821,6 @@ func (obj *Page) JavascriptDialogOpening(fn func(params *JavascriptDialogOpening
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -856,7 +844,6 @@ func (obj *Page) JavascriptDialogClosed(fn func(params *JavascriptDialogClosedPa
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -883,7 +870,6 @@ func (obj *Page) ScreencastFrame(fn func(params *ScreencastFrameParams, err erro
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -906,7 +892,6 @@ func (obj *Page) ScreencastVisibilityChanged(fn func(params *ScreencastVisibilit
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -923,7 +908,6 @@ func (obj *Page) InterstitialShown(fn func(err error) bool) {
 			readErr := decoder(nil)
 			if !fn(readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -940,7 +924,6 @@ func (obj *Page) InterstitialHidden(fn func(err error) bool) {
 			readErr := decoder(nil)
 			if !fn(readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -968,7 +951,6 @@ func (obj *Page) WindowOpen(fn func(params *WindowOpenParams, err error) bool) {
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}

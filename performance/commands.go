@@ -60,7 +60,6 @@ func (obj *Performance) Metrics(fn func(params *MetricsParams, err error) bool) 
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}

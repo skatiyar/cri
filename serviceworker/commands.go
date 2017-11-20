@@ -134,7 +134,6 @@ func (obj *ServiceWorker) WorkerRegistrationUpdated(fn func(params *WorkerRegist
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -154,7 +153,6 @@ func (obj *ServiceWorker) WorkerVersionUpdated(fn func(params *WorkerVersionUpda
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -174,7 +172,6 @@ func (obj *ServiceWorker) WorkerErrorReported(fn func(params *WorkerErrorReporte
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}

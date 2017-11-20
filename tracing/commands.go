@@ -93,7 +93,6 @@ func (obj *Tracing) DataCollected(fn func(params *DataCollectedParams, err error
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -115,7 +114,6 @@ func (obj *Tracing) TracingComplete(fn func(params *TracingCompleteParams, err e
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -140,7 +138,6 @@ func (obj *Tracing) BufferUsage(fn func(params *BufferUsageParams, err error) bo
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}

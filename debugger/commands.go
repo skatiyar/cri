@@ -436,7 +436,6 @@ func (obj *Debugger) ScriptParsed(fn func(params *ScriptParsedParams, err error)
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -488,7 +487,6 @@ func (obj *Debugger) ScriptFailedToParse(fn func(params *ScriptFailedToParsePara
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -512,7 +510,6 @@ func (obj *Debugger) BreakpointResolved(fn func(params *BreakpointResolvedParams
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -545,7 +542,6 @@ func (obj *Debugger) Paused(fn func(params *PausedParams, err error) bool) {
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -562,7 +558,6 @@ func (obj *Debugger) Resumed(fn func(err error) bool) {
 			readErr := decoder(nil)
 			if !fn(readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}

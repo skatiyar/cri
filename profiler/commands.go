@@ -138,7 +138,6 @@ func (obj *Profiler) ConsoleProfileStarted(fn func(params *ConsoleProfileStarted
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -163,7 +162,6 @@ func (obj *Profiler) ConsoleProfileFinished(fn func(params *ConsoleProfileFinish
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}

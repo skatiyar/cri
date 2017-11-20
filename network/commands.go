@@ -400,7 +400,6 @@ func (obj *Network) ResourceChangedPriority(fn func(params *ResourceChangedPrior
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -440,7 +439,6 @@ func (obj *Network) RequestWillBeSent(fn func(params *RequestWillBeSentParams, e
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -462,7 +460,6 @@ func (obj *Network) RequestServedFromCache(fn func(params *RequestServedFromCach
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -494,7 +491,6 @@ func (obj *Network) ResponseReceived(fn func(params *ResponseReceivedParams, err
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -522,7 +518,6 @@ func (obj *Network) DataReceived(fn func(params *DataReceivedParams, err error) 
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -548,7 +543,6 @@ func (obj *Network) LoadingFinished(fn func(params *LoadingFinishedParams, err e
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -580,7 +574,6 @@ func (obj *Network) LoadingFailed(fn func(params *LoadingFailedParams, err error
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -608,7 +601,6 @@ func (obj *Network) WebSocketWillSendHandshakeRequest(fn func(params *WebSocketW
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -634,7 +626,6 @@ func (obj *Network) WebSocketHandshakeResponseReceived(fn func(params *WebSocket
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -660,7 +651,6 @@ func (obj *Network) WebSocketCreated(fn func(params *WebSocketCreatedParams, err
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -684,7 +674,6 @@ func (obj *Network) WebSocketClosed(fn func(params *WebSocketClosedParams, err e
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -710,7 +699,6 @@ func (obj *Network) WebSocketFrameReceived(fn func(params *WebSocketFrameReceive
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -736,7 +724,6 @@ func (obj *Network) WebSocketFrameError(fn func(params *WebSocketFrameErrorParam
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -762,7 +749,6 @@ func (obj *Network) WebSocketFrameSent(fn func(params *WebSocketFrameSentParams,
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -792,7 +778,6 @@ func (obj *Network) EventSourceMessageReceived(fn func(params *EventSourceMessag
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -832,7 +817,6 @@ func (obj *Network) RequestIntercepted(fn func(params *RequestInterceptedParams,
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}

@@ -54,7 +54,6 @@ func (obj *Console) MessageAdded(fn func(params *MessageAddedParams, err error) 
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}

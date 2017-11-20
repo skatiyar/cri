@@ -238,7 +238,6 @@ func (obj *Emulation) VirtualTimeBudgetExpired(fn func(err error) bool) {
 			readErr := decoder(nil)
 			if !fn(readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -261,7 +260,6 @@ func (obj *Emulation) VirtualTimeAdvanced(fn func(params *VirtualTimeAdvancedPar
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -284,7 +282,6 @@ func (obj *Emulation) VirtualTimePaused(fn func(params *VirtualTimePausedParams,
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}

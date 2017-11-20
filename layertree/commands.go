@@ -164,7 +164,6 @@ func (obj *LayerTree) LayerTreeDidChange(fn func(params *LayerTreeDidChangeParam
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -187,7 +186,6 @@ func (obj *LayerTree) LayerPainted(fn func(params *LayerPaintedParams, err error
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}

@@ -22,6 +22,7 @@ Connection instance can now be used to send commands to chrome
 	pi.LoadEventFired()
 
 To get started with devtools read https://developers.google.com/web/updates/2017/04/headless-chrome
+
 */
 package cri
 

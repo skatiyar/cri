@@ -1,6 +1,7 @@
 package cri
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -14,59 +15,102 @@ import (
 )
 
 // DefaultAddress for remote debugging protocol
-const DefaultAddress = "http://127.0.0.1:9222"
+const DefaultAddress = "127.0.0.1:9222"
+
+// DefaultEventTimeout specifies default duration to receive an event
+const DefaultEventTimeout = 2 * time.Minute
+
+// DefaultCommandTimeout specifies default duration to receive command response
+const DefaultCommandTimeout = 2 * time.Minute
 
 const maxIntValue = 1<<31 - 1
 
-type ConnectionOption func(*ConnectionOpts)
+// ConnectionOption defines a function type to set values of ConnectionOptions
+type ConnectionOption func(*ConnectionOptions)
 
-type ConnectionOpts struct {
-	Addr       string
-	SocketAddr string
+// ConnectionOptions defines the connection parameters
+type ConnectionOptions struct {
+	// Address of the remote devtools instance, default used is DefaultAddress
+	Address string
+	// TargetID of the target to connect
+	TargetID string
+	// SocketAddress of the target to connect
+	SocketAddress string
+	// TLSClientConfig specifies the TLS configuration to use, default is nil
+	TLSConfig *tls.Config
+	// EventTimeout specifies the duration to receive an event, default used is DefaultEventTimeout
+	EventTimeout time.Duration
+	// CommandTimeout specifies the duration to receive command response, default used is DefaultCommandTimeout
+	CommandTimeout time.Duration
 }
 
-func (co *ConnectionOpts) Option(opts ...ConnectionOption) {
+// option iterates over all arguments to set the final options
+func (co *ConnectionOptions) option(opts ...ConnectionOption) {
 	for i := 0; i < len(opts); i++ {
 		opts[i](co)
 	}
 }
 
+// SetAddress sets the remote address for the connection
 func SetAddress(addr string) ConnectionOption {
-	return func(co *ConnectionOpts) {
-		co.Addr = addr
+	return func(co *ConnectionOptions) {
+		co.Address = addr
 	}
 }
 
+// SetSocketAddress sets the target websocket connection address
 func SetSocketAddress(addr string) ConnectionOption {
-	return func(co *ConnectionOpts) {
-		co.SocketAddr = addr
+	return func(co *ConnectionOptions) {
+		co.SocketAddress = addr
 	}
 }
 
-type eventRequest struct {
-	Method string
+// SetTargetID sets the target for connection
+func SetTargetID(targetID string) ConnectionOption {
+	return func(co *ConnectionOptions) {
+		co.TargetID = targetID
+	}
+}
 
-	eventChn chan commandResponse
+// SetTLSConfig sets the tls config for the connection
+func SetTLSConfig(config *tls.Config) ConnectionOption {
+	return func(co *ConnectionOptions) {
+		co.TLSConfig = config
+	}
+}
+
+// SetEventTimeout sets the eventTimeout for connection
+func SetEventTimeout(timeout time.Duration) ConnectionOption {
+	return func(co *ConnectionOptions) {
+		co.EventTimeout = timeout
+	}
+}
+
+// SetCommandTimeout sets the commandTimeout for connection
+func SetCommandTimeout(timeout time.Duration) ConnectionOption {
+	return func(co *ConnectionOptions) {
+		co.CommandTimeout = timeout
+	}
 }
 
 type eventsStore struct {
 	sync.RWMutex
-	events map[string]map[EventRequest]bool
+	events map[string]map[eventRequest]bool
 }
 
-func (es *eventsStore) addEvent(ereq EventRequest) {
+func (es *eventsStore) addEvent(ereq eventRequest) {
 	es.Lock()
 	defer es.Unlock()
 	if es.events == nil {
-		es.events = make(map[string]map[EventRequest]bool)
+		es.events = make(map[string]map[eventRequest]bool)
 	}
 	if _, ok := es.events[ereq.Method]; !ok {
-		es.events[ereq.Method] = make(map[EventRequest]bool)
+		es.events[ereq.Method] = make(map[eventRequest]bool)
 	}
 	es.events[ereq.Method][ereq] = true
 }
 
-func (es *eventsStore) deleteEvent(ereq EventRequest) {
+func (es *eventsStore) deleteEvent(ereq eventRequest) {
 	es.Lock()
 	defer es.Unlock()
 	if es.events == nil {
@@ -78,7 +122,7 @@ func (es *eventsStore) deleteEvent(ereq EventRequest) {
 	delete(es.events[ereq.Method], ereq)
 }
 
-func (es *eventsStore) forEvents(cmd string, fn func(EventRequest)) {
+func (es *eventsStore) forEvents(cmd string, fn func(eventRequest)) {
 	es.RLock()
 	defer es.RUnlock()
 	if es.events == nil {
@@ -97,8 +141,9 @@ func (es *eventsStore) forEvents(cmd string, fn func(EventRequest)) {
 // Connection can be used to send commands or listen to events from target.
 // This satisfies the Connector interface required by protocols to work.
 type Connection struct {
-	addr, wsAddr string
-	cmdTimeout   time.Duration
+	addr, wsAddr             string
+	tlsConfig                *tls.Config
+	eventTimeout, cmdTimeout time.Duration
 
 	conn   *websocket.Conn
 	reqChn chan commandRequest
@@ -111,26 +156,45 @@ type Connection struct {
 }
 
 func NewConnection(opts ...ConnectionOption) (*Connection, error) {
-	opt := &ConnectionOpts{
-		Addr: DefaultAddress,
+	opt := &ConnectionOptions{
+		Address:        DefaultAddress,
+		EventTimeout:   DefaultEventTimeout,
+		CommandTimeout: DefaultCommandTimeout,
 	}
-	opt.Option(opts...)
+	opt.option(opts...)
 
-	if len(opt.SocketAddr) == 0 {
-		if versionErr := checkVersion(opt.Addr); versionErr != nil {
+	instance := &Connection{
+		eventTimeout: opt.EventTimeout,
+		cmdTimeout:   opt.CommandTimeout,
+		tlsConfig:    opt.TLSConfig,
+		reqChn:       make(chan commandRequest),
+	}
+
+	if len(opt.SocketAddress) == 0 {
+		instance.addr = opt.Address
+		if versionErr := instance.isPackageCompatible(); versionErr != nil {
 			return nil, versionErr
 		}
 
-		wsAddr, wsAddrErr := getSocketAddress(opt.Addr)
-		if wsAddrErr != nil {
-			return nil, wsAddrErr
-		}
+		if len(opt.TargetID) == 0 {
+			wsAddr, wsAddrErr := instance.getDefaultSocketAddress()
+			if wsAddrErr != nil {
+				return nil, wsAddrErr
+			}
 
-		opt.SocketAddr = wsAddr
+			opt.SocketAddress = wsAddr
+		} else {
+			wsAddr, wsAddrErr := instance.getSocketAddressByTarget(opt.TargetID)
+			if wsAddrErr != nil {
+				return nil, wsAddrErr
+			}
+
+			opt.SocketAddress = wsAddr
+		}
 	}
 
-	dialer := websocket.Dialer{}
-	conn, res, resErr := dialer.Dial(opt.SocketAddr, nil)
+	dialer := &websocket.Dialer{TLSClientConfig: opt.TLSConfig}
+	conn, res, resErr := dialer.Dial(opt.SocketAddress, nil)
 	if resErr != nil {
 		return nil, resErr
 	}
@@ -138,13 +202,9 @@ func NewConnection(opts ...ConnectionOption) (*Connection, error) {
 		return nil, errors.New("Invalid status code")
 	}
 
-	instance := &Connection{
-		addr:       opt.Addr,
-		wsAddr:     opt.SocketAddr,
-		cmdTimeout: time.Second * 5,
-		conn:       conn,
-		reqChn:     make(chan commandRequest),
-	}
+	instance.conn = conn
+	instance.addr = conn.RemoteAddr().String()
+
 	go instance.reader()
 	go instance.writer()
 
@@ -173,7 +233,7 @@ type commandRequest struct {
 	timeoutChn chan bool
 }
 
-// Send sends a command and associated parameters to the target and waits for the response
+// Send sends a command and associated parameters to the target and waits for the response.
 // and decodes the respose back in location provided
 func (c *Connection) Send(command string, request, response interface{}) error {
 	cmd := commandRequest{
@@ -214,8 +274,14 @@ func (c *Connection) Send(command string, request, response interface{}) error {
 	}
 }
 
+type eventRequest struct {
+	Method string
+
+	eventChn chan commandResponse
+}
+
 func (c *Connection) On(event string, closeChn chan struct{}) func(params interface{}) error {
-	eve := EventRequest{
+	eve := eventRequest{
 		Method:   event,
 		eventChn: make(chan commandResponse, 1),
 	}
@@ -286,66 +352,123 @@ func (c *Connection) reader() {
 				}
 			}
 		} else if len(data.Method) > 0 {
-			c.eventMap.forEvents(data.Method, func(val EventRequest) {
+			c.eventMap.forEvents(data.Method, func(val eventRequest) {
 				val.eventChn <- data
 			})
 		}
 	}
 }
 
-func checkVersion(addr string) error {
-	var response struct {
-		Browser              string `json:"Browser"`
-		ProtocolVersion      string `json:"Protocol-Version"`
-		UserAgent            string `json:"User-Agent"`
-		V8Version            string `json:"V8-Version"`
-		WebKitVersion        string `json:"WebKit-Version"`
-		WebSocketDebuggerURL string `json:"webSocketDebuggerUrl"`
+type VersionResponse struct {
+	Browser              string `json:"Browser"`
+	ProtocolVersion      string `json:"Protocol-Version"`
+	UserAgent            string `json:"User-Agent"`
+	V8Version            string `json:"V8-Version"`
+	WebKitVersion        string `json:"WebKit-Version"`
+	WebSocketDebuggerURL string `json:"webSocketDebuggerUrl"`
+}
+
+func (c *Connection) GetVersion() (VersionResponse, error) {
+	client := &http.Client{}
+	if c.tlsConfig != nil {
+		client.Transport = &http.Transport{
+			TLSClientConfig: c.tlsConfig,
+		}
 	}
 
-	res, resErr := http.Get(addr + "/json/version")
+	var data VersionResponse
+	res, resErr := client.Get(c.getAddress() + "/json/version")
 	if resErr != nil {
-		return resErr
+		return data, resErr
 	}
 	if res.StatusCode != 200 {
-		return errors.New("Invalid status code")
+		return data, errors.New("Invalid status code")
 	}
-	if decodeErr := json.NewDecoder(res.Body).Decode(&response); decodeErr != nil {
-		return decodeErr
+	if decodeErr := json.NewDecoder(res.Body).Decode(&data); decodeErr != nil {
+		return data, decodeErr
+	}
+
+	return data, nil
+}
+
+type Target struct {
+	Description          string `json:"description"`
+	DevtoolsFrontendURL  string `json:"devtoolsFrontendUrl"`
+	ID                   string `json:"id"`
+	Title                string `json:"title"`
+	Type                 string `json:"type"`
+	URL                  string `json:"url"`
+	WebSocketDebuggerURL string `json:"webSocketDebuggerUrl"`
+}
+
+func (c *Connection) GetTargetsList() ([]Target, error) {
+	client := &http.Client{}
+	if c.tlsConfig != nil {
+		client.Transport = &http.Transport{
+			TLSClientConfig: c.tlsConfig,
+		}
+	}
+
+	var data []Target
+	res, resErr := client.Get(c.getAddress() + "/json/list")
+	if resErr != nil {
+		return data, resErr
+	}
+	if res.StatusCode != 200 {
+		return data, errors.New("Invalid status code")
+	}
+	if decodeErr := json.NewDecoder(res.Body).Decode(&data); decodeErr != nil {
+		return data, decodeErr
+	}
+	if len(data) < 1 {
+		return data, errors.New("No valid socket addresses")
+	}
+
+	return data, nil
+}
+
+func (c *Connection) getAddress() string {
+	if c.tlsConfig != nil {
+		return "https://" + c.addr
+	} else {
+		return "http://" + c.addr
+	}
+}
+
+func (c *Connection) getDefaultSocketAddress() (string, error) {
+	targets, targetsErr := c.GetTargetsList()
+	if targetsErr != nil {
+		return "", targetsErr
+	}
+
+	return targets[0].WebSocketDebuggerURL, nil
+}
+
+func (c *Connection) getSocketAddressByTarget(target string) (string, error) {
+	targets, targetsErr := c.GetTargetsList()
+	if targetsErr != nil {
+		return "", targetsErr
+	}
+
+	for i := 0; i < len(targets); i++ {
+		if targets[i].ID == target {
+			return targets[i].WebSocketDebuggerURL, nil
+		}
+	}
+
+	return "", errors.New("target not found")
+}
+
+func (c *Connection) isPackageCompatible() error {
+	verData, verErr := c.GetVersion()
+	if verErr != nil {
+		return verErr
 	}
 
 	majorV, minorV := Version()
-	if response.ProtocolVersion != majorV+"."+minorV {
+	if verData.ProtocolVersion != (majorV + "." + minorV) {
 		return errors.New("Version Mismatch")
 	}
 
 	return nil
-}
-
-func getSocketAddress(addr string) (string, error) {
-	var response []struct {
-		Description          string `json:"description"`
-		DevtoolsFrontendURL  string `json:"devtoolsFrontendUrl"`
-		ID                   string `json:"id"`
-		Title                string `json:"title"`
-		Type                 string `json:"type"`
-		URL                  string `json:"url"`
-		WebSocketDebuggerURL string `json:"webSocketDebuggerUrl"`
-	}
-
-	res, resErr := http.Get(addr + "/json/list")
-	if resErr != nil {
-		return "", resErr
-	}
-	if res.StatusCode != 200 {
-		return "", errors.New("Invalid status code")
-	}
-	if decodeErr := json.NewDecoder(res.Body).Decode(&response); decodeErr != nil {
-		return "", decodeErr
-	}
-	if len(response) < 1 {
-		return "", errors.New("No valid socket addresses")
-	}
-
-	return response[0].WebSocketDebuggerURL, nil
 }

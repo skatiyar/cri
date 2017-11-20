@@ -74,7 +74,6 @@ func (obj *HeadlessExperimental) NeedsBeginFramesChanged(fn func(params *NeedsBe
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
@@ -91,7 +90,6 @@ func (obj *HeadlessExperimental) MainFrameReadyForScreenshots(fn func(err error)
 			readErr := decoder(nil)
 			if !fn(readErr) {
 				closeChn <- struct{}{}
-				close(closeChn)
 				break
 			}
 		}
