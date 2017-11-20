@@ -145,8 +145,9 @@ type Connection struct {
 	tlsConfig                *tls.Config
 	eventTimeout, cmdTimeout time.Duration
 
-	conn   *websocket.Conn
-	reqChn chan commandRequest
+	conn     *websocket.Conn
+	reqChn   chan commandRequest
+	closeChn chan struct{}
 
 	responseMap syncmap.Map
 	eventMap    eventsStore
@@ -168,6 +169,7 @@ func NewConnection(opts ...ConnectionOption) (*Connection, error) {
 		cmdTimeout:   opt.CommandTimeout,
 		tlsConfig:    opt.TLSConfig,
 		reqChn:       make(chan commandRequest),
+		closeChn:     make(chan struct{}),
 	}
 
 	if len(opt.SocketAddress) == 0 {
@@ -304,6 +306,7 @@ func (c *Connection) On(event string, closeChn chan struct{}) func(params interf
 }
 
 func (c *Connection) Close() error {
+	close(c.closeChn)
 	if closeErr := c.conn.Close(); closeErr != nil {
 		return closeErr
 	}
@@ -326,6 +329,8 @@ func (c *Connection) id() int {
 func (c *Connection) writer() {
 	for {
 		select {
+		case <-c.closeChn:
+			return
 		case req := <-c.reqChn:
 			if writeErr := c.conn.WriteJSON(req); writeErr != nil {
 				req.errChn <- writeErr
@@ -336,25 +341,30 @@ func (c *Connection) writer() {
 
 func (c *Connection) reader() {
 	for {
-		var data commandResponse
-		if decodeErr := c.conn.ReadJSON(&data); decodeErr != nil {
-			fmt.Println(decodeErr.Error())
-		}
+		select {
+		case <-c.closeChn:
+			return
+		default:
+			var data commandResponse
+			if decodeErr := c.conn.ReadJSON(&data); decodeErr != nil {
+				fmt.Println("---", decodeErr.Error())
+			}
 
-		if data.ID > 0 {
-			if val, vok := c.responseMap.Load(data.ID); vok {
-				if req, rok := val.(commandRequest); rok {
-					if data.Error != nil {
-						req.errChn <- errors.New(data.Error.Message)
-					} else {
-						req.resChn <- data
+			if data.ID > 0 {
+				if val, vok := c.responseMap.Load(data.ID); vok {
+					if req, rok := val.(commandRequest); rok {
+						if data.Error != nil {
+							req.errChn <- errors.New(data.Error.Message)
+						} else {
+							req.resChn <- data
+						}
 					}
 				}
+			} else if len(data.Method) > 0 {
+				c.eventMap.forEvents(data.Method, func(val eventRequest) {
+					val.eventChn <- data
+				})
 			}
-		} else if len(data.Method) > 0 {
-			c.eventMap.forEvents(data.Method, func(val eventRequest) {
-				val.eventChn <- data
-			})
 		}
 	}
 }
