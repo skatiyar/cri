@@ -88,7 +88,7 @@ func (obj *DOMStorage) DomStorageItemsCleared(fn func(params *DomStorageItemsCle
 			params := DomStorageItemsClearedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -108,7 +108,7 @@ func (obj *DOMStorage) DomStorageItemRemoved(fn func(params *DomStorageItemRemov
 			params := DomStorageItemRemovedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -129,7 +129,7 @@ func (obj *DOMStorage) DomStorageItemAdded(fn func(params *DomStorageItemAddedPa
 			params := DomStorageItemAddedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -151,7 +151,7 @@ func (obj *DOMStorage) DomStorageItemUpdated(fn func(params *DomStorageItemUpdat
 			params := DomStorageItemUpdatedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}

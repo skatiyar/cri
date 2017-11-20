@@ -597,7 +597,7 @@ func (obj *DOM) DocumentUpdated(fn func(err error) bool) {
 
 			readErr := decoder(nil)
 			if !fn(readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -620,7 +620,7 @@ func (obj *DOM) SetChildNodes(fn func(params *SetChildNodesParams, err error) bo
 			params := SetChildNodesParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -645,7 +645,7 @@ func (obj *DOM) AttributeModified(fn func(params *AttributeModifiedParams, err e
 			params := AttributeModifiedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -668,7 +668,7 @@ func (obj *DOM) AttributeRemoved(fn func(params *AttributeRemovedParams, err err
 			params := AttributeRemovedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -690,7 +690,7 @@ func (obj *DOM) InlineStyleInvalidated(fn func(params *InlineStyleInvalidatedPar
 			params := InlineStyleInvalidatedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -713,7 +713,7 @@ func (obj *DOM) CharacterDataModified(fn func(params *CharacterDataModifiedParam
 			params := CharacterDataModifiedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -736,7 +736,7 @@ func (obj *DOM) ChildNodeCountUpdated(fn func(params *ChildNodeCountUpdatedParam
 			params := ChildNodeCountUpdatedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -761,7 +761,7 @@ func (obj *DOM) ChildNodeInserted(fn func(params *ChildNodeInsertedParams, err e
 			params := ChildNodeInsertedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -784,7 +784,7 @@ func (obj *DOM) ChildNodeRemoved(fn func(params *ChildNodeRemovedParams, err err
 			params := ChildNodeRemovedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -808,7 +808,7 @@ func (obj *DOM) ShadowRootPushed(fn func(params *ShadowRootPushedParams, err err
 			params := ShadowRootPushedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -832,7 +832,7 @@ func (obj *DOM) ShadowRootPopped(fn func(params *ShadowRootPoppedParams, err err
 			params := ShadowRootPoppedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -856,7 +856,7 @@ func (obj *DOM) PseudoElementAdded(fn func(params *PseudoElementAddedParams, err
 			params := PseudoElementAddedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -880,7 +880,7 @@ func (obj *DOM) PseudoElementRemoved(fn func(params *PseudoElementRemovedParams,
 			params := PseudoElementRemovedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -904,7 +904,7 @@ func (obj *DOM) DistributedNodesUpdated(fn func(params *DistributedNodesUpdatedP
 			params := DistributedNodesUpdatedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}

@@ -572,7 +572,7 @@ func (obj *Page) DomContentEventFired(fn func(params *DomContentEventFiredParams
 			params := DomContentEventFiredParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -591,7 +591,7 @@ func (obj *Page) LoadEventFired(fn func(params *LoadEventFiredParams, err error)
 			params := LoadEventFiredParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -616,7 +616,7 @@ func (obj *Page) LifecycleEvent(fn func(params *LifecycleEventParams, err error)
 			params := LifecycleEventParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -641,7 +641,7 @@ func (obj *Page) FrameAttached(fn func(params *FrameAttachedParams, err error) b
 			params := FrameAttachedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -662,7 +662,7 @@ func (obj *Page) FrameNavigated(fn func(params *FrameNavigatedParams, err error)
 			params := FrameNavigatedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -683,7 +683,7 @@ func (obj *Page) FrameDetached(fn func(params *FrameDetachedParams, err error) b
 			params := FrameDetachedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -705,7 +705,7 @@ func (obj *Page) FrameStartedLoading(fn func(params *FrameStartedLoadingParams, 
 			params := FrameStartedLoadingParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -727,7 +727,7 @@ func (obj *Page) FrameStoppedLoading(fn func(params *FrameStoppedLoadingParams, 
 			params := FrameStoppedLoadingParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -755,7 +755,7 @@ func (obj *Page) FrameScheduledNavigation(fn func(params *FrameScheduledNavigati
 			params := FrameScheduledNavigationParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -777,7 +777,7 @@ func (obj *Page) FrameClearedScheduledNavigation(fn func(params *FrameClearedSch
 			params := FrameClearedScheduledNavigationParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -793,7 +793,7 @@ func (obj *Page) FrameResized(fn func(err error) bool) {
 
 			readErr := decoder(nil)
 			if !fn(readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -820,7 +820,7 @@ func (obj *Page) JavascriptDialogOpening(fn func(params *JavascriptDialogOpening
 			params := JavascriptDialogOpeningParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -843,7 +843,7 @@ func (obj *Page) JavascriptDialogClosed(fn func(params *JavascriptDialogClosedPa
 			params := JavascriptDialogClosedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -869,7 +869,7 @@ func (obj *Page) ScreencastFrame(fn func(params *ScreencastFrameParams, err erro
 			params := ScreencastFrameParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -891,7 +891,7 @@ func (obj *Page) ScreencastVisibilityChanged(fn func(params *ScreencastVisibilit
 			params := ScreencastVisibilityChangedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -907,7 +907,7 @@ func (obj *Page) InterstitialShown(fn func(err error) bool) {
 
 			readErr := decoder(nil)
 			if !fn(readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -923,7 +923,7 @@ func (obj *Page) InterstitialHidden(fn func(err error) bool) {
 
 			readErr := decoder(nil)
 			if !fn(readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -950,7 +950,7 @@ func (obj *Page) WindowOpen(fn func(params *WindowOpenParams, err error) bool) {
 			params := WindowOpenParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}

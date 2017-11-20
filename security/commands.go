@@ -79,7 +79,7 @@ func (obj *Security) SecurityStateChanged(fn func(params *SecurityStateChangedPa
 			params := SecurityStateChangedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -104,7 +104,7 @@ func (obj *Security) CertificateError(fn func(params *CertificateErrorParams, er
 			params := CertificateErrorParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}

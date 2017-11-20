@@ -73,7 +73,7 @@ func (obj *Database) AddDatabase(fn func(params *AddDatabaseParams, err error) b
 			params := AddDatabaseParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}

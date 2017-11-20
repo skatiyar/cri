@@ -152,7 +152,7 @@ func (obj *Animation) AnimationCreated(fn func(params *AnimationCreatedParams, e
 			params := AnimationCreatedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -173,7 +173,7 @@ func (obj *Animation) AnimationStarted(fn func(params *AnimationStartedParams, e
 			params := AnimationStartedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -194,7 +194,7 @@ func (obj *Animation) AnimationCanceled(fn func(params *AnimationCanceledParams,
 			params := AnimationCanceledParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}

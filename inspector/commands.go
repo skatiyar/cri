@@ -45,7 +45,7 @@ func (obj *Inspector) Detached(fn func(params *DetachedParams, err error) bool) 
 			params := DetachedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -61,7 +61,7 @@ func (obj *Inspector) TargetCrashed(fn func(err error) bool) {
 
 			readErr := decoder(nil)
 			if !fn(readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}

@@ -70,7 +70,7 @@ func (obj *Log) EntryAdded(fn func(params *EntryAddedParams, err error) bool) {
 			params := EntryAddedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}

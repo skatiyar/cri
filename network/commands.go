@@ -399,7 +399,7 @@ func (obj *Network) ResourceChangedPriority(fn func(params *ResourceChangedPrior
 			params := ResourceChangedPriorityParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -438,7 +438,7 @@ func (obj *Network) RequestWillBeSent(fn func(params *RequestWillBeSentParams, e
 			params := RequestWillBeSentParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -459,7 +459,7 @@ func (obj *Network) RequestServedFromCache(fn func(params *RequestServedFromCach
 			params := RequestServedFromCacheParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -490,7 +490,7 @@ func (obj *Network) ResponseReceived(fn func(params *ResponseReceivedParams, err
 			params := ResponseReceivedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -517,7 +517,7 @@ func (obj *Network) DataReceived(fn func(params *DataReceivedParams, err error) 
 			params := DataReceivedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -542,7 +542,7 @@ func (obj *Network) LoadingFinished(fn func(params *LoadingFinishedParams, err e
 			params := LoadingFinishedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -573,7 +573,7 @@ func (obj *Network) LoadingFailed(fn func(params *LoadingFailedParams, err error
 			params := LoadingFailedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -600,7 +600,7 @@ func (obj *Network) WebSocketWillSendHandshakeRequest(fn func(params *WebSocketW
 			params := WebSocketWillSendHandshakeRequestParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -625,7 +625,7 @@ func (obj *Network) WebSocketHandshakeResponseReceived(fn func(params *WebSocket
 			params := WebSocketHandshakeResponseReceivedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -650,7 +650,7 @@ func (obj *Network) WebSocketCreated(fn func(params *WebSocketCreatedParams, err
 			params := WebSocketCreatedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -673,7 +673,7 @@ func (obj *Network) WebSocketClosed(fn func(params *WebSocketClosedParams, err e
 			params := WebSocketClosedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -698,7 +698,7 @@ func (obj *Network) WebSocketFrameReceived(fn func(params *WebSocketFrameReceive
 			params := WebSocketFrameReceivedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -723,7 +723,7 @@ func (obj *Network) WebSocketFrameError(fn func(params *WebSocketFrameErrorParam
 			params := WebSocketFrameErrorParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -748,7 +748,7 @@ func (obj *Network) WebSocketFrameSent(fn func(params *WebSocketFrameSentParams,
 			params := WebSocketFrameSentParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -777,7 +777,7 @@ func (obj *Network) EventSourceMessageReceived(fn func(params *EventSourceMessag
 			params := EventSourceMessageReceivedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -816,7 +816,7 @@ func (obj *Network) RequestIntercepted(fn func(params *RequestInterceptedParams,
 			params := RequestInterceptedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}

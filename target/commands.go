@@ -220,7 +220,7 @@ func (obj *Target) TargetCreated(fn func(params *TargetCreatedParams, err error)
 			params := TargetCreatedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -240,7 +240,7 @@ func (obj *Target) TargetInfoChanged(fn func(params *TargetInfoChangedParams, er
 			params := TargetInfoChangedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -260,7 +260,7 @@ func (obj *Target) TargetDestroyed(fn func(params *TargetDestroyedParams, err er
 			params := TargetDestroyedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -283,7 +283,7 @@ func (obj *Target) AttachedToTarget(fn func(params *AttachedToTargetParams, err 
 			params := AttachedToTargetParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -306,7 +306,7 @@ func (obj *Target) DetachedFromTarget(fn func(params *DetachedFromTargetParams, 
 			params := DetachedFromTargetParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -330,7 +330,7 @@ func (obj *Target) ReceivedMessageFromTarget(fn func(params *ReceivedMessageFrom
 			params := ReceivedMessageFromTargetParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}

@@ -49,7 +49,7 @@ func (obj *{{.Domain}}) {{.Name}}(fn func({{.EventParams}}) bool) {
             {{.ParamsDecl}}
 			readErr := decoder({{.ParamsValue}})
             if !fn({{.CallParams}}) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}

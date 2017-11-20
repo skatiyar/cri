@@ -58,7 +58,7 @@ func (obj *Tethering) Accepted(fn func(params *AcceptedParams, err error) bool) 
 			params := AcceptedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}

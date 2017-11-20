@@ -111,7 +111,7 @@ func (obj *Storage) CacheStorageListUpdated(fn func(params *CacheStorageListUpda
 			params := CacheStorageListUpdatedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -134,7 +134,7 @@ func (obj *Storage) CacheStorageContentUpdated(fn func(params *CacheStorageConte
 			params := CacheStorageContentUpdatedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -155,7 +155,7 @@ func (obj *Storage) IndexedDBListUpdated(fn func(params *IndexedDBListUpdatedPar
 			params := IndexedDBListUpdatedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -180,7 +180,7 @@ func (obj *Storage) IndexedDBContentUpdated(fn func(params *IndexedDBContentUpda
 			params := IndexedDBContentUpdatedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}

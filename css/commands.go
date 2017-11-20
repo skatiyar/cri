@@ -345,7 +345,7 @@ func (obj *CSS) MediaQueryResultChanged(fn func(err error) bool) {
 
 			readErr := decoder(nil)
 			if !fn(readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -361,7 +361,7 @@ func (obj *CSS) FontsUpdated(fn func(err error) bool) {
 
 			readErr := decoder(nil)
 			if !fn(readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -381,7 +381,7 @@ func (obj *CSS) StyleSheetChanged(fn func(params *StyleSheetChangedParams, err e
 			params := StyleSheetChangedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -402,7 +402,7 @@ func (obj *CSS) StyleSheetAdded(fn func(params *StyleSheetAddedParams, err error
 			params := StyleSheetAddedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -423,7 +423,7 @@ func (obj *CSS) StyleSheetRemoved(fn func(params *StyleSheetRemovedParams, err e
 			params := StyleSheetRemovedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}

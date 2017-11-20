@@ -214,8 +214,8 @@ func NewConnection(opts ...ConnectionOption) (*Connection, error) {
 }
 
 type commandResponse struct {
-	ID     int                    `json:"id"`
-	Method string                 `json:"method"`
+	ID     int                    `json:"id"`     // id of the command request or 0 in case of event
+	Method string                 `json:"method"` // command or event name
 	Result map[string]interface{} `json:"result"`
 	Params map[string]interface{} `json:"params"`
 	Error  *struct {
@@ -224,10 +224,9 @@ type commandResponse struct {
 	} `json:"error"`
 }
 
-// commandRequest
 type commandRequest struct {
 	ID     int         `json:"id"`     // id of the command request, should be greater than 0
-	Method string      `json:"method"` // method takes
+	Method string      `json:"method"` // method takes the command to be sent
 	Params interface{} `json:"params"` // params contains parameters taken by command
 
 	resChn     chan commandResponse
@@ -369,7 +368,7 @@ func (c *Connection) reader() {
 	}
 }
 
-type VersionResponse struct {
+type versionResponse struct {
 	Browser              string `json:"Browser"`
 	ProtocolVersion      string `json:"Protocol-Version"`
 	UserAgent            string `json:"User-Agent"`
@@ -378,7 +377,8 @@ type VersionResponse struct {
 	WebSocketDebuggerURL string `json:"webSocketDebuggerUrl"`
 }
 
-func (c *Connection) GetVersion() (VersionResponse, error) {
+// getVersion fetches the protocol version of remote
+func (c *Connection) getVersion() (versionResponse, error) {
 	client := &http.Client{}
 	if c.tlsConfig != nil {
 		client.Transport = &http.Transport{
@@ -386,7 +386,7 @@ func (c *Connection) GetVersion() (VersionResponse, error) {
 		}
 	}
 
-	var data VersionResponse
+	var data versionResponse
 	res, resErr := client.Get(c.getAddress() + "/json/version")
 	if resErr != nil {
 		return data, resErr
@@ -401,7 +401,8 @@ func (c *Connection) GetVersion() (VersionResponse, error) {
 	return data, nil
 }
 
-type Target struct {
+// target represents a connectable resource
+type target struct {
 	Description          string `json:"description"`
 	DevtoolsFrontendURL  string `json:"devtoolsFrontendUrl"`
 	ID                   string `json:"id"`
@@ -411,7 +412,8 @@ type Target struct {
 	WebSocketDebuggerURL string `json:"webSocketDebuggerUrl"`
 }
 
-func (c *Connection) GetTargetsList() ([]Target, error) {
+// getTargetsList retreives targets in remote connection
+func (c *Connection) getTargetsList() ([]target, error) {
 	client := &http.Client{}
 	if c.tlsConfig != nil {
 		client.Transport = &http.Transport{
@@ -419,7 +421,7 @@ func (c *Connection) GetTargetsList() ([]Target, error) {
 		}
 	}
 
-	var data []Target
+	var data []target
 	res, resErr := client.Get(c.getAddress() + "/json/list")
 	if resErr != nil {
 		return data, resErr
@@ -437,6 +439,7 @@ func (c *Connection) GetTargetsList() ([]Target, error) {
 	return data, nil
 }
 
+// getAddress adds https if tls config is present
 func (c *Connection) getAddress() string {
 	if c.tlsConfig != nil {
 		return "https://" + c.addr
@@ -445,8 +448,9 @@ func (c *Connection) getAddress() string {
 	}
 }
 
+// getDefaultSocketAddress picks the first element in target array
 func (c *Connection) getDefaultSocketAddress() (string, error) {
-	targets, targetsErr := c.GetTargetsList()
+	targets, targetsErr := c.getTargetsList()
 	if targetsErr != nil {
 		return "", targetsErr
 	}
@@ -455,7 +459,7 @@ func (c *Connection) getDefaultSocketAddress() (string, error) {
 }
 
 func (c *Connection) getSocketAddressByTarget(target string) (string, error) {
-	targets, targetsErr := c.GetTargetsList()
+	targets, targetsErr := c.getTargetsList()
 	if targetsErr != nil {
 		return "", targetsErr
 	}
@@ -470,7 +474,7 @@ func (c *Connection) getSocketAddressByTarget(target string) (string, error) {
 }
 
 func (c *Connection) isPackageCompatible() error {
-	verData, verErr := c.GetVersion()
+	verData, verErr := c.getVersion()
 	if verErr != nil {
 		return verErr
 	}

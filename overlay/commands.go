@@ -224,7 +224,7 @@ func (obj *Overlay) NodeHighlightRequested(fn func(params *NodeHighlightRequeste
 			params := NodeHighlightRequestedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -245,7 +245,7 @@ func (obj *Overlay) InspectNodeRequested(fn func(params *InspectNodeRequestedPar
 			params := InspectNodeRequestedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -266,7 +266,7 @@ func (obj *Overlay) ScreenshotRequested(fn func(params *ScreenshotRequestedParam
 			params := ScreenshotRequestedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}

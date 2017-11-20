@@ -300,7 +300,7 @@ func (obj *Runtime) ExecutionContextCreated(fn func(params *ExecutionContextCrea
 			params := ExecutionContextCreatedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -321,7 +321,7 @@ func (obj *Runtime) ExecutionContextDestroyed(fn func(params *ExecutionContextDe
 			params := ExecutionContextDestroyedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -337,7 +337,7 @@ func (obj *Runtime) ExecutionContextsCleared(fn func(err error) bool) {
 
 			readErr := decoder(nil)
 			if !fn(readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -359,7 +359,7 @@ func (obj *Runtime) ExceptionThrown(fn func(params *ExceptionThrownParams, err e
 			params := ExceptionThrownParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -382,7 +382,7 @@ func (obj *Runtime) ExceptionRevoked(fn func(params *ExceptionRevokedParams, err
 			params := ExceptionRevokedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -414,7 +414,7 @@ func (obj *Runtime) ConsoleAPICalled(fn func(params *ConsoleAPICalledParams, err
 			params := ConsoleAPICalledParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
@@ -435,7 +435,7 @@ func (obj *Runtime) InspectRequested(fn func(params *InspectRequestedParams, err
 			params := InspectRequestedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
+				close(closeChn)
 				break
 			}
 		}
