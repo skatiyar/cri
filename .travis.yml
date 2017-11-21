@@ -10,8 +10,10 @@ go:
     - 1.4.x
 
 addons:
-    chrome: stable
+    chrome: beta
+
+before_script:
+    - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 &
 
 script:
-    - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 &
     - go test -v
