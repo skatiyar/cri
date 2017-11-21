@@ -11,6 +11,22 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in Tracing domain
+const (
+	Start                 = "Tracing.start"
+	End                   = "Tracing.end"
+	GetCategories         = "Tracing.getCategories"
+	RequestMemoryDump     = "Tracing.requestMemoryDump"
+	RecordClockSyncMarker = "Tracing.recordClockSyncMarker"
+)
+
+// List of events in Tracing domain
+const (
+	DataCollected   = "Tracing.dataCollected"
+	TracingComplete = "Tracing.tracingComplete"
+	BufferUsage     = "Tracing.bufferUsage"
+)
+
 type Tracing struct {
 	conn cri.Connector
 }
@@ -34,13 +50,13 @@ type StartRequest struct {
 
 // Start trace events collection.
 func (obj *Tracing) Start(request *StartRequest) (err error) {
-	err = obj.conn.Send("Tracing.start", request, nil)
+	err = obj.conn.Send(Start, request, nil)
 	return
 }
 
 // Stop trace events collection.
 func (obj *Tracing) End() (err error) {
-	err = obj.conn.Send("Tracing.end", nil, nil)
+	err = obj.conn.Send(End, nil, nil)
 	return
 }
 
@@ -51,7 +67,7 @@ type GetCategoriesResponse struct {
 
 // Gets supported tracing categories.
 func (obj *Tracing) GetCategories() (response GetCategoriesResponse, err error) {
-	err = obj.conn.Send("Tracing.getCategories", nil, &response)
+	err = obj.conn.Send(GetCategories, nil, &response)
 	return
 }
 
@@ -64,7 +80,7 @@ type RequestMemoryDumpResponse struct {
 
 // Request a global memory dump.
 func (obj *Tracing) RequestMemoryDump() (response RequestMemoryDumpResponse, err error) {
-	err = obj.conn.Send("Tracing.requestMemoryDump", nil, &response)
+	err = obj.conn.Send(RequestMemoryDump, nil, &response)
 	return
 }
 
@@ -75,7 +91,7 @@ type RecordClockSyncMarkerRequest struct {
 
 // Record a clock sync marker in the trace.
 func (obj *Tracing) RecordClockSyncMarker(request *RecordClockSyncMarkerRequest) (err error) {
-	err = obj.conn.Send("Tracing.recordClockSyncMarker", request, nil)
+	err = obj.conn.Send(RecordClockSyncMarker, request, nil)
 	return
 }
 
@@ -86,13 +102,12 @@ type DataCollectedParams struct {
 // Contains an bucket of collected trace events. When tracing is stopped collected events will be send as a sequence of dataCollected events followed by tracingComplete event.
 func (obj *Tracing) DataCollected(fn func(params *DataCollectedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Tracing.dataCollected", closeChn)
+	decoder := obj.conn.On(DataCollected, closeChn)
 	go func() {
 		for {
 			params := DataCollectedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -108,13 +123,12 @@ type TracingCompleteParams struct {
 // Signals that tracing is stopped and there is no trace buffers pending flush, all data were delivered via dataCollected events.
 func (obj *Tracing) TracingComplete(fn func(params *TracingCompleteParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Tracing.tracingComplete", closeChn)
+	decoder := obj.conn.On(TracingComplete, closeChn)
 	go func() {
 		for {
 			params := TracingCompleteParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -133,13 +147,12 @@ type BufferUsageParams struct {
 
 func (obj *Tracing) BufferUsage(fn func(params *BufferUsageParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Tracing.bufferUsage", closeChn)
+	decoder := obj.conn.On(BufferUsage, closeChn)
 	go func() {
 		for {
 			params := BufferUsageParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}

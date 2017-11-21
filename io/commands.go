@@ -11,6 +11,13 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in IO domain
+const (
+	Read        = "IO.read"
+	Close       = "IO.close"
+	ResolveBlob = "IO.resolveBlob"
+)
+
 // Input/Output operations for streams produced by DevTools.
 type IO struct {
 	conn cri.Connector
@@ -41,7 +48,7 @@ type ReadResponse struct {
 
 // Read a chunk of the stream
 func (obj *IO) Read(request *ReadRequest) (response ReadResponse, err error) {
-	err = obj.conn.Send("IO.read", request, &response)
+	err = obj.conn.Send(Read, request, &response)
 	return
 }
 
@@ -52,7 +59,7 @@ type CloseRequest struct {
 
 // Close the stream, discard any temporary backing storage.
 func (obj *IO) Close(request *CloseRequest) (err error) {
-	err = obj.conn.Send("IO.close", request, nil)
+	err = obj.conn.Send(Close, request, nil)
 	return
 }
 
@@ -68,6 +75,6 @@ type ResolveBlobResponse struct {
 
 // Return UUID of Blob object specified by a remote object id.
 func (obj *IO) ResolveBlob(request *ResolveBlobRequest) (response ResolveBlobResponse, err error) {
-	err = obj.conn.Send("IO.resolveBlob", request, &response)
+	err = obj.conn.Send(ResolveBlob, request, &response)
 	return
 }

@@ -11,6 +11,41 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in CSS domain
+const (
+	Enable                           = "CSS.enable"
+	Disable                          = "CSS.disable"
+	GetMatchedStylesForNode          = "CSS.getMatchedStylesForNode"
+	GetInlineStylesForNode           = "CSS.getInlineStylesForNode"
+	GetComputedStyleForNode          = "CSS.getComputedStyleForNode"
+	GetPlatformFontsForNode          = "CSS.getPlatformFontsForNode"
+	GetStyleSheetText                = "CSS.getStyleSheetText"
+	CollectClassNames                = "CSS.collectClassNames"
+	SetStyleSheetText                = "CSS.setStyleSheetText"
+	SetRuleSelector                  = "CSS.setRuleSelector"
+	SetKeyframeKey                   = "CSS.setKeyframeKey"
+	SetStyleTexts                    = "CSS.setStyleTexts"
+	SetMediaText                     = "CSS.setMediaText"
+	CreateStyleSheet                 = "CSS.createStyleSheet"
+	AddRule                          = "CSS.addRule"
+	ForcePseudoState                 = "CSS.forcePseudoState"
+	GetMediaQueries                  = "CSS.getMediaQueries"
+	SetEffectivePropertyValueForNode = "CSS.setEffectivePropertyValueForNode"
+	GetBackgroundColors              = "CSS.getBackgroundColors"
+	StartRuleUsageTracking           = "CSS.startRuleUsageTracking"
+	TakeCoverageDelta                = "CSS.takeCoverageDelta"
+	StopRuleUsageTracking            = "CSS.stopRuleUsageTracking"
+)
+
+// List of events in CSS domain
+const (
+	MediaQueryResultChanged = "CSS.mediaQueryResultChanged"
+	FontsUpdated            = "CSS.fontsUpdated"
+	StyleSheetChanged       = "CSS.styleSheetChanged"
+	StyleSheetAdded         = "CSS.styleSheetAdded"
+	StyleSheetRemoved       = "CSS.styleSheetRemoved"
+)
+
 // This domain exposes CSS read/write operations. All CSS objects (stylesheets, rules, and styles) have an associated <code>id</code> used in subsequent operations on the related object. Each object type has a specific <code>id</code> structure, and those are not interchangeable between objects of different kinds. CSS objects can be loaded using the <code>get*ForNode()</code> calls (which accept a DOM node id). A client can also keep track of stylesheets via the <code>styleSheetAdded</code>/<code>styleSheetRemoved</code> events and subsequently load the required stylesheet contents using the <code>getStyleSheet[Text]()</code> methods.
 type CSS struct {
 	conn cri.Connector
@@ -23,13 +58,13 @@ func New(conn cri.Connector) *CSS {
 
 // Enables the CSS agent for the given page. Clients should not assume that the CSS agent has been enabled until the result of this command is received.
 func (obj *CSS) Enable() (err error) {
-	err = obj.conn.Send("CSS.enable", nil, nil)
+	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 
 // Disables the CSS agent for the given page.
 func (obj *CSS) Disable() (err error) {
-	err = obj.conn.Send("CSS.disable", nil, nil)
+	err = obj.conn.Send(Disable, nil, nil)
 	return
 }
 
@@ -54,7 +89,7 @@ type GetMatchedStylesForNodeResponse struct {
 
 // Returns requested styles for a DOM node identified by <code>nodeId</code>.
 func (obj *CSS) GetMatchedStylesForNode(request *GetMatchedStylesForNodeRequest) (response GetMatchedStylesForNodeResponse, err error) {
-	err = obj.conn.Send("CSS.getMatchedStylesForNode", request, &response)
+	err = obj.conn.Send(GetMatchedStylesForNode, request, &response)
 	return
 }
 
@@ -71,7 +106,7 @@ type GetInlineStylesForNodeResponse struct {
 
 // Returns the styles defined inline (explicitly in the "style" attribute and implicitly, using DOM attributes) for a DOM node identified by <code>nodeId</code>.
 func (obj *CSS) GetInlineStylesForNode(request *GetInlineStylesForNodeRequest) (response GetInlineStylesForNodeResponse, err error) {
-	err = obj.conn.Send("CSS.getInlineStylesForNode", request, &response)
+	err = obj.conn.Send(GetInlineStylesForNode, request, &response)
 	return
 }
 
@@ -86,7 +121,7 @@ type GetComputedStyleForNodeResponse struct {
 
 // Returns the computed style for a DOM node identified by <code>nodeId</code>.
 func (obj *CSS) GetComputedStyleForNode(request *GetComputedStyleForNodeRequest) (response GetComputedStyleForNodeResponse, err error) {
-	err = obj.conn.Send("CSS.getComputedStyleForNode", request, &response)
+	err = obj.conn.Send(GetComputedStyleForNode, request, &response)
 	return
 }
 
@@ -101,7 +136,7 @@ type GetPlatformFontsForNodeResponse struct {
 
 // Requests information about platform fonts which we used to render child TextNodes in the given node.
 func (obj *CSS) GetPlatformFontsForNode(request *GetPlatformFontsForNodeRequest) (response GetPlatformFontsForNodeResponse, err error) {
-	err = obj.conn.Send("CSS.getPlatformFontsForNode", request, &response)
+	err = obj.conn.Send(GetPlatformFontsForNode, request, &response)
 	return
 }
 
@@ -116,7 +151,7 @@ type GetStyleSheetTextResponse struct {
 
 // Returns the current textual content and the URL for a stylesheet.
 func (obj *CSS) GetStyleSheetText(request *GetStyleSheetTextRequest) (response GetStyleSheetTextResponse, err error) {
-	err = obj.conn.Send("CSS.getStyleSheetText", request, &response)
+	err = obj.conn.Send(GetStyleSheetText, request, &response)
 	return
 }
 
@@ -131,7 +166,7 @@ type CollectClassNamesResponse struct {
 
 // Returns all class names from specified stylesheet.
 func (obj *CSS) CollectClassNames(request *CollectClassNamesRequest) (response CollectClassNamesResponse, err error) {
-	err = obj.conn.Send("CSS.collectClassNames", request, &response)
+	err = obj.conn.Send(CollectClassNames, request, &response)
 	return
 }
 
@@ -147,7 +182,7 @@ type SetStyleSheetTextResponse struct {
 
 // Sets the new stylesheet text.
 func (obj *CSS) SetStyleSheetText(request *SetStyleSheetTextRequest) (response SetStyleSheetTextResponse, err error) {
-	err = obj.conn.Send("CSS.setStyleSheetText", request, &response)
+	err = obj.conn.Send(SetStyleSheetText, request, &response)
 	return
 }
 
@@ -164,7 +199,7 @@ type SetRuleSelectorResponse struct {
 
 // Modifies the rule selector.
 func (obj *CSS) SetRuleSelector(request *SetRuleSelectorRequest) (response SetRuleSelectorResponse, err error) {
-	err = obj.conn.Send("CSS.setRuleSelector", request, &response)
+	err = obj.conn.Send(SetRuleSelector, request, &response)
 	return
 }
 
@@ -181,7 +216,7 @@ type SetKeyframeKeyResponse struct {
 
 // Modifies the keyframe rule key text.
 func (obj *CSS) SetKeyframeKey(request *SetKeyframeKeyRequest) (response SetKeyframeKeyResponse, err error) {
-	err = obj.conn.Send("CSS.setKeyframeKey", request, &response)
+	err = obj.conn.Send(SetKeyframeKey, request, &response)
 	return
 }
 
@@ -196,7 +231,7 @@ type SetStyleTextsResponse struct {
 
 // Applies specified style edits one after another in the given order.
 func (obj *CSS) SetStyleTexts(request *SetStyleTextsRequest) (response SetStyleTextsResponse, err error) {
-	err = obj.conn.Send("CSS.setStyleTexts", request, &response)
+	err = obj.conn.Send(SetStyleTexts, request, &response)
 	return
 }
 
@@ -213,7 +248,7 @@ type SetMediaTextResponse struct {
 
 // Modifies the rule selector.
 func (obj *CSS) SetMediaText(request *SetMediaTextRequest) (response SetMediaTextResponse, err error) {
-	err = obj.conn.Send("CSS.setMediaText", request, &response)
+	err = obj.conn.Send(SetMediaText, request, &response)
 	return
 }
 
@@ -229,7 +264,7 @@ type CreateStyleSheetResponse struct {
 
 // Creates a new special "via-inspector" stylesheet in the frame with given <code>frameId</code>.
 func (obj *CSS) CreateStyleSheet(request *CreateStyleSheetRequest) (response CreateStyleSheetResponse, err error) {
-	err = obj.conn.Send("CSS.createStyleSheet", request, &response)
+	err = obj.conn.Send(CreateStyleSheet, request, &response)
 	return
 }
 
@@ -249,7 +284,7 @@ type AddRuleResponse struct {
 
 // Inserts a new rule with the given <code>ruleText</code> in a stylesheet with given <code>styleSheetId</code>, at the position specified by <code>location</code>.
 func (obj *CSS) AddRule(request *AddRuleRequest) (response AddRuleResponse, err error) {
-	err = obj.conn.Send("CSS.addRule", request, &response)
+	err = obj.conn.Send(AddRule, request, &response)
 	return
 }
 
@@ -262,7 +297,7 @@ type ForcePseudoStateRequest struct {
 
 // Ensures that the given node will have specified pseudo-classes whenever its style is computed by the browser.
 func (obj *CSS) ForcePseudoState(request *ForcePseudoStateRequest) (err error) {
-	err = obj.conn.Send("CSS.forcePseudoState", request, nil)
+	err = obj.conn.Send(ForcePseudoState, request, nil)
 	return
 }
 
@@ -272,7 +307,7 @@ type GetMediaQueriesResponse struct {
 
 // Returns all media queries parsed by the rendering engine.
 func (obj *CSS) GetMediaQueries() (response GetMediaQueriesResponse, err error) {
-	err = obj.conn.Send("CSS.getMediaQueries", nil, &response)
+	err = obj.conn.Send(GetMediaQueries, nil, &response)
 	return
 }
 
@@ -285,7 +320,7 @@ type SetEffectivePropertyValueForNodeRequest struct {
 
 // Find a rule with the given active property for the given node and set the new value for this property
 func (obj *CSS) SetEffectivePropertyValueForNode(request *SetEffectivePropertyValueForNodeRequest) (err error) {
-	err = obj.conn.Send("CSS.setEffectivePropertyValueForNode", request, nil)
+	err = obj.conn.Send(SetEffectivePropertyValueForNode, request, nil)
 	return
 }
 
@@ -306,13 +341,13 @@ type GetBackgroundColorsResponse struct {
 }
 
 func (obj *CSS) GetBackgroundColors(request *GetBackgroundColorsRequest) (response GetBackgroundColorsResponse, err error) {
-	err = obj.conn.Send("CSS.getBackgroundColors", request, &response)
+	err = obj.conn.Send(GetBackgroundColors, request, &response)
 	return
 }
 
 // Enables the selector recording.
 func (obj *CSS) StartRuleUsageTracking() (err error) {
-	err = obj.conn.Send("CSS.startRuleUsageTracking", nil, nil)
+	err = obj.conn.Send(StartRuleUsageTracking, nil, nil)
 	return
 }
 
@@ -322,7 +357,7 @@ type TakeCoverageDeltaResponse struct {
 
 // Obtain list of rules that became used since last call to this method (or since start of coverage instrumentation)
 func (obj *CSS) TakeCoverageDelta() (response TakeCoverageDeltaResponse, err error) {
-	err = obj.conn.Send("CSS.takeCoverageDelta", nil, &response)
+	err = obj.conn.Send(TakeCoverageDelta, nil, &response)
 	return
 }
 
@@ -332,20 +367,19 @@ type StopRuleUsageTrackingResponse struct {
 
 // The list of rules with an indication of whether these were used
 func (obj *CSS) StopRuleUsageTracking() (response StopRuleUsageTrackingResponse, err error) {
-	err = obj.conn.Send("CSS.stopRuleUsageTracking", nil, &response)
+	err = obj.conn.Send(StopRuleUsageTracking, nil, &response)
 	return
 }
 
 // Fires whenever a MediaQuery result changes (for example, after a browser window has been resized.) The current implementation considers only viewport-dependent media features.
 func (obj *CSS) MediaQueryResultChanged(fn func(err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("CSS.mediaQueryResultChanged", closeChn)
+	decoder := obj.conn.On(MediaQueryResultChanged, closeChn)
 	go func() {
 		for {
 
 			readErr := decoder(nil)
 			if !fn(readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -356,13 +390,12 @@ func (obj *CSS) MediaQueryResultChanged(fn func(err error) bool) {
 // Fires whenever a web font gets loaded.
 func (obj *CSS) FontsUpdated(fn func(err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("CSS.fontsUpdated", closeChn)
+	decoder := obj.conn.On(FontsUpdated, closeChn)
 	go func() {
 		for {
 
 			readErr := decoder(nil)
 			if !fn(readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -377,13 +410,12 @@ type StyleSheetChangedParams struct {
 // Fired whenever a stylesheet is changed as a result of the client operation.
 func (obj *CSS) StyleSheetChanged(fn func(params *StyleSheetChangedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("CSS.styleSheetChanged", closeChn)
+	decoder := obj.conn.On(StyleSheetChanged, closeChn)
 	go func() {
 		for {
 			params := StyleSheetChangedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -399,13 +431,12 @@ type StyleSheetAddedParams struct {
 // Fired whenever an active document stylesheet is added.
 func (obj *CSS) StyleSheetAdded(fn func(params *StyleSheetAddedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("CSS.styleSheetAdded", closeChn)
+	decoder := obj.conn.On(StyleSheetAdded, closeChn)
 	go func() {
 		for {
 			params := StyleSheetAddedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -421,13 +452,12 @@ type StyleSheetRemovedParams struct {
 // Fired whenever an active document stylesheet is removed.
 func (obj *CSS) StyleSheetRemoved(fn func(params *StyleSheetRemovedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("CSS.styleSheetRemoved", closeChn)
+	decoder := obj.conn.On(StyleSheetRemoved, closeChn)
 	go func() {
 		for {
 			params := StyleSheetRemovedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}

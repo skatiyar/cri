@@ -11,6 +11,11 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in SystemInfo domain
+const (
+	GetInfo = "SystemInfo.getInfo"
+)
+
 // The SystemInfo domain defines methods and events for querying low-level system information.
 type SystemInfo struct {
 	conn cri.Connector
@@ -34,6 +39,6 @@ type GetInfoResponse struct {
 
 // Returns information about the system.
 func (obj *SystemInfo) GetInfo() (response GetInfoResponse, err error) {
-	err = obj.conn.Send("SystemInfo.getInfo", nil, &response)
+	err = obj.conn.Send(GetInfo, nil, &response)
 	return
 }

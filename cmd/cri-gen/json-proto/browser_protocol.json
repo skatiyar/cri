@@ -355,6 +355,7 @@
                 ],
                 "returns": [
                     { "name": "frameId", "$ref": "FrameId", "description": "Frame id that has navigated (or failed to navigate)" },
+                    { "name": "loaderId", "$ref": "Network.LoaderId", "optional": true, "description": "Loader identifier.", "experimental": true },
                     { "name": "errorText", "type": "string", "optional": true, "description": "User friendly error message, present if and only if navigation has failed." }
                 ],
                 "description": "Navigates current page to the given URL."
@@ -963,7 +964,7 @@
     {
         "domain": "Emulation",
         "description": "This domain emulates different environments for the page.",
-        "dependencies": ["DOM", "Page"],
+        "dependencies": ["DOM", "Page", "Runtime"],
         "types": [
             {
                 "id": "ScreenOrientation",
@@ -1095,8 +1096,11 @@
                 "description": "Turns on virtual time for all frames (replacing real-time with a synthetic time source) and sets the current virtual time policy.  Note this supersedes any previous time budget.",
                 "parameters": [
                     { "name": "policy", "$ref": "VirtualTimePolicy" },
-                    { "name": "budget", "type": "integer", "optional": true, "description": "If set, after this many virtual milliseconds have elapsed virtual time will be paused and a virtualTimeBudgetExpired event is sent." },
+                    { "name": "budget", "type": "number", "optional": true, "description": "If set, after this many virtual milliseconds have elapsed virtual time will be paused and a virtualTimeBudgetExpired event is sent." },
                     { "name": "maxVirtualTimeTaskStarvationCount", "type": "integer", "optional": true, "description": "If set this specifies the maximum number of tasks that can be run before virtual is forced forwards to prevent deadlock." }
+                ],
+                "returns": [
+                    { "name": "virtualTimeBase", "$ref": "Runtime.Timestamp", "description": "Absolute timestamp at which virtual time was first enabled (milliseconds since epoch)." }
                 ],
                 "experimental": true
             },
@@ -1126,7 +1130,7 @@
                 "name": "virtualTimeAdvanced",
                 "experimental": true,
                 "parameters": [
-                    { "name": "virtualTimeElapsed", "type": "integer", "description": "The amount of virtual time that has elapsed in milliseconds since virtual time was first enabled." }
+                    { "name": "virtualTimeElapsed", "type": "number", "description": "The amount of virtual time that has elapsed in milliseconds since virtual time was first enabled." }
                 ],
                 "description": "Notification sent after the virtual time has advanced."
             },
@@ -1134,7 +1138,7 @@
                 "name": "virtualTimePaused",
                 "experimental": true,
                 "parameters": [
-                    { "name": "virtualTimeElapsed", "type": "integer", "description": "The amount of virtual time that has elapsed in milliseconds since virtual time was first enabled." }
+                    { "name": "virtualTimeElapsed", "type": "number", "description": "The amount of virtual time that has elapsed in milliseconds since virtual time was first enabled." }
                 ],
                 "description": "Notification sent after the virtual time has paused."
             }
@@ -1268,7 +1272,7 @@
     {
         "domain": "Network",
         "description": "Network domain allows tracking network activities of the page. It exposes information about http, file, data and other requests and responses, their headers, bodies, timing, etc.",
-        "dependencies": ["Runtime", "Security"],
+        "dependencies": ["Debugger", "Runtime", "Security"],
         "types": [
             {
                 "id": "LoaderId",
@@ -1575,6 +1579,20 @@
                 "parameters": [
                     { "name": "userAgent", "type": "string", "description": "User agent to use." }
                 ]
+            },
+            {
+                "name": "searchInResponseBody",
+                "description": "Searches for given string in response content.",
+                "parameters": [
+                    { "name": "requestId", "$ref": "RequestId", "description": "Identifier of the network response to search." },
+                    { "name": "query", "type": "string", "description": "String to search for."  },
+                    { "name": "caseSensitive", "type": "boolean", "optional": true, "description": "If true, search is case sensitive." },
+                    { "name": "isRegex", "type": "boolean", "optional": true, "description": "If true, treats string parameter as regex." }
+                ],
+                "returns": [
+                    { "name": "result", "type": "array", "items": { "$ref": "Debugger.SearchMatch" }, "description": "List of search matches." }
+                ],
+                "experimental": true
             },
             {
                 "name": "setExtraHTTPHeaders",
@@ -4855,7 +4873,7 @@
                 "id": "AXProperty",
                 "type": "object",
                 "properties": [
-                    { "name": "name", "type": "string", "description": "The name of this property." },
+                    { "name": "name", "$ref": "AXPropertyName", "description": "The name of this property." },
                     { "name": "value", "$ref": "AXValue", "description": "The value of this property." }
                 ]
             },
@@ -4871,34 +4889,10 @@
                 "description": "A single computed AX property."
             },
             {
-                "id": "AXGlobalStates",
+                "id": "AXPropertyName",
                 "type": "string",
-                "enum": [ "busy", "disabled", "hidden", "hiddenRoot", "invalid", "keyshortcuts", "roledescription" ],
-                "description": "States which apply to every AX node."
-            },
-            {
-                "id": "AXLiveRegionAttributes",
-                "type": "string",
-                "enum": [ "live", "atomic", "relevant", "root" ],
-                "description": "Attributes which apply to nodes in live regions."
-            },
-            {
-                "id": "AXWidgetAttributes",
-                "type": "string",
-                "enum": [ "autocomplete", "haspopup", "level", "multiselectable", "orientation", "multiline", "readonly", "required", "valuemin", "valuemax", "valuetext" ],
-                "description": "Attributes which apply to widgets."
-            },
-            {
-                "id": "AXWidgetStates",
-                "type": "string",
-                "enum": [ "checked", "expanded", "modal", "pressed", "selected" ],
-                "description": "States which apply to widgets."
-            },
-            {
-                "id": "AXRelationshipAttributes",
-                "type": "string",
-                "enum": [ "activedescendant", "controls", "describedby", "details", "errormessage", "flowto", "labelledby", "owns" ],
-                "description": "Relationships between elements other than parent/child/sibling."
+                "enum": [ "busy", "disabled", "hidden", "hiddenRoot", "invalid", "keyshortcuts", "roledescription", "live", "atomic", "relevant", "root", "autocomplete", "haspopup", "level", "multiselectable", "orientation", "multiline", "readonly", "required", "valuemin", "valuemax", "valuetext", "checked", "expanded", "modal", "pressed", "selected", "activedescendant", "controls", "describedby", "details", "errormessage", "flowto", "labelledby", "owns" ],
+                "description": "Values of AXProperty name: from 'busy' to 'roledescription' - states which apply to every AX node, from 'live' to 'root' - attributes which apply to nodes in live regions, from 'autocomplete' to 'valuetext' - attributes which apply to widgets, from 'checked' to 'selected' - states which apply to widgets, from 'activedescendant' to 'owns' - relationships between elements other than parent/child/sibling."
             },
             {
                 "id": "AXNode",

@@ -11,6 +11,29 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in ServiceWorker domain
+const (
+	Enable                   = "ServiceWorker.enable"
+	Disable                  = "ServiceWorker.disable"
+	Unregister               = "ServiceWorker.unregister"
+	UpdateRegistration       = "ServiceWorker.updateRegistration"
+	StartWorker              = "ServiceWorker.startWorker"
+	SkipWaiting              = "ServiceWorker.skipWaiting"
+	StopWorker               = "ServiceWorker.stopWorker"
+	StopAllWorkers           = "ServiceWorker.stopAllWorkers"
+	InspectWorker            = "ServiceWorker.inspectWorker"
+	SetForceUpdateOnPageLoad = "ServiceWorker.setForceUpdateOnPageLoad"
+	DeliverPushMessage       = "ServiceWorker.deliverPushMessage"
+	DispatchSyncEvent        = "ServiceWorker.dispatchSyncEvent"
+)
+
+// List of events in ServiceWorker domain
+const (
+	WorkerRegistrationUpdated = "ServiceWorker.workerRegistrationUpdated"
+	WorkerVersionUpdated      = "ServiceWorker.workerVersionUpdated"
+	WorkerErrorReported       = "ServiceWorker.workerErrorReported"
+)
+
 type ServiceWorker struct {
 	conn cri.Connector
 }
@@ -21,12 +44,12 @@ func New(conn cri.Connector) *ServiceWorker {
 }
 
 func (obj *ServiceWorker) Enable() (err error) {
-	err = obj.conn.Send("ServiceWorker.enable", nil, nil)
+	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 
 func (obj *ServiceWorker) Disable() (err error) {
-	err = obj.conn.Send("ServiceWorker.disable", nil, nil)
+	err = obj.conn.Send(Disable, nil, nil)
 	return
 }
 
@@ -35,7 +58,7 @@ type UnregisterRequest struct {
 }
 
 func (obj *ServiceWorker) Unregister(request *UnregisterRequest) (err error) {
-	err = obj.conn.Send("ServiceWorker.unregister", request, nil)
+	err = obj.conn.Send(Unregister, request, nil)
 	return
 }
 
@@ -44,7 +67,7 @@ type UpdateRegistrationRequest struct {
 }
 
 func (obj *ServiceWorker) UpdateRegistration(request *UpdateRegistrationRequest) (err error) {
-	err = obj.conn.Send("ServiceWorker.updateRegistration", request, nil)
+	err = obj.conn.Send(UpdateRegistration, request, nil)
 	return
 }
 
@@ -53,7 +76,7 @@ type StartWorkerRequest struct {
 }
 
 func (obj *ServiceWorker) StartWorker(request *StartWorkerRequest) (err error) {
-	err = obj.conn.Send("ServiceWorker.startWorker", request, nil)
+	err = obj.conn.Send(StartWorker, request, nil)
 	return
 }
 
@@ -62,7 +85,7 @@ type SkipWaitingRequest struct {
 }
 
 func (obj *ServiceWorker) SkipWaiting(request *SkipWaitingRequest) (err error) {
-	err = obj.conn.Send("ServiceWorker.skipWaiting", request, nil)
+	err = obj.conn.Send(SkipWaiting, request, nil)
 	return
 }
 
@@ -71,12 +94,12 @@ type StopWorkerRequest struct {
 }
 
 func (obj *ServiceWorker) StopWorker(request *StopWorkerRequest) (err error) {
-	err = obj.conn.Send("ServiceWorker.stopWorker", request, nil)
+	err = obj.conn.Send(StopWorker, request, nil)
 	return
 }
 
 func (obj *ServiceWorker) StopAllWorkers() (err error) {
-	err = obj.conn.Send("ServiceWorker.stopAllWorkers", nil, nil)
+	err = obj.conn.Send(StopAllWorkers, nil, nil)
 	return
 }
 
@@ -85,7 +108,7 @@ type InspectWorkerRequest struct {
 }
 
 func (obj *ServiceWorker) InspectWorker(request *InspectWorkerRequest) (err error) {
-	err = obj.conn.Send("ServiceWorker.inspectWorker", request, nil)
+	err = obj.conn.Send(InspectWorker, request, nil)
 	return
 }
 
@@ -94,7 +117,7 @@ type SetForceUpdateOnPageLoadRequest struct {
 }
 
 func (obj *ServiceWorker) SetForceUpdateOnPageLoad(request *SetForceUpdateOnPageLoadRequest) (err error) {
-	err = obj.conn.Send("ServiceWorker.setForceUpdateOnPageLoad", request, nil)
+	err = obj.conn.Send(SetForceUpdateOnPageLoad, request, nil)
 	return
 }
 
@@ -105,7 +128,7 @@ type DeliverPushMessageRequest struct {
 }
 
 func (obj *ServiceWorker) DeliverPushMessage(request *DeliverPushMessageRequest) (err error) {
-	err = obj.conn.Send("ServiceWorker.deliverPushMessage", request, nil)
+	err = obj.conn.Send(DeliverPushMessage, request, nil)
 	return
 }
 
@@ -117,7 +140,7 @@ type DispatchSyncEventRequest struct {
 }
 
 func (obj *ServiceWorker) DispatchSyncEvent(request *DispatchSyncEventRequest) (err error) {
-	err = obj.conn.Send("ServiceWorker.dispatchSyncEvent", request, nil)
+	err = obj.conn.Send(DispatchSyncEvent, request, nil)
 	return
 }
 
@@ -127,13 +150,12 @@ type WorkerRegistrationUpdatedParams struct {
 
 func (obj *ServiceWorker) WorkerRegistrationUpdated(fn func(params *WorkerRegistrationUpdatedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("ServiceWorker.workerRegistrationUpdated", closeChn)
+	decoder := obj.conn.On(WorkerRegistrationUpdated, closeChn)
 	go func() {
 		for {
 			params := WorkerRegistrationUpdatedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -147,13 +169,12 @@ type WorkerVersionUpdatedParams struct {
 
 func (obj *ServiceWorker) WorkerVersionUpdated(fn func(params *WorkerVersionUpdatedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("ServiceWorker.workerVersionUpdated", closeChn)
+	decoder := obj.conn.On(WorkerVersionUpdated, closeChn)
 	go func() {
 		for {
 			params := WorkerVersionUpdatedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -167,13 +188,12 @@ type WorkerErrorReportedParams struct {
 
 func (obj *ServiceWorker) WorkerErrorReported(fn func(params *WorkerErrorReportedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("ServiceWorker.workerErrorReported", closeChn)
+	decoder := obj.conn.On(WorkerErrorReported, closeChn)
 	go func() {
 		for {
 			params := WorkerErrorReportedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}

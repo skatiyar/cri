@@ -11,6 +11,15 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in Browser domain
+const (
+	Close              = "Browser.close"
+	GetWindowForTarget = "Browser.getWindowForTarget"
+	GetVersion         = "Browser.getVersion"
+	SetWindowBounds    = "Browser.setWindowBounds"
+	GetWindowBounds    = "Browser.getWindowBounds"
+)
+
 // The Browser domain defines methods and events for browser managing.
 type Browser struct {
 	conn cri.Connector
@@ -23,7 +32,7 @@ func New(conn cri.Connector) *Browser {
 
 // Close browser gracefully.
 func (obj *Browser) Close() (err error) {
-	err = obj.conn.Send("Browser.close", nil, nil)
+	err = obj.conn.Send(Close, nil, nil)
 	return
 }
 
@@ -41,7 +50,7 @@ type GetWindowForTargetResponse struct {
 
 // Get the browser window that contains the devtools target.
 func (obj *Browser) GetWindowForTarget(request *GetWindowForTargetRequest) (response GetWindowForTargetResponse, err error) {
-	err = obj.conn.Send("Browser.getWindowForTarget", request, &response)
+	err = obj.conn.Send(GetWindowForTarget, request, &response)
 	return
 }
 
@@ -60,7 +69,7 @@ type GetVersionResponse struct {
 
 // Returns version information.
 func (obj *Browser) GetVersion() (response GetVersionResponse, err error) {
-	err = obj.conn.Send("Browser.getVersion", nil, &response)
+	err = obj.conn.Send(GetVersion, nil, &response)
 	return
 }
 
@@ -73,7 +82,7 @@ type SetWindowBoundsRequest struct {
 
 // Set position and/or size of the browser window.
 func (obj *Browser) SetWindowBounds(request *SetWindowBoundsRequest) (err error) {
-	err = obj.conn.Send("Browser.setWindowBounds", request, nil)
+	err = obj.conn.Send(SetWindowBounds, request, nil)
 	return
 }
 
@@ -89,6 +98,6 @@ type GetWindowBoundsResponse struct {
 
 // Get position and size of the browser window.
 func (obj *Browser) GetWindowBounds(request *GetWindowBoundsRequest) (response GetWindowBoundsResponse, err error) {
-	err = obj.conn.Send("Browser.getWindowBounds", request, &response)
+	err = obj.conn.Send(GetWindowBounds, request, &response)
 	return
 }

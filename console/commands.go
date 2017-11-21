@@ -11,6 +11,18 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in Console domain
+const (
+	Enable        = "Console.enable"
+	Disable       = "Console.disable"
+	ClearMessages = "Console.clearMessages"
+)
+
+// List of events in Console domain
+const (
+	MessageAdded = "Console.messageAdded"
+)
+
 // This domain is deprecated - use Runtime or Log instead.
 type Console struct {
 	conn cri.Connector
@@ -23,19 +35,19 @@ func New(conn cri.Connector) *Console {
 
 // Enables console domain, sends the messages collected so far to the client by means of the <code>messageAdded</code> notification.
 func (obj *Console) Enable() (err error) {
-	err = obj.conn.Send("Console.enable", nil, nil)
+	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 
 // Disables console domain, prevents further console messages from being reported to the client.
 func (obj *Console) Disable() (err error) {
-	err = obj.conn.Send("Console.disable", nil, nil)
+	err = obj.conn.Send(Disable, nil, nil)
 	return
 }
 
 // Does nothing.
 func (obj *Console) ClearMessages() (err error) {
-	err = obj.conn.Send("Console.clearMessages", nil, nil)
+	err = obj.conn.Send(ClearMessages, nil, nil)
 	return
 }
 
@@ -47,13 +59,12 @@ type MessageAddedParams struct {
 // Issued when new console message is added.
 func (obj *Console) MessageAdded(fn func(params *MessageAddedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Console.messageAdded", closeChn)
+	decoder := obj.conn.On(MessageAdded, closeChn)
 	go func() {
 		for {
 			params := MessageAddedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}

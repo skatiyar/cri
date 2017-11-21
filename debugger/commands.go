@@ -11,6 +11,46 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in Debugger domain
+const (
+	Enable                 = "Debugger.enable"
+	Disable                = "Debugger.disable"
+	SetBreakpointsActive   = "Debugger.setBreakpointsActive"
+	SetSkipAllPauses       = "Debugger.setSkipAllPauses"
+	SetBreakpointByUrl     = "Debugger.setBreakpointByUrl"
+	SetBreakpoint          = "Debugger.setBreakpoint"
+	RemoveBreakpoint       = "Debugger.removeBreakpoint"
+	GetPossibleBreakpoints = "Debugger.getPossibleBreakpoints"
+	ContinueToLocation     = "Debugger.continueToLocation"
+	PauseOnAsyncTask       = "Debugger.pauseOnAsyncTask"
+	StepOver               = "Debugger.stepOver"
+	StepInto               = "Debugger.stepInto"
+	StepOut                = "Debugger.stepOut"
+	Pause                  = "Debugger.pause"
+	ScheduleStepIntoAsync  = "Debugger.scheduleStepIntoAsync"
+	Resume                 = "Debugger.resume"
+	SearchInContent        = "Debugger.searchInContent"
+	SetScriptSource        = "Debugger.setScriptSource"
+	RestartFrame           = "Debugger.restartFrame"
+	GetScriptSource        = "Debugger.getScriptSource"
+	SetPauseOnExceptions   = "Debugger.setPauseOnExceptions"
+	EvaluateOnCallFrame    = "Debugger.evaluateOnCallFrame"
+	SetVariableValue       = "Debugger.setVariableValue"
+	SetReturnValue         = "Debugger.setReturnValue"
+	SetAsyncCallStackDepth = "Debugger.setAsyncCallStackDepth"
+	SetBlackboxPatterns    = "Debugger.setBlackboxPatterns"
+	SetBlackboxedRanges    = "Debugger.setBlackboxedRanges"
+)
+
+// List of events in Debugger domain
+const (
+	ScriptParsed        = "Debugger.scriptParsed"
+	ScriptFailedToParse = "Debugger.scriptFailedToParse"
+	BreakpointResolved  = "Debugger.breakpointResolved"
+	Paused              = "Debugger.paused"
+	Resumed             = "Debugger.resumed"
+)
+
 // Debugger domain exposes JavaScript debugging capabilities. It allows setting and removing breakpoints, stepping through execution, exploring stack traces, etc.
 type Debugger struct {
 	conn cri.Connector
@@ -23,13 +63,13 @@ func New(conn cri.Connector) *Debugger {
 
 // Enables debugger for the given page. Clients should not assume that the debugging has been enabled until the result for this command is received.
 func (obj *Debugger) Enable() (err error) {
-	err = obj.conn.Send("Debugger.enable", nil, nil)
+	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 
 // Disables debugger for given page.
 func (obj *Debugger) Disable() (err error) {
-	err = obj.conn.Send("Debugger.disable", nil, nil)
+	err = obj.conn.Send(Disable, nil, nil)
 	return
 }
 
@@ -40,7 +80,7 @@ type SetBreakpointsActiveRequest struct {
 
 // Activates / deactivates all breakpoints on the page.
 func (obj *Debugger) SetBreakpointsActive(request *SetBreakpointsActiveRequest) (err error) {
-	err = obj.conn.Send("Debugger.setBreakpointsActive", request, nil)
+	err = obj.conn.Send(SetBreakpointsActive, request, nil)
 	return
 }
 
@@ -51,7 +91,7 @@ type SetSkipAllPausesRequest struct {
 
 // Makes page not interrupt on any pauses (breakpoint, exception, dom exception etc).
 func (obj *Debugger) SetSkipAllPauses(request *SetSkipAllPausesRequest) (err error) {
-	err = obj.conn.Send("Debugger.setSkipAllPauses", request, nil)
+	err = obj.conn.Send(SetSkipAllPauses, request, nil)
 	return
 }
 
@@ -80,7 +120,7 @@ type SetBreakpointByUrlResponse struct {
 
 // Sets JavaScript breakpoint at given location specified either by URL or URL regex. Once this command is issued, all existing parsed scripts will have breakpoints resolved and returned in <code>locations</code> property. Further matching script parsing will result in subsequent <code>breakpointResolved</code> events issued. This logical breakpoint will survive page reloads.
 func (obj *Debugger) SetBreakpointByUrl(request *SetBreakpointByUrlRequest) (response SetBreakpointByUrlResponse, err error) {
-	err = obj.conn.Send("Debugger.setBreakpointByUrl", request, &response)
+	err = obj.conn.Send(SetBreakpointByUrl, request, &response)
 	return
 }
 
@@ -100,7 +140,7 @@ type SetBreakpointResponse struct {
 
 // Sets JavaScript breakpoint at a given location.
 func (obj *Debugger) SetBreakpoint(request *SetBreakpointRequest) (response SetBreakpointResponse, err error) {
-	err = obj.conn.Send("Debugger.setBreakpoint", request, &response)
+	err = obj.conn.Send(SetBreakpoint, request, &response)
 	return
 }
 
@@ -110,7 +150,7 @@ type RemoveBreakpointRequest struct {
 
 // Removes JavaScript breakpoint.
 func (obj *Debugger) RemoveBreakpoint(request *RemoveBreakpointRequest) (err error) {
-	err = obj.conn.Send("Debugger.removeBreakpoint", request, nil)
+	err = obj.conn.Send(RemoveBreakpoint, request, nil)
 	return
 }
 
@@ -130,7 +170,7 @@ type GetPossibleBreakpointsResponse struct {
 
 // Returns possible locations for breakpoint. scriptId in start and end range locations should be the same.
 func (obj *Debugger) GetPossibleBreakpoints(request *GetPossibleBreakpointsRequest) (response GetPossibleBreakpointsResponse, err error) {
-	err = obj.conn.Send("Debugger.getPossibleBreakpoints", request, &response)
+	err = obj.conn.Send(GetPossibleBreakpoints, request, &response)
 	return
 }
 
@@ -143,7 +183,7 @@ type ContinueToLocationRequest struct {
 
 // Continues execution until specific location is reached.
 func (obj *Debugger) ContinueToLocation(request *ContinueToLocationRequest) (err error) {
-	err = obj.conn.Send("Debugger.continueToLocation", request, nil)
+	err = obj.conn.Send(ContinueToLocation, request, nil)
 	return
 }
 
@@ -153,13 +193,13 @@ type PauseOnAsyncTaskRequest struct {
 }
 
 func (obj *Debugger) PauseOnAsyncTask(request *PauseOnAsyncTaskRequest) (err error) {
-	err = obj.conn.Send("Debugger.pauseOnAsyncTask", request, nil)
+	err = obj.conn.Send(PauseOnAsyncTask, request, nil)
 	return
 }
 
 // Steps over the statement.
 func (obj *Debugger) StepOver() (err error) {
-	err = obj.conn.Send("Debugger.stepOver", nil, nil)
+	err = obj.conn.Send(StepOver, nil, nil)
 	return
 }
 
@@ -171,31 +211,31 @@ type StepIntoRequest struct {
 
 // Steps into the function call.
 func (obj *Debugger) StepInto(request *StepIntoRequest) (err error) {
-	err = obj.conn.Send("Debugger.stepInto", request, nil)
+	err = obj.conn.Send(StepInto, request, nil)
 	return
 }
 
 // Steps out of the function call.
 func (obj *Debugger) StepOut() (err error) {
-	err = obj.conn.Send("Debugger.stepOut", nil, nil)
+	err = obj.conn.Send(StepOut, nil, nil)
 	return
 }
 
 // Stops on the next JavaScript statement.
 func (obj *Debugger) Pause() (err error) {
-	err = obj.conn.Send("Debugger.pause", nil, nil)
+	err = obj.conn.Send(Pause, nil, nil)
 	return
 }
 
 // This method is deprecated - use Debugger.stepInto with breakOnAsyncCall and Debugger.pauseOnAsyncTask instead. Steps into next scheduled async task if any is scheduled before next pause. Returns success when async task is actually scheduled, returns error if no task were scheduled or another scheduleStepIntoAsync was called.
 func (obj *Debugger) ScheduleStepIntoAsync() (err error) {
-	err = obj.conn.Send("Debugger.scheduleStepIntoAsync", nil, nil)
+	err = obj.conn.Send(ScheduleStepIntoAsync, nil, nil)
 	return
 }
 
 // Resumes JavaScript execution.
 func (obj *Debugger) Resume() (err error) {
-	err = obj.conn.Send("Debugger.resume", nil, nil)
+	err = obj.conn.Send(Resume, nil, nil)
 	return
 }
 
@@ -217,7 +257,7 @@ type SearchInContentResponse struct {
 
 // Searches for given string in script content.
 func (obj *Debugger) SearchInContent(request *SearchInContentRequest) (response SearchInContentResponse, err error) {
-	err = obj.conn.Send("Debugger.searchInContent", request, &response)
+	err = obj.conn.Send(SearchInContent, request, &response)
 	return
 }
 
@@ -243,7 +283,7 @@ type SetScriptSourceResponse struct {
 
 // Edits JavaScript source live.
 func (obj *Debugger) SetScriptSource(request *SetScriptSourceRequest) (response SetScriptSourceResponse, err error) {
-	err = obj.conn.Send("Debugger.setScriptSource", request, &response)
+	err = obj.conn.Send(SetScriptSource, request, &response)
 	return
 }
 
@@ -261,7 +301,7 @@ type RestartFrameResponse struct {
 
 // Restarts particular call frame from the beginning.
 func (obj *Debugger) RestartFrame(request *RestartFrameRequest) (response RestartFrameResponse, err error) {
-	err = obj.conn.Send("Debugger.restartFrame", request, &response)
+	err = obj.conn.Send(RestartFrame, request, &response)
 	return
 }
 
@@ -277,7 +317,7 @@ type GetScriptSourceResponse struct {
 
 // Returns source for the script with given id.
 func (obj *Debugger) GetScriptSource(request *GetScriptSourceRequest) (response GetScriptSourceResponse, err error) {
-	err = obj.conn.Send("Debugger.getScriptSource", request, &response)
+	err = obj.conn.Send(GetScriptSource, request, &response)
 	return
 }
 
@@ -288,7 +328,7 @@ type SetPauseOnExceptionsRequest struct {
 
 // Defines pause on exceptions state. Can be set to stop on all exceptions, uncaught exceptions or no exceptions. Initial pause on exceptions state is <code>none</code>.
 func (obj *Debugger) SetPauseOnExceptions(request *SetPauseOnExceptionsRequest) (err error) {
-	err = obj.conn.Send("Debugger.setPauseOnExceptions", request, nil)
+	err = obj.conn.Send(SetPauseOnExceptions, request, nil)
 	return
 }
 
@@ -322,7 +362,7 @@ type EvaluateOnCallFrameResponse struct {
 
 // Evaluates expression on a given call frame.
 func (obj *Debugger) EvaluateOnCallFrame(request *EvaluateOnCallFrameRequest) (response EvaluateOnCallFrameResponse, err error) {
-	err = obj.conn.Send("Debugger.evaluateOnCallFrame", request, &response)
+	err = obj.conn.Send(EvaluateOnCallFrame, request, &response)
 	return
 }
 
@@ -339,7 +379,7 @@ type SetVariableValueRequest struct {
 
 // Changes value of variable in a callframe. Object-based scopes are not supported and must be mutated manually.
 func (obj *Debugger) SetVariableValue(request *SetVariableValueRequest) (err error) {
-	err = obj.conn.Send("Debugger.setVariableValue", request, nil)
+	err = obj.conn.Send(SetVariableValue, request, nil)
 	return
 }
 
@@ -350,7 +390,7 @@ type SetReturnValueRequest struct {
 
 // Changes return value in top frame. Available only at return break position.
 func (obj *Debugger) SetReturnValue(request *SetReturnValueRequest) (err error) {
-	err = obj.conn.Send("Debugger.setReturnValue", request, nil)
+	err = obj.conn.Send(SetReturnValue, request, nil)
 	return
 }
 
@@ -361,7 +401,7 @@ type SetAsyncCallStackDepthRequest struct {
 
 // Enables or disables async call stacks tracking.
 func (obj *Debugger) SetAsyncCallStackDepth(request *SetAsyncCallStackDepthRequest) (err error) {
-	err = obj.conn.Send("Debugger.setAsyncCallStackDepth", request, nil)
+	err = obj.conn.Send(SetAsyncCallStackDepth, request, nil)
 	return
 }
 
@@ -372,7 +412,7 @@ type SetBlackboxPatternsRequest struct {
 
 // Replace previous blackbox patterns with passed ones. Forces backend to skip stepping/pausing in scripts with url matching one of the patterns. VM will try to leave blackboxed script by performing 'step in' several times, finally resorting to 'step out' if unsuccessful.
 func (obj *Debugger) SetBlackboxPatterns(request *SetBlackboxPatternsRequest) (err error) {
-	err = obj.conn.Send("Debugger.setBlackboxPatterns", request, nil)
+	err = obj.conn.Send(SetBlackboxPatterns, request, nil)
 	return
 }
 
@@ -384,7 +424,7 @@ type SetBlackboxedRangesRequest struct {
 
 // Makes backend skip steps in the script in blackboxed ranges. VM will try leave blacklisted scripts by performing 'step in' several times, finally resorting to 'step out' if unsuccessful. Positions array contains positions where blackbox state is changed. First interval isn't blackboxed. Array should be sorted.
 func (obj *Debugger) SetBlackboxedRanges(request *SetBlackboxedRangesRequest) (err error) {
-	err = obj.conn.Send("Debugger.setBlackboxedRanges", request, nil)
+	err = obj.conn.Send(SetBlackboxedRanges, request, nil)
 	return
 }
 
@@ -429,13 +469,12 @@ type ScriptParsedParams struct {
 // Fired when virtual machine parses script. This event is also fired for all known and uncollected scripts upon enabling debugger.
 func (obj *Debugger) ScriptParsed(fn func(params *ScriptParsedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Debugger.scriptParsed", closeChn)
+	decoder := obj.conn.On(ScriptParsed, closeChn)
 	go func() {
 		for {
 			params := ScriptParsedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -481,13 +520,12 @@ type ScriptFailedToParseParams struct {
 // Fired when virtual machine fails to parse the script.
 func (obj *Debugger) ScriptFailedToParse(fn func(params *ScriptFailedToParseParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Debugger.scriptFailedToParse", closeChn)
+	decoder := obj.conn.On(ScriptFailedToParse, closeChn)
 	go func() {
 		for {
 			params := ScriptFailedToParseParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -505,13 +543,12 @@ type BreakpointResolvedParams struct {
 // Fired when breakpoint is resolved to an actual script and location.
 func (obj *Debugger) BreakpointResolved(fn func(params *BreakpointResolvedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Debugger.breakpointResolved", closeChn)
+	decoder := obj.conn.On(BreakpointResolved, closeChn)
 	go func() {
 		for {
 			params := BreakpointResolvedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -538,13 +575,12 @@ type PausedParams struct {
 // Fired when the virtual machine stopped on breakpoint or exception or any other stop criteria.
 func (obj *Debugger) Paused(fn func(params *PausedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Debugger.paused", closeChn)
+	decoder := obj.conn.On(Paused, closeChn)
 	go func() {
 		for {
 			params := PausedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -555,13 +591,12 @@ func (obj *Debugger) Paused(fn func(params *PausedParams, err error) bool) {
 // Fired when the virtual machine resumed execution.
 func (obj *Debugger) Resumed(fn func(err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Debugger.resumed", closeChn)
+	decoder := obj.conn.On(Resumed, closeChn)
 	go func() {
 		for {
 
 			readErr := decoder(nil)
 			if !fn(readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}

@@ -11,6 +11,27 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in Animation domain
+const (
+	Enable            = "Animation.enable"
+	Disable           = "Animation.disable"
+	GetPlaybackRate   = "Animation.getPlaybackRate"
+	SetPlaybackRate   = "Animation.setPlaybackRate"
+	GetCurrentTime    = "Animation.getCurrentTime"
+	SetPaused         = "Animation.setPaused"
+	SetTiming         = "Animation.setTiming"
+	SeekAnimations    = "Animation.seekAnimations"
+	ReleaseAnimations = "Animation.releaseAnimations"
+	ResolveAnimation  = "Animation.resolveAnimation"
+)
+
+// List of events in Animation domain
+const (
+	AnimationCreated  = "Animation.animationCreated"
+	AnimationStarted  = "Animation.animationStarted"
+	AnimationCanceled = "Animation.animationCanceled"
+)
+
 type Animation struct {
 	conn cri.Connector
 }
@@ -22,13 +43,13 @@ func New(conn cri.Connector) *Animation {
 
 // Enables animation domain notifications.
 func (obj *Animation) Enable() (err error) {
-	err = obj.conn.Send("Animation.enable", nil, nil)
+	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 
 // Disables animation domain notifications.
 func (obj *Animation) Disable() (err error) {
-	err = obj.conn.Send("Animation.disable", nil, nil)
+	err = obj.conn.Send(Disable, nil, nil)
 	return
 }
 
@@ -39,7 +60,7 @@ type GetPlaybackRateResponse struct {
 
 // Gets the playback rate of the document timeline.
 func (obj *Animation) GetPlaybackRate() (response GetPlaybackRateResponse, err error) {
-	err = obj.conn.Send("Animation.getPlaybackRate", nil, &response)
+	err = obj.conn.Send(GetPlaybackRate, nil, &response)
 	return
 }
 
@@ -50,7 +71,7 @@ type SetPlaybackRateRequest struct {
 
 // Sets the playback rate of the document timeline.
 func (obj *Animation) SetPlaybackRate(request *SetPlaybackRateRequest) (err error) {
-	err = obj.conn.Send("Animation.setPlaybackRate", request, nil)
+	err = obj.conn.Send(SetPlaybackRate, request, nil)
 	return
 }
 
@@ -66,7 +87,7 @@ type GetCurrentTimeResponse struct {
 
 // Returns the current time of the an animation.
 func (obj *Animation) GetCurrentTime(request *GetCurrentTimeRequest) (response GetCurrentTimeResponse, err error) {
-	err = obj.conn.Send("Animation.getCurrentTime", request, &response)
+	err = obj.conn.Send(GetCurrentTime, request, &response)
 	return
 }
 
@@ -79,7 +100,7 @@ type SetPausedRequest struct {
 
 // Sets the paused state of a set of animations.
 func (obj *Animation) SetPaused(request *SetPausedRequest) (err error) {
-	err = obj.conn.Send("Animation.setPaused", request, nil)
+	err = obj.conn.Send(SetPaused, request, nil)
 	return
 }
 
@@ -94,7 +115,7 @@ type SetTimingRequest struct {
 
 // Sets the timing of an animation node.
 func (obj *Animation) SetTiming(request *SetTimingRequest) (err error) {
-	err = obj.conn.Send("Animation.setTiming", request, nil)
+	err = obj.conn.Send(SetTiming, request, nil)
 	return
 }
 
@@ -107,7 +128,7 @@ type SeekAnimationsRequest struct {
 
 // Seek a set of animations to a particular time within each animation.
 func (obj *Animation) SeekAnimations(request *SeekAnimationsRequest) (err error) {
-	err = obj.conn.Send("Animation.seekAnimations", request, nil)
+	err = obj.conn.Send(SeekAnimations, request, nil)
 	return
 }
 
@@ -118,7 +139,7 @@ type ReleaseAnimationsRequest struct {
 
 // Releases a set of animations to no longer be manipulated.
 func (obj *Animation) ReleaseAnimations(request *ReleaseAnimationsRequest) (err error) {
-	err = obj.conn.Send("Animation.releaseAnimations", request, nil)
+	err = obj.conn.Send(ReleaseAnimations, request, nil)
 	return
 }
 
@@ -134,7 +155,7 @@ type ResolveAnimationResponse struct {
 
 // Gets the remote object of the Animation.
 func (obj *Animation) ResolveAnimation(request *ResolveAnimationRequest) (response ResolveAnimationResponse, err error) {
-	err = obj.conn.Send("Animation.resolveAnimation", request, &response)
+	err = obj.conn.Send(ResolveAnimation, request, &response)
 	return
 }
 
@@ -146,13 +167,12 @@ type AnimationCreatedParams struct {
 // Event for each animation that has been created.
 func (obj *Animation) AnimationCreated(fn func(params *AnimationCreatedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Animation.animationCreated", closeChn)
+	decoder := obj.conn.On(AnimationCreated, closeChn)
 	go func() {
 		for {
 			params := AnimationCreatedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -168,13 +188,12 @@ type AnimationStartedParams struct {
 // Event for animation that has been started.
 func (obj *Animation) AnimationStarted(fn func(params *AnimationStartedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Animation.animationStarted", closeChn)
+	decoder := obj.conn.On(AnimationStarted, closeChn)
 	go func() {
 		for {
 			params := AnimationStartedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -190,13 +209,12 @@ type AnimationCanceledParams struct {
 // Event for when an animation has been cancelled.
 func (obj *Animation) AnimationCanceled(fn func(params *AnimationCanceledParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Animation.animationCanceled", closeChn)
+	decoder := obj.conn.On(AnimationCanceled, closeChn)
 	go func() {
 		for {
 			params := AnimationCanceledParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}

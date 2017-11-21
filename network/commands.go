@@ -11,6 +11,56 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in Network domain
+const (
+	Enable                         = "Network.enable"
+	Disable                        = "Network.disable"
+	SetUserAgentOverride           = "Network.setUserAgentOverride"
+	SearchInResponseBody           = "Network.searchInResponseBody"
+	SetExtraHTTPHeaders            = "Network.setExtraHTTPHeaders"
+	GetResponseBody                = "Network.getResponseBody"
+	SetBlockedURLs                 = "Network.setBlockedURLs"
+	ReplayXHR                      = "Network.replayXHR"
+	CanClearBrowserCache           = "Network.canClearBrowserCache"
+	ClearBrowserCache              = "Network.clearBrowserCache"
+	CanClearBrowserCookies         = "Network.canClearBrowserCookies"
+	ClearBrowserCookies            = "Network.clearBrowserCookies"
+	GetCookies                     = "Network.getCookies"
+	GetAllCookies                  = "Network.getAllCookies"
+	DeleteCookies                  = "Network.deleteCookies"
+	SetCookie                      = "Network.setCookie"
+	SetCookies                     = "Network.setCookies"
+	CanEmulateNetworkConditions    = "Network.canEmulateNetworkConditions"
+	EmulateNetworkConditions       = "Network.emulateNetworkConditions"
+	SetCacheDisabled               = "Network.setCacheDisabled"
+	SetBypassServiceWorker         = "Network.setBypassServiceWorker"
+	SetDataSizeLimitsForTest       = "Network.setDataSizeLimitsForTest"
+	GetCertificate                 = "Network.getCertificate"
+	SetRequestInterception         = "Network.setRequestInterception"
+	ContinueInterceptedRequest     = "Network.continueInterceptedRequest"
+	GetResponseBodyForInterception = "Network.getResponseBodyForInterception"
+)
+
+// List of events in Network domain
+const (
+	ResourceChangedPriority            = "Network.resourceChangedPriority"
+	RequestWillBeSent                  = "Network.requestWillBeSent"
+	RequestServedFromCache             = "Network.requestServedFromCache"
+	ResponseReceived                   = "Network.responseReceived"
+	DataReceived                       = "Network.dataReceived"
+	LoadingFinished                    = "Network.loadingFinished"
+	LoadingFailed                      = "Network.loadingFailed"
+	WebSocketWillSendHandshakeRequest  = "Network.webSocketWillSendHandshakeRequest"
+	WebSocketHandshakeResponseReceived = "Network.webSocketHandshakeResponseReceived"
+	WebSocketCreated                   = "Network.webSocketCreated"
+	WebSocketClosed                    = "Network.webSocketClosed"
+	WebSocketFrameReceived             = "Network.webSocketFrameReceived"
+	WebSocketFrameError                = "Network.webSocketFrameError"
+	WebSocketFrameSent                 = "Network.webSocketFrameSent"
+	EventSourceMessageReceived         = "Network.eventSourceMessageReceived"
+	RequestIntercepted                 = "Network.requestIntercepted"
+)
+
 // Network domain allows tracking network activities of the page. It exposes information about http, file, data and other requests and responses, their headers, bodies, timing, etc.
 type Network struct {
 	conn cri.Connector
@@ -32,13 +82,13 @@ type EnableRequest struct {
 
 // Enables network tracking, network events will now be delivered to the client.
 func (obj *Network) Enable(request *EnableRequest) (err error) {
-	err = obj.conn.Send("Network.enable", request, nil)
+	err = obj.conn.Send(Enable, request, nil)
 	return
 }
 
 // Disables network tracking, prevents network events from being sent to the client.
 func (obj *Network) Disable() (err error) {
-	err = obj.conn.Send("Network.disable", nil, nil)
+	err = obj.conn.Send(Disable, nil, nil)
 	return
 }
 
@@ -49,7 +99,29 @@ type SetUserAgentOverrideRequest struct {
 
 // Allows overriding user agent with the given string.
 func (obj *Network) SetUserAgentOverride(request *SetUserAgentOverrideRequest) (err error) {
-	err = obj.conn.Send("Network.setUserAgentOverride", request, nil)
+	err = obj.conn.Send(SetUserAgentOverride, request, nil)
+	return
+}
+
+type SearchInResponseBodyRequest struct {
+	// Identifier of the network response to search.
+	RequestId types.Network_RequestId `json:"requestId"`
+	// String to search for.
+	Query string `json:"query"`
+	// If true, search is case sensitive.
+	CaseSensitive *bool `json:"caseSensitive,omitempty"`
+	// If true, treats string parameter as regex.
+	IsRegex *bool `json:"isRegex,omitempty"`
+}
+
+type SearchInResponseBodyResponse struct {
+	// List of search matches.
+	Result []types.Debugger_SearchMatch `json:"result"`
+}
+
+// Searches for given string in response content.
+func (obj *Network) SearchInResponseBody(request *SearchInResponseBodyRequest) (response SearchInResponseBodyResponse, err error) {
+	err = obj.conn.Send(SearchInResponseBody, request, &response)
 	return
 }
 
@@ -60,7 +132,7 @@ type SetExtraHTTPHeadersRequest struct {
 
 // Specifies whether to always send extra HTTP headers with the requests from this page.
 func (obj *Network) SetExtraHTTPHeaders(request *SetExtraHTTPHeadersRequest) (err error) {
-	err = obj.conn.Send("Network.setExtraHTTPHeaders", request, nil)
+	err = obj.conn.Send(SetExtraHTTPHeaders, request, nil)
 	return
 }
 
@@ -78,7 +150,7 @@ type GetResponseBodyResponse struct {
 
 // Returns content served for the given request.
 func (obj *Network) GetResponseBody(request *GetResponseBodyRequest) (response GetResponseBodyResponse, err error) {
-	err = obj.conn.Send("Network.getResponseBody", request, &response)
+	err = obj.conn.Send(GetResponseBody, request, &response)
 	return
 }
 
@@ -89,7 +161,7 @@ type SetBlockedURLsRequest struct {
 
 // Blocks URLs from loading.
 func (obj *Network) SetBlockedURLs(request *SetBlockedURLsRequest) (err error) {
-	err = obj.conn.Send("Network.setBlockedURLs", request, nil)
+	err = obj.conn.Send(SetBlockedURLs, request, nil)
 	return
 }
 
@@ -100,7 +172,7 @@ type ReplayXHRRequest struct {
 
 // This method sends a new XMLHttpRequest which is identical to the original one. The following parameters should be identical: method, url, async, request body, extra headers, withCredentials attribute, user, password.
 func (obj *Network) ReplayXHR(request *ReplayXHRRequest) (err error) {
-	err = obj.conn.Send("Network.replayXHR", request, nil)
+	err = obj.conn.Send(ReplayXHR, request, nil)
 	return
 }
 
@@ -111,13 +183,13 @@ type CanClearBrowserCacheResponse struct {
 
 // Tells whether clearing browser cache is supported.
 func (obj *Network) CanClearBrowserCache() (response CanClearBrowserCacheResponse, err error) {
-	err = obj.conn.Send("Network.canClearBrowserCache", nil, &response)
+	err = obj.conn.Send(CanClearBrowserCache, nil, &response)
 	return
 }
 
 // Clears browser cache.
 func (obj *Network) ClearBrowserCache() (err error) {
-	err = obj.conn.Send("Network.clearBrowserCache", nil, nil)
+	err = obj.conn.Send(ClearBrowserCache, nil, nil)
 	return
 }
 
@@ -128,13 +200,13 @@ type CanClearBrowserCookiesResponse struct {
 
 // Tells whether clearing browser cookies is supported.
 func (obj *Network) CanClearBrowserCookies() (response CanClearBrowserCookiesResponse, err error) {
-	err = obj.conn.Send("Network.canClearBrowserCookies", nil, &response)
+	err = obj.conn.Send(CanClearBrowserCookies, nil, &response)
 	return
 }
 
 // Clears browser cookies.
 func (obj *Network) ClearBrowserCookies() (err error) {
-	err = obj.conn.Send("Network.clearBrowserCookies", nil, nil)
+	err = obj.conn.Send(ClearBrowserCookies, nil, nil)
 	return
 }
 
@@ -150,7 +222,7 @@ type GetCookiesResponse struct {
 
 // Returns all browser cookies for the current URL. Depending on the backend support, will return detailed cookie information in the <code>cookies</code> field.
 func (obj *Network) GetCookies(request *GetCookiesRequest) (response GetCookiesResponse, err error) {
-	err = obj.conn.Send("Network.getCookies", request, &response)
+	err = obj.conn.Send(GetCookies, request, &response)
 	return
 }
 
@@ -161,7 +233,7 @@ type GetAllCookiesResponse struct {
 
 // Returns all browser cookies. Depending on the backend support, will return detailed cookie information in the <code>cookies</code> field.
 func (obj *Network) GetAllCookies() (response GetAllCookiesResponse, err error) {
-	err = obj.conn.Send("Network.getAllCookies", nil, &response)
+	err = obj.conn.Send(GetAllCookies, nil, &response)
 	return
 }
 
@@ -178,7 +250,7 @@ type DeleteCookiesRequest struct {
 
 // Deletes browser cookies with matching name and url or domain/path pair.
 func (obj *Network) DeleteCookies(request *DeleteCookiesRequest) (err error) {
-	err = obj.conn.Send("Network.deleteCookies", request, nil)
+	err = obj.conn.Send(DeleteCookies, request, nil)
 	return
 }
 
@@ -210,7 +282,7 @@ type SetCookieResponse struct {
 
 // Sets a cookie with the given cookie data; may overwrite equivalent cookies if they exist.
 func (obj *Network) SetCookie(request *SetCookieRequest) (response SetCookieResponse, err error) {
-	err = obj.conn.Send("Network.setCookie", request, &response)
+	err = obj.conn.Send(SetCookie, request, &response)
 	return
 }
 
@@ -221,7 +293,7 @@ type SetCookiesRequest struct {
 
 // Sets given cookies.
 func (obj *Network) SetCookies(request *SetCookiesRequest) (err error) {
-	err = obj.conn.Send("Network.setCookies", request, nil)
+	err = obj.conn.Send(SetCookies, request, nil)
 	return
 }
 
@@ -232,7 +304,7 @@ type CanEmulateNetworkConditionsResponse struct {
 
 // Tells whether emulation of network conditions is supported.
 func (obj *Network) CanEmulateNetworkConditions() (response CanEmulateNetworkConditionsResponse, err error) {
-	err = obj.conn.Send("Network.canEmulateNetworkConditions", nil, &response)
+	err = obj.conn.Send(CanEmulateNetworkConditions, nil, &response)
 	return
 }
 
@@ -251,7 +323,7 @@ type EmulateNetworkConditionsRequest struct {
 
 // Activates emulation of network conditions.
 func (obj *Network) EmulateNetworkConditions(request *EmulateNetworkConditionsRequest) (err error) {
-	err = obj.conn.Send("Network.emulateNetworkConditions", request, nil)
+	err = obj.conn.Send(EmulateNetworkConditions, request, nil)
 	return
 }
 
@@ -262,7 +334,7 @@ type SetCacheDisabledRequest struct {
 
 // Toggles ignoring cache for each request. If <code>true</code>, cache will not be used.
 func (obj *Network) SetCacheDisabled(request *SetCacheDisabledRequest) (err error) {
-	err = obj.conn.Send("Network.setCacheDisabled", request, nil)
+	err = obj.conn.Send(SetCacheDisabled, request, nil)
 	return
 }
 
@@ -273,7 +345,7 @@ type SetBypassServiceWorkerRequest struct {
 
 // Toggles ignoring of service worker for each request.
 func (obj *Network) SetBypassServiceWorker(request *SetBypassServiceWorkerRequest) (err error) {
-	err = obj.conn.Send("Network.setBypassServiceWorker", request, nil)
+	err = obj.conn.Send(SetBypassServiceWorker, request, nil)
 	return
 }
 
@@ -286,7 +358,7 @@ type SetDataSizeLimitsForTestRequest struct {
 
 // For testing.
 func (obj *Network) SetDataSizeLimitsForTest(request *SetDataSizeLimitsForTestRequest) (err error) {
-	err = obj.conn.Send("Network.setDataSizeLimitsForTest", request, nil)
+	err = obj.conn.Send(SetDataSizeLimitsForTest, request, nil)
 	return
 }
 
@@ -301,7 +373,7 @@ type GetCertificateResponse struct {
 
 // Returns the DER-encoded certificate.
 func (obj *Network) GetCertificate(request *GetCertificateRequest) (response GetCertificateResponse, err error) {
-	err = obj.conn.Send("Network.getCertificate", request, &response)
+	err = obj.conn.Send(GetCertificate, request, &response)
 	return
 }
 
@@ -312,7 +384,7 @@ type SetRequestInterceptionRequest struct {
 
 // Sets the requests to intercept that match a the provided patterns and optionally resource types.
 func (obj *Network) SetRequestInterception(request *SetRequestInterceptionRequest) (err error) {
-	err = obj.conn.Send("Network.setRequestInterception", request, nil)
+	err = obj.conn.Send(SetRequestInterception, request, nil)
 	return
 }
 
@@ -336,7 +408,7 @@ type ContinueInterceptedRequestRequest struct {
 
 // Response to Network.requestIntercepted which either modifies the request to continue with any modifications, or blocks it, or completes it with the provided response bytes. If a network fetch occurs as a result which encounters a redirect an additional Network.requestIntercepted event will be sent with the same InterceptionId.
 func (obj *Network) ContinueInterceptedRequest(request *ContinueInterceptedRequestRequest) (err error) {
-	err = obj.conn.Send("Network.continueInterceptedRequest", request, nil)
+	err = obj.conn.Send(ContinueInterceptedRequest, request, nil)
 	return
 }
 
@@ -354,7 +426,7 @@ type GetResponseBodyForInterceptionResponse struct {
 
 // Returns content served for the given currently intercepted request.
 func (obj *Network) GetResponseBodyForInterception(request *GetResponseBodyForInterceptionRequest) (response GetResponseBodyForInterceptionResponse, err error) {
-	err = obj.conn.Send("Network.getResponseBodyForInterception", request, &response)
+	err = obj.conn.Send(GetResponseBodyForInterception, request, &response)
 	return
 }
 
@@ -371,13 +443,12 @@ type ResourceChangedPriorityParams struct {
 // NOTE Experimental
 func (obj *Network) ResourceChangedPriority(fn func(params *ResourceChangedPriorityParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Network.resourceChangedPriority", closeChn)
+	decoder := obj.conn.On(ResourceChangedPriority, closeChn)
 	go func() {
 		for {
 			params := ResourceChangedPriorityParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -411,13 +482,12 @@ type RequestWillBeSentParams struct {
 // Fired when page is about to send HTTP request.
 func (obj *Network) RequestWillBeSent(fn func(params *RequestWillBeSentParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Network.requestWillBeSent", closeChn)
+	decoder := obj.conn.On(RequestWillBeSent, closeChn)
 	go func() {
 		for {
 			params := RequestWillBeSentParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -433,13 +503,12 @@ type RequestServedFromCacheParams struct {
 // Fired if request ended up loading from cache.
 func (obj *Network) RequestServedFromCache(fn func(params *RequestServedFromCacheParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Network.requestServedFromCache", closeChn)
+	decoder := obj.conn.On(RequestServedFromCache, closeChn)
 	go func() {
 		for {
 			params := RequestServedFromCacheParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -465,13 +534,12 @@ type ResponseReceivedParams struct {
 // Fired when HTTP response is available.
 func (obj *Network) ResponseReceived(fn func(params *ResponseReceivedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Network.responseReceived", closeChn)
+	decoder := obj.conn.On(ResponseReceived, closeChn)
 	go func() {
 		for {
 			params := ResponseReceivedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -493,13 +561,12 @@ type DataReceivedParams struct {
 // Fired when data chunk was received over the network.
 func (obj *Network) DataReceived(fn func(params *DataReceivedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Network.dataReceived", closeChn)
+	decoder := obj.conn.On(DataReceived, closeChn)
 	go func() {
 		for {
 			params := DataReceivedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -519,13 +586,12 @@ type LoadingFinishedParams struct {
 // Fired when HTTP request has finished loading.
 func (obj *Network) LoadingFinished(fn func(params *LoadingFinishedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Network.loadingFinished", closeChn)
+	decoder := obj.conn.On(LoadingFinished, closeChn)
 	go func() {
 		for {
 			params := LoadingFinishedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -551,13 +617,12 @@ type LoadingFailedParams struct {
 // Fired when HTTP request has failed to load.
 func (obj *Network) LoadingFailed(fn func(params *LoadingFailedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Network.loadingFailed", closeChn)
+	decoder := obj.conn.On(LoadingFailed, closeChn)
 	go func() {
 		for {
 			params := LoadingFailedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -579,13 +644,12 @@ type WebSocketWillSendHandshakeRequestParams struct {
 // Fired when WebSocket is about to initiate handshake.
 func (obj *Network) WebSocketWillSendHandshakeRequest(fn func(params *WebSocketWillSendHandshakeRequestParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Network.webSocketWillSendHandshakeRequest", closeChn)
+	decoder := obj.conn.On(WebSocketWillSendHandshakeRequest, closeChn)
 	go func() {
 		for {
 			params := WebSocketWillSendHandshakeRequestParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -605,13 +669,12 @@ type WebSocketHandshakeResponseReceivedParams struct {
 // Fired when WebSocket handshake response becomes available.
 func (obj *Network) WebSocketHandshakeResponseReceived(fn func(params *WebSocketHandshakeResponseReceivedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Network.webSocketHandshakeResponseReceived", closeChn)
+	decoder := obj.conn.On(WebSocketHandshakeResponseReceived, closeChn)
 	go func() {
 		for {
 			params := WebSocketHandshakeResponseReceivedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -631,13 +694,12 @@ type WebSocketCreatedParams struct {
 // Fired upon WebSocket creation.
 func (obj *Network) WebSocketCreated(fn func(params *WebSocketCreatedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Network.webSocketCreated", closeChn)
+	decoder := obj.conn.On(WebSocketCreated, closeChn)
 	go func() {
 		for {
 			params := WebSocketCreatedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -655,13 +717,12 @@ type WebSocketClosedParams struct {
 // Fired when WebSocket is closed.
 func (obj *Network) WebSocketClosed(fn func(params *WebSocketClosedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Network.webSocketClosed", closeChn)
+	decoder := obj.conn.On(WebSocketClosed, closeChn)
 	go func() {
 		for {
 			params := WebSocketClosedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -681,13 +742,12 @@ type WebSocketFrameReceivedParams struct {
 // Fired when WebSocket frame is received.
 func (obj *Network) WebSocketFrameReceived(fn func(params *WebSocketFrameReceivedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Network.webSocketFrameReceived", closeChn)
+	decoder := obj.conn.On(WebSocketFrameReceived, closeChn)
 	go func() {
 		for {
 			params := WebSocketFrameReceivedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -707,13 +767,12 @@ type WebSocketFrameErrorParams struct {
 // Fired when WebSocket frame error occurs.
 func (obj *Network) WebSocketFrameError(fn func(params *WebSocketFrameErrorParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Network.webSocketFrameError", closeChn)
+	decoder := obj.conn.On(WebSocketFrameError, closeChn)
 	go func() {
 		for {
 			params := WebSocketFrameErrorParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -733,13 +792,12 @@ type WebSocketFrameSentParams struct {
 // Fired when WebSocket frame is sent.
 func (obj *Network) WebSocketFrameSent(fn func(params *WebSocketFrameSentParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Network.webSocketFrameSent", closeChn)
+	decoder := obj.conn.On(WebSocketFrameSent, closeChn)
 	go func() {
 		for {
 			params := WebSocketFrameSentParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -763,13 +821,12 @@ type EventSourceMessageReceivedParams struct {
 // Fired when EventSource message is received.
 func (obj *Network) EventSourceMessageReceived(fn func(params *EventSourceMessageReceivedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Network.eventSourceMessageReceived", closeChn)
+	decoder := obj.conn.On(EventSourceMessageReceived, closeChn)
 	go func() {
 		for {
 			params := EventSourceMessageReceivedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -803,13 +860,12 @@ type RequestInterceptedParams struct {
 // NOTE Experimental
 func (obj *Network) RequestIntercepted(fn func(params *RequestInterceptedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("Network.requestIntercepted", closeChn)
+	decoder := obj.conn.On(RequestIntercepted, closeChn)
 	go func() {
 		for {
 			params := RequestInterceptedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}

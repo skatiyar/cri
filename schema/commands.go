@@ -11,6 +11,11 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in Schema domain
+const (
+	GetDomains = "Schema.getDomains"
+)
+
 // Provides information about the protocol schema.
 type Schema struct {
 	conn cri.Connector
@@ -28,6 +33,6 @@ type GetDomainsResponse struct {
 
 // Returns supported domains.
 func (obj *Schema) GetDomains() (response GetDomainsResponse, err error) {
-	err = obj.conn.Send("Schema.getDomains", nil, &response)
+	err = obj.conn.Send(GetDomains, nil, &response)
 	return
 }

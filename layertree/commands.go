@@ -11,6 +11,25 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in LayerTree domain
+const (
+	Enable             = "LayerTree.enable"
+	Disable            = "LayerTree.disable"
+	CompositingReasons = "LayerTree.compositingReasons"
+	MakeSnapshot       = "LayerTree.makeSnapshot"
+	LoadSnapshot       = "LayerTree.loadSnapshot"
+	ReleaseSnapshot    = "LayerTree.releaseSnapshot"
+	ProfileSnapshot    = "LayerTree.profileSnapshot"
+	ReplaySnapshot     = "LayerTree.replaySnapshot"
+	SnapshotCommandLog = "LayerTree.snapshotCommandLog"
+)
+
+// List of events in LayerTree domain
+const (
+	LayerTreeDidChange = "LayerTree.layerTreeDidChange"
+	LayerPainted       = "LayerTree.layerPainted"
+)
+
 type LayerTree struct {
 	conn cri.Connector
 }
@@ -22,13 +41,13 @@ func New(conn cri.Connector) *LayerTree {
 
 // Enables compositing tree inspection.
 func (obj *LayerTree) Enable() (err error) {
-	err = obj.conn.Send("LayerTree.enable", nil, nil)
+	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 
 // Disables compositing tree inspection.
 func (obj *LayerTree) Disable() (err error) {
-	err = obj.conn.Send("LayerTree.disable", nil, nil)
+	err = obj.conn.Send(Disable, nil, nil)
 	return
 }
 
@@ -44,7 +63,7 @@ type CompositingReasonsResponse struct {
 
 // Provides the reasons why the given layer was composited.
 func (obj *LayerTree) CompositingReasons(request *CompositingReasonsRequest) (response CompositingReasonsResponse, err error) {
-	err = obj.conn.Send("LayerTree.compositingReasons", request, &response)
+	err = obj.conn.Send(CompositingReasons, request, &response)
 	return
 }
 
@@ -60,7 +79,7 @@ type MakeSnapshotResponse struct {
 
 // Returns the layer snapshot identifier.
 func (obj *LayerTree) MakeSnapshot(request *MakeSnapshotRequest) (response MakeSnapshotResponse, err error) {
-	err = obj.conn.Send("LayerTree.makeSnapshot", request, &response)
+	err = obj.conn.Send(MakeSnapshot, request, &response)
 	return
 }
 
@@ -76,7 +95,7 @@ type LoadSnapshotResponse struct {
 
 // Returns the snapshot identifier.
 func (obj *LayerTree) LoadSnapshot(request *LoadSnapshotRequest) (response LoadSnapshotResponse, err error) {
-	err = obj.conn.Send("LayerTree.loadSnapshot", request, &response)
+	err = obj.conn.Send(LoadSnapshot, request, &response)
 	return
 }
 
@@ -87,7 +106,7 @@ type ReleaseSnapshotRequest struct {
 
 // Releases layer snapshot captured by the back-end.
 func (obj *LayerTree) ReleaseSnapshot(request *ReleaseSnapshotRequest) (err error) {
-	err = obj.conn.Send("LayerTree.releaseSnapshot", request, nil)
+	err = obj.conn.Send(ReleaseSnapshot, request, nil)
 	return
 }
 
@@ -108,7 +127,7 @@ type ProfileSnapshotResponse struct {
 }
 
 func (obj *LayerTree) ProfileSnapshot(request *ProfileSnapshotRequest) (response ProfileSnapshotResponse, err error) {
-	err = obj.conn.Send("LayerTree.profileSnapshot", request, &response)
+	err = obj.conn.Send(ProfileSnapshot, request, &response)
 	return
 }
 
@@ -130,7 +149,7 @@ type ReplaySnapshotResponse struct {
 
 // Replays the layer snapshot and returns the resulting bitmap.
 func (obj *LayerTree) ReplaySnapshot(request *ReplaySnapshotRequest) (response ReplaySnapshotResponse, err error) {
-	err = obj.conn.Send("LayerTree.replaySnapshot", request, &response)
+	err = obj.conn.Send(ReplaySnapshot, request, &response)
 	return
 }
 
@@ -146,7 +165,7 @@ type SnapshotCommandLogResponse struct {
 
 // Replays the layer snapshot and returns canvas log.
 func (obj *LayerTree) SnapshotCommandLog(request *SnapshotCommandLogRequest) (response SnapshotCommandLogResponse, err error) {
-	err = obj.conn.Send("LayerTree.snapshotCommandLog", request, &response)
+	err = obj.conn.Send(SnapshotCommandLog, request, &response)
 	return
 }
 
@@ -157,13 +176,12 @@ type LayerTreeDidChangeParams struct {
 
 func (obj *LayerTree) LayerTreeDidChange(fn func(params *LayerTreeDidChangeParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("LayerTree.layerTreeDidChange", closeChn)
+	decoder := obj.conn.On(LayerTreeDidChange, closeChn)
 	go func() {
 		for {
 			params := LayerTreeDidChangeParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}
@@ -180,13 +198,12 @@ type LayerPaintedParams struct {
 
 func (obj *LayerTree) LayerPainted(fn func(params *LayerPaintedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On("LayerTree.layerPainted", closeChn)
+	decoder := obj.conn.On(LayerPainted, closeChn)
 	go func() {
 		for {
 			params := LayerPaintedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
-				closeChn <- struct{}{}
 				close(closeChn)
 				break
 			}

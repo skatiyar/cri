@@ -11,6 +11,19 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in DOMDebugger domain
+const (
+	SetDOMBreakpoint                = "DOMDebugger.setDOMBreakpoint"
+	RemoveDOMBreakpoint             = "DOMDebugger.removeDOMBreakpoint"
+	SetEventListenerBreakpoint      = "DOMDebugger.setEventListenerBreakpoint"
+	RemoveEventListenerBreakpoint   = "DOMDebugger.removeEventListenerBreakpoint"
+	SetInstrumentationBreakpoint    = "DOMDebugger.setInstrumentationBreakpoint"
+	RemoveInstrumentationBreakpoint = "DOMDebugger.removeInstrumentationBreakpoint"
+	SetXHRBreakpoint                = "DOMDebugger.setXHRBreakpoint"
+	RemoveXHRBreakpoint             = "DOMDebugger.removeXHRBreakpoint"
+	GetEventListeners               = "DOMDebugger.getEventListeners"
+)
+
 // DOM debugging allows setting breakpoints on particular DOM operations and events. JavaScript execution will stop on these operations as if there was a regular breakpoint set.
 type DOMDebugger struct {
 	conn cri.Connector
@@ -30,7 +43,7 @@ type SetDOMBreakpointRequest struct {
 
 // Sets breakpoint on particular operation with DOM.
 func (obj *DOMDebugger) SetDOMBreakpoint(request *SetDOMBreakpointRequest) (err error) {
-	err = obj.conn.Send("DOMDebugger.setDOMBreakpoint", request, nil)
+	err = obj.conn.Send(SetDOMBreakpoint, request, nil)
 	return
 }
 
@@ -43,7 +56,7 @@ type RemoveDOMBreakpointRequest struct {
 
 // Removes DOM breakpoint that was set using <code>setDOMBreakpoint</code>.
 func (obj *DOMDebugger) RemoveDOMBreakpoint(request *RemoveDOMBreakpointRequest) (err error) {
-	err = obj.conn.Send("DOMDebugger.removeDOMBreakpoint", request, nil)
+	err = obj.conn.Send(RemoveDOMBreakpoint, request, nil)
 	return
 }
 
@@ -57,7 +70,7 @@ type SetEventListenerBreakpointRequest struct {
 
 // Sets breakpoint on particular DOM event.
 func (obj *DOMDebugger) SetEventListenerBreakpoint(request *SetEventListenerBreakpointRequest) (err error) {
-	err = obj.conn.Send("DOMDebugger.setEventListenerBreakpoint", request, nil)
+	err = obj.conn.Send(SetEventListenerBreakpoint, request, nil)
 	return
 }
 
@@ -71,7 +84,7 @@ type RemoveEventListenerBreakpointRequest struct {
 
 // Removes breakpoint on particular DOM event.
 func (obj *DOMDebugger) RemoveEventListenerBreakpoint(request *RemoveEventListenerBreakpointRequest) (err error) {
-	err = obj.conn.Send("DOMDebugger.removeEventListenerBreakpoint", request, nil)
+	err = obj.conn.Send(RemoveEventListenerBreakpoint, request, nil)
 	return
 }
 
@@ -82,7 +95,7 @@ type SetInstrumentationBreakpointRequest struct {
 
 // Sets breakpoint on particular native event.
 func (obj *DOMDebugger) SetInstrumentationBreakpoint(request *SetInstrumentationBreakpointRequest) (err error) {
-	err = obj.conn.Send("DOMDebugger.setInstrumentationBreakpoint", request, nil)
+	err = obj.conn.Send(SetInstrumentationBreakpoint, request, nil)
 	return
 }
 
@@ -93,7 +106,7 @@ type RemoveInstrumentationBreakpointRequest struct {
 
 // Removes breakpoint on particular native event.
 func (obj *DOMDebugger) RemoveInstrumentationBreakpoint(request *RemoveInstrumentationBreakpointRequest) (err error) {
-	err = obj.conn.Send("DOMDebugger.removeInstrumentationBreakpoint", request, nil)
+	err = obj.conn.Send(RemoveInstrumentationBreakpoint, request, nil)
 	return
 }
 
@@ -104,7 +117,7 @@ type SetXHRBreakpointRequest struct {
 
 // Sets breakpoint on XMLHttpRequest.
 func (obj *DOMDebugger) SetXHRBreakpoint(request *SetXHRBreakpointRequest) (err error) {
-	err = obj.conn.Send("DOMDebugger.setXHRBreakpoint", request, nil)
+	err = obj.conn.Send(SetXHRBreakpoint, request, nil)
 	return
 }
 
@@ -115,7 +128,7 @@ type RemoveXHRBreakpointRequest struct {
 
 // Removes breakpoint from XMLHttpRequest.
 func (obj *DOMDebugger) RemoveXHRBreakpoint(request *RemoveXHRBreakpointRequest) (err error) {
-	err = obj.conn.Send("DOMDebugger.removeXHRBreakpoint", request, nil)
+	err = obj.conn.Send(RemoveXHRBreakpoint, request, nil)
 	return
 }
 
@@ -135,6 +148,6 @@ type GetEventListenersResponse struct {
 
 // Returns event listeners of the given object.
 func (obj *DOMDebugger) GetEventListeners(request *GetEventListenersRequest) (response GetEventListenersResponse, err error) {
-	err = obj.conn.Send("DOMDebugger.getEventListeners", request, &response)
+	err = obj.conn.Send(GetEventListeners, request, &response)
 	return
 }

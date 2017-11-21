@@ -11,6 +11,18 @@ import (
 	types "github.com/SKatiyar/cri/types"
 )
 
+// List of commands in Input domain
+const (
+	SetIgnoreInputEvents       = "Input.setIgnoreInputEvents"
+	DispatchKeyEvent           = "Input.dispatchKeyEvent"
+	DispatchMouseEvent         = "Input.dispatchMouseEvent"
+	DispatchTouchEvent         = "Input.dispatchTouchEvent"
+	EmulateTouchFromMouseEvent = "Input.emulateTouchFromMouseEvent"
+	SynthesizePinchGesture     = "Input.synthesizePinchGesture"
+	SynthesizeScrollGesture    = "Input.synthesizeScrollGesture"
+	SynthesizeTapGesture       = "Input.synthesizeTapGesture"
+)
+
 type Input struct {
 	conn cri.Connector
 }
@@ -27,7 +39,7 @@ type SetIgnoreInputEventsRequest struct {
 
 // Ignores input events (useful while auditing page).
 func (obj *Input) SetIgnoreInputEvents(request *SetIgnoreInputEventsRequest) (err error) {
-	err = obj.conn.Send("Input.setIgnoreInputEvents", request, nil)
+	err = obj.conn.Send(SetIgnoreInputEvents, request, nil)
 	return
 }
 
@@ -64,7 +76,7 @@ type DispatchKeyEventRequest struct {
 
 // Dispatches a key event to the page.
 func (obj *Input) DispatchKeyEvent(request *DispatchKeyEventRequest) (err error) {
-	err = obj.conn.Send("Input.dispatchKeyEvent", request, nil)
+	err = obj.conn.Send(DispatchKeyEvent, request, nil)
 	return
 }
 
@@ -91,7 +103,7 @@ type DispatchMouseEventRequest struct {
 
 // Dispatches a mouse event to the page.
 func (obj *Input) DispatchMouseEvent(request *DispatchMouseEventRequest) (err error) {
-	err = obj.conn.Send("Input.dispatchMouseEvent", request, nil)
+	err = obj.conn.Send(DispatchMouseEvent, request, nil)
 	return
 }
 
@@ -108,7 +120,7 @@ type DispatchTouchEventRequest struct {
 
 // Dispatches a touch event to the page.
 func (obj *Input) DispatchTouchEvent(request *DispatchTouchEventRequest) (err error) {
-	err = obj.conn.Send("Input.dispatchTouchEvent", request, nil)
+	err = obj.conn.Send(DispatchTouchEvent, request, nil)
 	return
 }
 
@@ -135,7 +147,7 @@ type EmulateTouchFromMouseEventRequest struct {
 
 // Emulates touch event from the mouse event parameters.
 func (obj *Input) EmulateTouchFromMouseEvent(request *EmulateTouchFromMouseEventRequest) (err error) {
-	err = obj.conn.Send("Input.emulateTouchFromMouseEvent", request, nil)
+	err = obj.conn.Send(EmulateTouchFromMouseEvent, request, nil)
 	return
 }
 
@@ -154,7 +166,7 @@ type SynthesizePinchGestureRequest struct {
 
 // Synthesizes a pinch gesture over a time period by issuing appropriate touch events.
 func (obj *Input) SynthesizePinchGesture(request *SynthesizePinchGestureRequest) (err error) {
-	err = obj.conn.Send("Input.synthesizePinchGesture", request, nil)
+	err = obj.conn.Send(SynthesizePinchGesture, request, nil)
 	return
 }
 
@@ -187,7 +199,7 @@ type SynthesizeScrollGestureRequest struct {
 
 // Synthesizes a scroll gesture over a time period by issuing appropriate touch events.
 func (obj *Input) SynthesizeScrollGesture(request *SynthesizeScrollGestureRequest) (err error) {
-	err = obj.conn.Send("Input.synthesizeScrollGesture", request, nil)
+	err = obj.conn.Send(SynthesizeScrollGesture, request, nil)
 	return
 }
 
@@ -206,6 +218,6 @@ type SynthesizeTapGestureRequest struct {
 
 // Synthesizes a tap gesture over a time period by issuing appropriate touch events.
 func (obj *Input) SynthesizeTapGesture(request *SynthesizeTapGestureRequest) (err error) {
-	err = obj.conn.Send("Input.synthesizeTapGesture", request, nil)
+	err = obj.conn.Send(SynthesizeTapGesture, request, nil)
 	return
 }
