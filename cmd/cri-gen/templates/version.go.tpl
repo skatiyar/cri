@@ -5,7 +5,7 @@
 
 package cri
 
-// Version returns the current major and minor version of the package protocol.
+// Version returns the current major and minor version of package protocol.
 func Version() (major, minor string) {
 	return {{printf "%q" .Major}}, {{printf "%q" .Minor}}
 }

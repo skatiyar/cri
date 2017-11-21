@@ -207,6 +207,9 @@ type NavigateRequest struct {
 type NavigateResponse struct {
 	// Frame id that has navigated (or failed to navigate)
 	FrameId types.Page_FrameId `json:"frameId"`
+	// Loader identifier.
+	// NOTE Experimental
+	LoaderId *types.Network_LoaderId `json:"loaderId,omitempty"`
 	// User friendly error message, present if and only if navigation has failed.
 	ErrorText *string `json:"errorText,omitempty"`
 }

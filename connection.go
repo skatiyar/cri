@@ -28,65 +28,65 @@ const maxIntValue = 1<<31 - 1
 // ConnectionOption defines a function type to set values of ConnectionOptions
 type ConnectionOption func(*ConnectionOptions)
 
-// ConnectionOptions defines the connection parameters
+// ConnectionOptions defines connection parameters
 type ConnectionOptions struct {
-	// Address of the remote devtools instance, default used is DefaultAddress
+	// Address of remote devtools instance, default used is DefaultAddress
 	Address string
-	// TargetID of the target to connect
+	// TargetID of target to connect
 	TargetID string
-	// SocketAddress of the target to connect
+	// SocketAddress of target to connect
 	SocketAddress string
-	// TLSClientConfig specifies the TLS configuration to use, default is nil
+	// TLSClientConfig specifies TLS configuration to use
 	TLSConfig *tls.Config
-	// EventTimeout specifies the duration to receive an event, default used is DefaultEventTimeout
+	// EventTimeout specifies duration to receive an event, default used is DefaultEventTimeout
 	EventTimeout time.Duration
-	// CommandTimeout specifies the duration to receive command response, default used is DefaultCommandTimeout
+	// CommandTimeout specifies duration to receive command response, default used is DefaultCommandTimeout
 	CommandTimeout time.Duration
 }
 
-// option iterates over all arguments to set the final options
+// option iterates over all arguments to set final options
 func (co *ConnectionOptions) option(opts ...ConnectionOption) {
 	for i := 0; i < len(opts); i++ {
 		opts[i](co)
 	}
 }
 
-// SetAddress sets the remote address for the connection
+// SetAddress sets remote address for connection
 func SetAddress(addr string) ConnectionOption {
 	return func(co *ConnectionOptions) {
 		co.Address = addr
 	}
 }
 
-// SetSocketAddress sets the target websocket connection address
+// SetSocketAddress sets target websocket connection address
 func SetSocketAddress(addr string) ConnectionOption {
 	return func(co *ConnectionOptions) {
 		co.SocketAddress = addr
 	}
 }
 
-// SetTargetID sets the target for connection
+// SetTargetID sets target for connection
 func SetTargetID(targetID string) ConnectionOption {
 	return func(co *ConnectionOptions) {
 		co.TargetID = targetID
 	}
 }
 
-// SetTLSConfig sets the tls config for the connection
+// SetTLSConfig sets tls config for connection
 func SetTLSConfig(config *tls.Config) ConnectionOption {
 	return func(co *ConnectionOptions) {
 		co.TLSConfig = config
 	}
 }
 
-// SetEventTimeout sets the eventTimeout for connection
+// SetEventTimeout sets eventTimeout for connection
 func SetEventTimeout(timeout time.Duration) ConnectionOption {
 	return func(co *ConnectionOptions) {
 		co.EventTimeout = timeout
 	}
 }
 
-// SetCommandTimeout sets the commandTimeout for connection
+// SetCommandTimeout sets commandTimeout for connection
 func SetCommandTimeout(timeout time.Duration) ConnectionOption {
 	return func(co *ConnectionOptions) {
 		co.CommandTimeout = timeout
@@ -136,10 +136,8 @@ func (es *eventsStore) forEvents(cmd string, fn func(eventRequest)) {
 	}
 }
 
-// Connection represents a connection to remote target.
-// Connection is thread safe can be called from multiple go routines.
-// Connection can be used to send commands or listen to events from target.
-// This satisfies the Connector interface required by protocols to work.
+// Connection contains socket connection to remote target. Its safe to share
+// same instance among multiple goroutines.
 type Connection struct {
 	addr, wsAddr             string
 	tlsConfig                *tls.Config
@@ -156,6 +154,13 @@ type Connection struct {
 	counterLock sync.RWMutex
 }
 
+// NewConnection creates a connection to remote target. Connection options can be
+// given in arguments using SetAddress, SetTargetID, SetSocketAddress etc.
+// To see all options check ConnectionOptions.
+//
+// When no arguments are provided, connection is created using DefaultAddress.
+// If TargetID is provided, connection looks for remote target and connects to it.
+// If SocketAddress is provided then Address and TargetID are ignored.
 func NewConnection(opts ...ConnectionOption) (*Connection, error) {
 	opt := &ConnectionOptions{
 		Address:        DefaultAddress,
@@ -174,10 +179,6 @@ func NewConnection(opts ...ConnectionOption) (*Connection, error) {
 
 	if len(opt.SocketAddress) == 0 {
 		instance.addr = opt.Address
-		if versionErr := instance.isPackageCompatible(); versionErr != nil {
-			return nil, versionErr
-		}
-
 		if len(opt.TargetID) == 0 {
 			wsAddr, wsAddrErr := instance.getDefaultSocketAddress()
 			if wsAddrErr != nil {
@@ -213,15 +214,21 @@ func NewConnection(opts ...ConnectionOption) (*Connection, error) {
 	return instance, nil
 }
 
+// IsPackageCompatible verifies remote protocol version
+// with package protocol version. Returns error if not same.
+func (c *Connection) IsPackageCompatible() error {
+	return c.isPackageCompatible()
+}
+
 type commandResponse struct {
 	ID     int                    `json:"id"`     // id of the command request or 0 in case of event
 	Method string                 `json:"method"` // command or event name
-	Result map[string]interface{} `json:"result"`
-	Params map[string]interface{} `json:"params"`
+	Result map[string]interface{} `json:"result"` // parameters returned for command
 	Error  *struct {
 		Message string `json:"message"`
 		Code    int    `json:"code"`
-	} `json:"error"`
+	} `json:"error"` // error returned for command
+	Params map[string]interface{} `json:"params"` // parameters returned for event
 }
 
 type commandRequest struct {
@@ -234,8 +241,9 @@ type commandRequest struct {
 	timeoutChn chan bool
 }
 
-// Send sends a command and associated parameters to the target and waits for the response.
-// and decodes the respose back in location provided
+// Send writes command and associated parameters to underlying connection.
+// It waits for command response and decodes it in response argument.
+// Timeout error is returned if response is not received.
 func (c *Connection) Send(command string, request, response interface{}) error {
 	cmd := commandRequest{
 		ID:         c.id(),
@@ -281,6 +289,8 @@ type eventRequest struct {
 	eventChn chan commandResponse
 }
 
+// On listens for subscribed event. It takes event name and a non nil channel as arguments.
+// It returns a function, when called decodes event parameters.
 func (c *Connection) On(event string, closeChn chan struct{}) func(params interface{}) error {
 	eve := eventRequest{
 		Method:   event,
@@ -304,6 +314,7 @@ func (c *Connection) On(event string, closeChn chan struct{}) func(params interf
 	}
 }
 
+// Close stops websocket connection.
 func (c *Connection) Close() error {
 	close(c.closeChn)
 	if closeErr := c.conn.Close(); closeErr != nil {
@@ -448,7 +459,7 @@ func (c *Connection) getAddress() string {
 	}
 }
 
-// getDefaultSocketAddress picks the first element in target array
+// getDefaultSocketAddress picks first element in target array
 func (c *Connection) getDefaultSocketAddress() (string, error) {
 	targets, targetsErr := c.getTargetsList()
 	if targetsErr != nil {

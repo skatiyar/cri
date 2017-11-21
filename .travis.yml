@@ -14,4 +14,4 @@ addons:
 
 script:
     - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 &
-    - go test -v ./...
+    - go test -v
