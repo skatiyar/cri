@@ -73,7 +73,7 @@ func main() {
 		return
 	}
 
-	if writeErr := ioutil.WriteFile("img.jpg", img, 0700); writeErr != nil {
+	if writeErr := ioutil.WriteFile("img.png", img, 0700); writeErr != nil {
 		fmt.Println(writeErr)
 		return
 	}
