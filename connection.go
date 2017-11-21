@@ -290,7 +290,8 @@ type eventRequest struct {
 }
 
 // On listens for subscribed event. It takes event name and a non nil channel as arguments.
-// It returns a function, when called decodes event parameters.
+// It returns a function, which blocks current routine till channel is closed.
+// When event is received, parameters are decoded in params argument or error is returned.
 func (c *Connection) On(event string, closeChn chan struct{}) func(params interface{}) error {
 	eve := eventRequest{
 		Method:   event,
