@@ -90,3 +90,4 @@ ___
 * Add tests for `connection.go`
 * Add tests for domain packages.
 * Simplify `On` function.
+* Add timeout to `On` function.

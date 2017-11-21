@@ -18,10 +18,10 @@ import (
 const DefaultAddress = "127.0.0.1:9222"
 
 // DefaultEventTimeout specifies default duration to receive an event
-const DefaultEventTimeout = 2 * time.Minute
+const DefaultEventTimeout = 10 * time.Second
 
 // DefaultCommandTimeout specifies default duration to receive command response
-const DefaultCommandTimeout = 2 * time.Minute
+const DefaultCommandTimeout = 10 * time.Second
 
 const maxIntValue = 1<<31 - 1
 
@@ -236,9 +236,9 @@ type commandRequest struct {
 	Method string      `json:"method"` // method takes the command to be sent
 	Params interface{} `json:"params"` // params contains parameters taken by command
 
-	resChn     chan commandResponse
-	errChn     chan error
-	timeoutChn chan bool
+	resChn       chan commandResponse
+	errChn       chan error
+	timeoutTimer *time.Timer
 }
 
 // Send writes command and associated parameters to underlying connection.
@@ -246,22 +246,17 @@ type commandRequest struct {
 // Timeout error is returned if response is not received.
 func (c *Connection) Send(command string, request, response interface{}) error {
 	cmd := commandRequest{
-		ID:         c.id(),
-		Method:     command,
-		Params:     request,
-		resChn:     make(chan commandResponse, 1),
-		errChn:     make(chan error, 1),
-		timeoutChn: make(chan bool, 1),
+		ID:           c.id(),
+		Method:       command,
+		Params:       request,
+		resChn:       make(chan commandResponse, 1),
+		errChn:       make(chan error, 1),
+		timeoutTimer: time.NewTimer(c.cmdTimeout),
 	}
 
 	c.responseMap.Store(cmd.ID, cmd)
 	defer func() {
 		c.responseMap.Delete(cmd.ID)
-	}()
-
-	go func() {
-		time.Sleep(c.cmdTimeout)
-		cmd.timeoutChn <- true
 	}()
 
 	if cmd.Params == nil {
@@ -272,13 +267,15 @@ func (c *Connection) Send(command string, request, response interface{}) error {
 
 	select {
 	case cmdRes := <-cmd.resChn:
+		cmd.timeoutTimer.Stop()
 		if response == nil {
 			return nil
 		}
 		return mapstructure.Decode(cmdRes.Result, response)
 	case resErr := <-cmd.errChn:
+		cmd.timeoutTimer.Stop()
 		return resErr
-	case <-cmd.timeoutChn:
+	case <-cmd.timeoutTimer.C:
 		return errors.New("command response timeout")
 	}
 }
