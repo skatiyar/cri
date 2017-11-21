@@ -2,7 +2,7 @@
 
 [![GoDoc](https://godoc.org/github.com/SKatiyar/cri?status.svg)](https://godoc.org/github.com/SKatiyar/cri)
 [![Go Report Card](https://goreportcard.com/badge/github.com/SKatiyar/cri)](https://goreportcard.com/report/github.com/SKatiyar/cri)
-[![Go Report Card](https://travis-ci.org/SKatiyar/cri.svg?branch=develop)](https://travis-ci.org/SKatiyar/cri)
+[![Go Report Card](https://travis-ci.org/SKatiyar/cri.svg?branch=master)](https://travis-ci.org/SKatiyar/cri)
 
 Package cri provides type-safe bindings for devtools protocol. It can be used with Chrome or any other target that implements the interface.
 
@@ -81,3 +81,12 @@ func main() {
 	fmt.Println(res.JsVersion, nav.FrameId)
 }
 ```
+
+___
+
+### TODO
+
+* Add go get support to version 1.2 of protocol.
+* Add tests for `connection.go`
+* Add tests for domain packages.
+* Simplify `On` function.
