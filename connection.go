@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"sync"
 	"time"
 
@@ -177,27 +178,36 @@ func NewConnection(opts ...ConnectionOption) (*Connection, error) {
 		closeChn:     make(chan struct{}),
 	}
 
-	if len(opt.SocketAddress) == 0 {
-		instance.addr = opt.Address
-		if len(opt.TargetID) == 0 {
-			wsAddr, wsAddrErr := instance.getDefaultSocketAddress()
-			if wsAddrErr != nil {
-				return nil, wsAddrErr
-			}
-
-			opt.SocketAddress = wsAddr
-		} else {
-			wsAddr, wsAddrErr := instance.getSocketAddressByTarget(opt.TargetID)
-			if wsAddrErr != nil {
-				return nil, wsAddrErr
-			}
-
-			opt.SocketAddress = wsAddr
+	if len(opt.SocketAddress) != 0 {
+		parsedAddr, addrParseErr := url.Parse(opt.SocketAddress)
+		if addrParseErr != nil {
+			return nil, addrParseErr
 		}
+
+		instance.wsAddr = parsedAddr.String()
+		instance.addr = parsedAddr.Host
+	} else {
+		targets, targetsErr := GetTargets(opts...)
+		if targetsErr != nil {
+			return nil, targetsErr
+		}
+
+		wsAddr := targets[0].WebSocketDebuggerURL
+		if len(opt.TargetID) != 0 {
+			for i := range targets {
+				if targets[i].ID == opt.TargetID {
+					wsAddr = targets[i].WebSocketDebuggerURL
+					break
+				}
+			}
+		}
+
+		instance.wsAddr = wsAddr
+		instance.addr = opt.Address
 	}
 
-	dialer := &websocket.Dialer{TLSClientConfig: opt.TLSConfig}
-	conn, res, resErr := dialer.Dial(opt.SocketAddress, nil)
+	dialer := &websocket.Dialer{TLSClientConfig: instance.tlsConfig}
+	conn, res, resErr := dialer.Dial(instance.wsAddr, nil)
 	if resErr != nil {
 		return nil, resErr
 	}
@@ -206,21 +216,12 @@ func NewConnection(opts ...ConnectionOption) (*Connection, error) {
 	}
 
 	instance.conn = conn
-	instance.addr = conn.RemoteAddr().String()
 
 	go instance.reader()
 	go instance.writer()
 
 	return instance, nil
 }
-
-/*
-// IsPackageCompatible verifies remote protocol version
-// with package protocol version. Returns error if not same.
-func (c *Connection) IsPackageCompatible() error {
-	return c.isPackageCompatible()
-}
-*/
 
 type commandResponse struct {
 	ID     int                    `json:"id"`     // id of the command request or 0 in case of event
@@ -379,7 +380,8 @@ func (c *Connection) reader() {
 	}
 }
 
-type versionResponse struct {
+// VersionResponse contains fields received in response to version query.
+type VersionResponse struct {
 	Browser              string `json:"Browser"`
 	ProtocolVersion      string `json:"Protocol-Version"`
 	UserAgent            string `json:"User-Agent"`
@@ -388,17 +390,22 @@ type versionResponse struct {
 	WebSocketDebuggerURL string `json:"webSocketDebuggerUrl"`
 }
 
-// getVersion fetches the protocol version of remote
-func (c *Connection) getVersion() (versionResponse, error) {
+// GetVersion fetches the protocol version of remote
+func GetVersion(opts ...ConnectionOption) (VersionResponse, error) {
+	opt := &ConnectionOptions{
+		Address: DefaultAddress,
+	}
+	opt.option(opts...)
+
 	client := &http.Client{}
-	if c.tlsConfig != nil {
+	if opt.TLSConfig != nil {
 		client.Transport = &http.Transport{
-			TLSClientConfig: c.tlsConfig,
+			TLSClientConfig: opt.TLSConfig,
 		}
 	}
 
-	var data versionResponse
-	res, resErr := client.Get(c.getAddress() + "/json/version")
+	var data VersionResponse
+	res, resErr := client.Get(getAddress(opt) + "/json/version")
 	if resErr != nil {
 		return data, resErr
 	}
@@ -412,8 +419,8 @@ func (c *Connection) getVersion() (versionResponse, error) {
 	return data, nil
 }
 
-// target represents a connectable resource
-type target struct {
+// Targets represent a list of connectable remotes
+type Targets []struct {
 	Description          string `json:"description"`
 	DevtoolsFrontendURL  string `json:"devtoolsFrontendUrl"`
 	ID                   string `json:"id"`
@@ -423,17 +430,22 @@ type target struct {
 	WebSocketDebuggerURL string `json:"webSocketDebuggerUrl"`
 }
 
-// getTargetsList retreives targets in remote connection
-func (c *Connection) getTargetsList() ([]target, error) {
+// GetTargets retreives targets in remote connection
+func GetTargets(opts ...ConnectionOption) (Targets, error) {
+	opt := &ConnectionOptions{
+		Address: DefaultAddress,
+	}
+	opt.option(opts...)
+
 	client := &http.Client{}
-	if c.tlsConfig != nil {
+	if opt.TLSConfig != nil {
 		client.Transport = &http.Transport{
-			TLSClientConfig: c.tlsConfig,
+			TLSClientConfig: opt.TLSConfig,
 		}
 	}
 
-	var data []target
-	res, resErr := client.Get(c.getAddress() + "/json/list")
+	var data Targets
+	res, resErr := client.Get(getAddress(opt) + "/json/list")
 	if resErr != nil {
 		return data, resErr
 	}
@@ -444,58 +456,17 @@ func (c *Connection) getTargetsList() ([]target, error) {
 		return data, decodeErr
 	}
 	if len(data) < 1 {
-		return data, errors.New("No valid socket addresses")
+		return data, errors.New("No valid targets")
 	}
 
 	return data, nil
 }
 
 // getAddress adds https if tls config is present
-func (c *Connection) getAddress() string {
-	if c.tlsConfig != nil {
-		return "https://" + c.addr
+func getAddress(opts *ConnectionOptions) string {
+	if opts.TLSConfig != nil {
+		return "https://" + opts.Address
 	} else {
-		return "http://" + c.addr
+		return "http://" + opts.Address
 	}
 }
-
-// getDefaultSocketAddress picks first element in target array
-func (c *Connection) getDefaultSocketAddress() (string, error) {
-	targets, targetsErr := c.getTargetsList()
-	if targetsErr != nil {
-		return "", targetsErr
-	}
-
-	return targets[0].WebSocketDebuggerURL, nil
-}
-
-func (c *Connection) getSocketAddressByTarget(target string) (string, error) {
-	targets, targetsErr := c.getTargetsList()
-	if targetsErr != nil {
-		return "", targetsErr
-	}
-
-	for i := 0; i < len(targets); i++ {
-		if targets[i].ID == target {
-			return targets[i].WebSocketDebuggerURL, nil
-		}
-	}
-
-	return "", errors.New("target not found")
-}
-
-/*
-func (c *Connection) isPackageCompatible() error {
-	verData, verErr := c.getVersion()
-	if verErr != nil {
-		return verErr
-	}
-
-	majorV, minorV := Version()
-	if verData.ProtocolVersion != (majorV + "." + minorV) {
-		return errors.New("Version Mismatch")
-	}
-
-	return nil
-}
-*/
