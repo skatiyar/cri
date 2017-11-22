@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -151,8 +152,7 @@ type Connection struct {
 	responseMap syncmap.Map
 	eventMap    eventsStore
 
-	counter     int
-	counterLock sync.RWMutex
+	counter int32
 }
 
 // NewConnection creates a connection to remote target. Connection options can be
@@ -224,7 +224,7 @@ func NewConnection(opts ...ConnectionOption) (*Connection, error) {
 }
 
 type commandResponse struct {
-	ID     int                    `json:"id"`     // id of the command request or 0 in case of event
+	ID     int32                  `json:"id"`     // id of the command request or 0 in case of event
 	Method string                 `json:"method"` // command or event name
 	Result map[string]interface{} `json:"result"` // parameters returned for command
 	Error  *struct {
@@ -235,7 +235,7 @@ type commandResponse struct {
 }
 
 type commandRequest struct {
-	ID     int         `json:"id"`     // id of the command request, should be greater than 0
+	ID     int32       `json:"id"`     // id of the command request, should be greater than 0
 	Method string      `json:"method"` // method takes the command to be sent
 	Params interface{} `json:"params"` // params contains parameters taken by command
 
@@ -325,16 +325,12 @@ func (c *Connection) Close() error {
 	return nil
 }
 
-func (c *Connection) id() int {
-	c.counterLock.Lock()
-	defer c.counterLock.Unlock()
-	nextCount := c.counter + 1
-	if nextCount == maxIntValue {
-		c.counter = 1
+func (c *Connection) id() int32 {
+	if atomic.CompareAndSwapInt32(&c.counter, maxIntValue, 1) {
+		return 1
 	} else {
-		c.counter = nextCount
+		return atomic.AddInt32(&c.counter, 1)
 	}
-	return nextCount
 }
 
 func (c *Connection) writer() {
