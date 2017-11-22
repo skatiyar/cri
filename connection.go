@@ -214,11 +214,13 @@ func NewConnection(opts ...ConnectionOption) (*Connection, error) {
 	return instance, nil
 }
 
+/*
 // IsPackageCompatible verifies remote protocol version
 // with package protocol version. Returns error if not same.
 func (c *Connection) IsPackageCompatible() error {
 	return c.isPackageCompatible()
 }
+*/
 
 type commandResponse struct {
 	ID     int                    `json:"id"`     // id of the command request or 0 in case of event
@@ -482,6 +484,7 @@ func (c *Connection) getSocketAddressByTarget(target string) (string, error) {
 	return "", errors.New("target not found")
 }
 
+/*
 func (c *Connection) isPackageCompatible() error {
 	verData, verErr := c.getVersion()
 	if verErr != nil {
@@ -495,3 +498,4 @@ func (c *Connection) isPackageCompatible() error {
 
 	return nil
 }
+*/
