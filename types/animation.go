@@ -12,7 +12,6 @@ type Animation_Animation struct {
 	// <code>Animation</code>'s name.
 	Name string `json:"name"`
 	// <code>Animation</code>'s internal paused state.
-	// NOTE Experimental
 	PausedState bool `json:"pausedState"`
 	// <code>Animation</code>'s play state.
 	PlayState string `json:"playState"`

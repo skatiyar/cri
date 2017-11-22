@@ -185,9 +185,6 @@ type Runtime_StackTrace struct {
 	CallFrames []Runtime_CallFrame `json:"callFrames"`
 	// Asynchronous JavaScript stack trace that preceded this stack, if available.
 	Parent *Runtime_StackTrace `json:"parent,omitempty"`
-	// Creation frame of the Promise which produced the next synchronous trace when resolved, if available.
-	// NOTE Experimental
-	PromiseCreationFrame *Runtime_CallFrame `json:"promiseCreationFrame,omitempty"`
 }
 
 type Runtime_AsyncTaskId string

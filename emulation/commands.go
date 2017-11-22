@@ -58,6 +58,7 @@ type SetDeviceMetricsOverrideRequest struct {
 	// Whether to emulate mobile device. This includes viewport meta tag, overlay scrollbars, text autosizing and more.
 	Mobile bool `json:"mobile"`
 	// Scale to apply to resulting view image.
+	// NOTE Experimental
 	Scale *float32 `json:"scale,omitempty"`
 	// Overriding screen width value in pixels (minimum 0, maximum 10000000).
 	// NOTE Experimental
