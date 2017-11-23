@@ -68,7 +68,6 @@ type EvaluateRequest struct {
 	// NOTE Experimental
 	GeneratePreview *bool `json:"generatePreview,omitempty"`
 	// Whether execution should be treated as initiated by user in the UI.
-	// NOTE Experimental
 	UserGesture *bool `json:"userGesture,omitempty"`
 	// Whether execution should <code>await</code> for resulting value and return once awaited promise is resolved.
 	AwaitPromise *bool `json:"awaitPromise,omitempty"`
@@ -124,7 +123,6 @@ type CallFunctionOnRequest struct {
 	// NOTE Experimental
 	GeneratePreview *bool `json:"generatePreview,omitempty"`
 	// Whether execution should be treated as initiated by user in the UI.
-	// NOTE Experimental
 	UserGesture *bool `json:"userGesture,omitempty"`
 	// Whether execution should <code>await</code> for resulting value and return once awaited promise is resolved.
 	AwaitPromise *bool `json:"awaitPromise,omitempty"`

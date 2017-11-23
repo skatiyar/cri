@@ -22,13 +22,14 @@ const (
 	RemoveBreakpoint       = "Debugger.removeBreakpoint"
 	GetPossibleBreakpoints = "Debugger.getPossibleBreakpoints"
 	ContinueToLocation     = "Debugger.continueToLocation"
-	PauseOnAsyncTask       = "Debugger.pauseOnAsyncTask"
+	PauseOnAsyncCall       = "Debugger.pauseOnAsyncCall"
 	StepOver               = "Debugger.stepOver"
 	StepInto               = "Debugger.stepInto"
 	StepOut                = "Debugger.stepOut"
 	Pause                  = "Debugger.pause"
 	ScheduleStepIntoAsync  = "Debugger.scheduleStepIntoAsync"
 	Resume                 = "Debugger.resume"
+	GetStackTrace          = "Debugger.getStackTrace"
 	SearchInContent        = "Debugger.searchInContent"
 	SetScriptSource        = "Debugger.setScriptSource"
 	RestartFrame           = "Debugger.restartFrame"
@@ -61,9 +62,15 @@ func New(conn cri.Connector) *Debugger {
 	return &Debugger{conn}
 }
 
+type EnableResponse struct {
+	// Unique identifier of the debugger.
+	// NOTE Experimental
+	DebuggerId types.Runtime_UniqueDebuggerId `json:"debuggerId"`
+}
+
 // Enables debugger for the given page. Clients should not assume that the debugging has been enabled until the result for this command is received.
-func (obj *Debugger) Enable() (err error) {
-	err = obj.conn.Send(Enable, nil, nil)
+func (obj *Debugger) Enable() (response EnableResponse, err error) {
+	err = obj.conn.Send(Enable, nil, &response)
 	return
 }
 
@@ -103,7 +110,6 @@ type SetBreakpointByUrlRequest struct {
 	// Regex pattern for the URLs of the resources to set breakpoints on. Either <code>url</code> or <code>urlRegex</code> must be specified.
 	UrlRegex *string `json:"urlRegex,omitempty"`
 	// Script hash of the resources to set breakpoint on.
-	// NOTE Experimental
 	ScriptHash *string `json:"scriptHash,omitempty"`
 	// Offset in the line to set breakpoint at.
 	ColumnNumber *int `json:"columnNumber,omitempty"`
@@ -176,9 +182,8 @@ func (obj *Debugger) GetPossibleBreakpoints(request *GetPossibleBreakpointsReque
 
 type ContinueToLocationRequest struct {
 	// Location to continue to.
-	Location types.Debugger_Location `json:"location"`
-	// NOTE Experimental
-	TargetCallFrames *string `json:"targetCallFrames,omitempty"`
+	Location         types.Debugger_Location `json:"location"`
+	TargetCallFrames *string                 `json:"targetCallFrames,omitempty"`
 }
 
 // Continues execution until specific location is reached.
@@ -187,13 +192,13 @@ func (obj *Debugger) ContinueToLocation(request *ContinueToLocationRequest) (err
 	return
 }
 
-type PauseOnAsyncTaskRequest struct {
-	// Debugger will pause when given async task is started.
-	AsyncTaskId types.Runtime_AsyncTaskId `json:"asyncTaskId"`
+type PauseOnAsyncCallRequest struct {
+	// Debugger will pause when async call with given stack trace is started.
+	ParentStackTraceId types.Runtime_StackTraceId `json:"parentStackTraceId"`
 }
 
-func (obj *Debugger) PauseOnAsyncTask(request *PauseOnAsyncTaskRequest) (err error) {
-	err = obj.conn.Send(PauseOnAsyncTask, request, nil)
+func (obj *Debugger) PauseOnAsyncCall(request *PauseOnAsyncCallRequest) (err error) {
+	err = obj.conn.Send(PauseOnAsyncCall, request, nil)
 	return
 }
 
@@ -239,6 +244,20 @@ func (obj *Debugger) Resume() (err error) {
 	return
 }
 
+type GetStackTraceRequest struct {
+	StackTraceId types.Runtime_StackTraceId `json:"stackTraceId"`
+}
+
+type GetStackTraceResponse struct {
+	StackTrace types.Runtime_StackTrace `json:"stackTrace"`
+}
+
+// Returns stack trace with given <code>stackTraceId</code>.
+func (obj *Debugger) GetStackTrace(request *GetStackTraceRequest) (response GetStackTraceResponse, err error) {
+	err = obj.conn.Send(GetStackTrace, request, &response)
+	return
+}
+
 type SearchInContentRequest struct {
 	// Id of the script to search in.
 	ScriptId types.Runtime_ScriptId `json:"scriptId"`
@@ -277,6 +296,9 @@ type SetScriptSourceResponse struct {
 	StackChanged *bool `json:"stackChanged,omitempty"`
 	// Async stack trace, if any.
 	AsyncStackTrace *types.Runtime_StackTrace `json:"asyncStackTrace,omitempty"`
+	// Async stack trace, if any.
+	// NOTE Experimental
+	AsyncStackTraceId *types.Runtime_StackTraceId `json:"asyncStackTraceId,omitempty"`
 	// Exception details if any.
 	ExceptionDetails *types.Runtime_ExceptionDetails `json:"exceptionDetails,omitempty"`
 }
@@ -297,6 +319,9 @@ type RestartFrameResponse struct {
 	CallFrames []types.Debugger_CallFrame `json:"callFrames"`
 	// Async stack trace, if any.
 	AsyncStackTrace *types.Runtime_StackTrace `json:"asyncStackTrace,omitempty"`
+	// Async stack trace, if any.
+	// NOTE Experimental
+	AsyncStackTraceId *types.Runtime_StackTraceId `json:"asyncStackTraceId,omitempty"`
 }
 
 // Restarts particular call frame from the beginning.
@@ -349,7 +374,6 @@ type EvaluateOnCallFrameRequest struct {
 	// NOTE Experimental
 	GeneratePreview *bool `json:"generatePreview,omitempty"`
 	// Whether to throw an exception if side effect cannot be ruled out during evaluation.
-	// NOTE Experimental
 	ThrowOnSideEffect *bool `json:"throwOnSideEffect,omitempty"`
 }
 
@@ -453,13 +477,10 @@ type ScriptParsedParams struct {
 	// URL of source map associated with script (if any).
 	SourceMapURL *string `json:"sourceMapURL,omitempty"`
 	// True, if this script has sourceURL.
-	// NOTE Experimental
 	HasSourceURL *bool `json:"hasSourceURL,omitempty"`
 	// True, if this script is ES6 module.
-	// NOTE Experimental
 	IsModule *bool `json:"isModule,omitempty"`
 	// This script length.
-	// NOTE Experimental
 	Length *int `json:"length,omitempty"`
 	// JavaScript top stack frame of where the script parsed event was triggered if available.
 	// NOTE Experimental
@@ -504,13 +525,10 @@ type ScriptFailedToParseParams struct {
 	// URL of source map associated with script (if any).
 	SourceMapURL *string `json:"sourceMapURL,omitempty"`
 	// True, if this script has sourceURL.
-	// NOTE Experimental
 	HasSourceURL *bool `json:"hasSourceURL,omitempty"`
 	// True, if this script is ES6 module.
-	// NOTE Experimental
 	IsModule *bool `json:"isModule,omitempty"`
 	// This script length.
-	// NOTE Experimental
 	Length *int `json:"length,omitempty"`
 	// JavaScript top stack frame of where the script parsed event was triggered if available.
 	// NOTE Experimental
@@ -567,9 +585,12 @@ type PausedParams struct {
 	HitBreakpoints []string `json:"hitBreakpoints,omitempty"`
 	// Async stack trace, if any.
 	AsyncStackTrace *types.Runtime_StackTrace `json:"asyncStackTrace,omitempty"`
-	// Scheduled async task id.
+	// Async stack trace, if any.
 	// NOTE Experimental
-	ScheduledAsyncTaskId *types.Runtime_AsyncTaskId `json:"scheduledAsyncTaskId,omitempty"`
+	AsyncStackTraceId *types.Runtime_StackTraceId `json:"asyncStackTraceId,omitempty"`
+	// Just scheduled async call will have this stack trace as parent stack during async execution. This field is available only after <code>Debugger.stepInto</code> call with <code>breakOnAsynCall</code> flag.
+	// NOTE Experimental
+	AsyncCallStackTraceId *types.Runtime_StackTraceId `json:"asyncCallStackTraceId,omitempty"`
 }
 
 // Fired when the virtual machine stopped on breakpoint or exception or any other stop criteria.

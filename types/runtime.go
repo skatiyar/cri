@@ -185,6 +185,16 @@ type Runtime_StackTrace struct {
 	CallFrames []Runtime_CallFrame `json:"callFrames"`
 	// Asynchronous JavaScript stack trace that preceded this stack, if available.
 	Parent *Runtime_StackTrace `json:"parent,omitempty"`
+	// Asynchronous JavaScript stack trace that preceded this stack, if available.
+	// NOTE Experimental
+	ParentId *Runtime_StackTraceId `json:"parentId,omitempty"`
 }
 
-type Runtime_AsyncTaskId string
+// Unique identifier of current debugger.
+type Runtime_UniqueDebuggerId string
+
+// If <code>debuggerId</code> is set stack trace comes from another debugger and can be resolved there. This allows to track cross-debugger calls. See <code>Runtime.StackTrace</code> and <code>Debugger.paused</code> for usages.
+type Runtime_StackTraceId struct {
+	Id         string                    `json:"id"`
+	DebuggerId *Runtime_UniqueDebuggerId `json:"debuggerId,omitempty"`
+}

@@ -16,7 +16,7 @@ const (
 	GetDomains = "Schema.getDomains"
 )
 
-// Provides information about the protocol schema.
+// This domain is deprecated.
 type Schema struct {
 	conn cri.Connector
 }

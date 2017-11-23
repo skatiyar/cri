@@ -12,5 +12,5 @@ func BrowserProtocolVersion() (major, minor string) {
 
 // JsProtocolVersion returns current major and minor version of js protocol.
 func JsProtocolVersion() (major, minor string) {
-	return "1", "2"
+	return "1", "3"
 }

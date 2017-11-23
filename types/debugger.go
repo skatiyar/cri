@@ -34,7 +34,6 @@ type Debugger_CallFrame struct {
 	// Name of the JavaScript function called on this call frame.
 	FunctionName string `json:"functionName"`
 	// Location in the source code.
-	// NOTE Experimental
 	FunctionLocation *Debugger_Location `json:"functionLocation,omitempty"`
 	// Location in the source code.
 	Location Debugger_Location `json:"location"`
