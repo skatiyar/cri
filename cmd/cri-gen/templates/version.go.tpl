@@ -5,7 +5,12 @@
 
 package cri
 
-// Version returns the current major and minor version of package protocol.
-func Version() (major, minor string) {
-	return {{printf "%q" .Major}}, {{printf "%q" .Minor}}
+// BrowserProtocolVersion returns current major and minor version of browser protocol.
+func BrowserProtocolVersion() (major, minor string) {
+	return {{printf "%q" .BMajor}}, {{printf "%q" .BMinor}}
+}
+
+// JsProtocolVersion returns current major and minor version of js protocol.
+func JsProtocolVersion() (major, minor string) {
+	return {{printf "%q" .JMajor}}, {{printf "%q" .JMinor}}
 }

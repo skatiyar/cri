@@ -91,25 +91,18 @@ type Page_NavigationEntry struct {
 // Screencast frame metadata.
 type Page_ScreencastFrameMetadata struct {
 	// Top offset in DIP.
-	// NOTE Experimental
 	OffsetTop float32 `json:"offsetTop"`
 	// Page scale factor.
-	// NOTE Experimental
 	PageScaleFactor float32 `json:"pageScaleFactor"`
 	// Device screen width in DIP.
-	// NOTE Experimental
 	DeviceWidth float32 `json:"deviceWidth"`
 	// Device screen height in DIP.
-	// NOTE Experimental
 	DeviceHeight float32 `json:"deviceHeight"`
 	// Position of horizontal scroll in CSS pixels.
-	// NOTE Experimental
 	ScrollOffsetX float32 `json:"scrollOffsetX"`
 	// Position of vertical scroll in CSS pixels.
-	// NOTE Experimental
 	ScrollOffsetY float32 `json:"scrollOffsetY"`
 	// Frame swap timestamp.
-	// NOTE Experimental
 	Timestamp *Network_TimeSinceEpoch `json:"timestamp,omitempty"`
 }
 

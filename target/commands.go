@@ -303,6 +303,7 @@ type AttachedToTargetParams struct {
 }
 
 // Issued when attached to target because of auto-attach or <code>attachToTarget</code> command.
+// NOTE Experimental
 func (obj *Target) AttachedToTarget(fn func(params *AttachedToTargetParams, err error) bool) {
 	closeChn := make(chan struct{})
 	decoder := obj.conn.On(AttachedToTarget, closeChn)
@@ -326,6 +327,7 @@ type DetachedFromTargetParams struct {
 }
 
 // Issued when detached from target for any reason (including <code>detachFromTarget</code> command). Can be issued multiple times per target if multiple sessions have been attached to it.
+// NOTE Experimental
 func (obj *Target) DetachedFromTarget(fn func(params *DetachedFromTargetParams, err error) bool) {
 	closeChn := make(chan struct{})
 	decoder := obj.conn.On(DetachedFromTarget, closeChn)

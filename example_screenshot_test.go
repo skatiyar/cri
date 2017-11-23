@@ -65,7 +65,7 @@ func Example() {
 			panic(imgErr)
 		}
 
-		fileName := strconv.Itoa(i) + ".jpg"
+		fileName := strconv.Itoa(i) + ".png"
 		if writeErr := ioutil.WriteFile(fileName, img, 0700); writeErr != nil {
 			panic(writeErr)
 		}
@@ -78,8 +78,8 @@ func Example() {
 	}
 
 	// Unordered output:
-	// 0.jpg
-	// 1.jpg
-	// 2.jpg
-	// 3.jpg
+	// 0.png
+	// 1.png
+	// 2.png
+	// 3.png
 }

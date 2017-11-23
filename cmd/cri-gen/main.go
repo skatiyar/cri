@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"io/ioutil"
 	"log"
 	"os"
@@ -20,11 +19,6 @@ const (
 	VersionTplFile  = "templates/version.go.tpl"
 	CommandsTplFile = "templates/commands.go.tpl"
 	TypesTplFile    = "templates/types.go.tpl"
-)
-
-var (
-	ErrMajorVersionMismatch = errors.New("major version of protocols don't match")
-	ErrMinorVersionMismatch = errors.New("minor version of protocols don't match")
 )
 
 func main() {
@@ -52,13 +46,6 @@ func main() {
 }
 
 func createCode(jsProto JSProtocol, browserProto BrowserProtocol) {
-	if jsProto.Version.Major != browserProto.Version.Major {
-		panic(ErrMajorVersionMismatch)
-	}
-	if jsProto.Version.Minor != browserProto.Version.Minor {
-		panic(ErrMinorVersionMismatch)
-	}
-
 	typesPath := path.Join(ProtocolOutputPath, "types")
 	if dirErr := os.Mkdir(typesPath, FilePerm); dirErr != nil {
 		if !os.IsExist(dirErr) {
@@ -129,7 +116,12 @@ func createCode(jsProto JSProtocol, browserProto BrowserProtocol) {
 		panic(newVersionFileErr)
 	}
 
-	if writeErr := newVersionFile.Execute(vFile, jsProto.Version); writeErr != nil {
+	if writeErr := newVersionFile.Execute(vFile, struct{ BMajor, BMinor, JMajor, JMinor string }{
+		BMajor: browserProto.Version.Major,
+		BMinor: browserProto.Version.Minor,
+		JMajor: jsProto.Version.Major,
+		JMinor: jsProto.Version.Minor,
+	}); writeErr != nil {
 		panic(writeErr)
 	}
 	if fileCloseErr := vFile.Close(); fileCloseErr != nil {

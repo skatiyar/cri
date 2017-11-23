@@ -4,14 +4,15 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"errors"
-	"fmt"
+	"log"
 	"net/http"
+	"net/url"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/mitchellh/mapstructure"
-	"golang.org/x/sync/syncmap"
 )
 
 // DefaultAddress for remote debugging protocol
@@ -42,6 +43,8 @@ type ConnectionOptions struct {
 	EventTimeout time.Duration
 	// CommandTimeout specifies duration to receive command response, default used is DefaultCommandTimeout
 	CommandTimeout time.Duration
+	// Logger if provided is used to print errors from connection reader.
+	Logger *log.Logger
 }
 
 // option iterates over all arguments to set final options
@@ -91,6 +94,46 @@ func SetCommandTimeout(timeout time.Duration) ConnectionOption {
 	return func(co *ConnectionOptions) {
 		co.CommandTimeout = timeout
 	}
+}
+
+// SetLogger sets logging for connection
+func SetLogger(logger *log.Logger) ConnectionOption {
+	return func(co *ConnectionOptions) {
+		co.Logger = logger
+	}
+}
+
+type commandsStore struct {
+	sync.RWMutex
+	commands map[int32]commandRequest
+}
+
+func (cs *commandsStore) addCommand(cmd commandRequest) {
+	cs.Lock()
+	defer cs.Unlock()
+	if cs.commands == nil {
+		cs.commands = make(map[int32]commandRequest)
+	}
+	cs.commands[cmd.ID] = cmd
+}
+
+func (cs *commandsStore) deleteCommand(id int32) {
+	cs.Lock()
+	defer cs.Unlock()
+	if cs.commands != nil {
+		delete(cs.commands, id)
+	}
+}
+
+func (cs *commandsStore) getCommand(id int32) (commandRequest, bool) {
+	cs.RLock()
+	defer cs.RUnlock()
+	if cs.commands != nil {
+		if val, ok := cs.commands[id]; ok {
+			return val, ok
+		}
+	}
+	return commandRequest{}, false
 }
 
 type eventsStore struct {
@@ -147,11 +190,12 @@ type Connection struct {
 	reqChn   chan commandRequest
 	closeChn chan struct{}
 
-	responseMap syncmap.Map
-	eventMap    eventsStore
+	commands commandsStore
+	events   eventsStore
 
-	counter     int
-	counterLock sync.RWMutex
+	counter int32
+
+	log *log.Logger
 }
 
 // NewConnection creates a connection to remote target. Connection options can be
@@ -175,29 +219,39 @@ func NewConnection(opts ...ConnectionOption) (*Connection, error) {
 		tlsConfig:    opt.TLSConfig,
 		reqChn:       make(chan commandRequest),
 		closeChn:     make(chan struct{}),
+		log:          opt.Logger,
 	}
 
-	if len(opt.SocketAddress) == 0 {
-		instance.addr = opt.Address
-		if len(opt.TargetID) == 0 {
-			wsAddr, wsAddrErr := instance.getDefaultSocketAddress()
-			if wsAddrErr != nil {
-				return nil, wsAddrErr
-			}
-
-			opt.SocketAddress = wsAddr
-		} else {
-			wsAddr, wsAddrErr := instance.getSocketAddressByTarget(opt.TargetID)
-			if wsAddrErr != nil {
-				return nil, wsAddrErr
-			}
-
-			opt.SocketAddress = wsAddr
+	if len(opt.SocketAddress) != 0 {
+		parsedAddr, addrParseErr := url.Parse(opt.SocketAddress)
+		if addrParseErr != nil {
+			return nil, addrParseErr
 		}
+
+		instance.wsAddr = parsedAddr.String()
+		instance.addr = parsedAddr.Host
+	} else {
+		targets, targetsErr := GetTargets(opts...)
+		if targetsErr != nil {
+			return nil, targetsErr
+		}
+
+		wsAddr := targets[0].WebSocketDebuggerURL
+		if len(opt.TargetID) != 0 {
+			for i := range targets {
+				if targets[i].ID == opt.TargetID {
+					wsAddr = targets[i].WebSocketDebuggerURL
+					break
+				}
+			}
+		}
+
+		instance.wsAddr = wsAddr
+		instance.addr = opt.Address
 	}
 
-	dialer := &websocket.Dialer{TLSClientConfig: opt.TLSConfig}
-	conn, res, resErr := dialer.Dial(opt.SocketAddress, nil)
+	dialer := &websocket.Dialer{TLSClientConfig: instance.tlsConfig}
+	conn, res, resErr := dialer.Dial(instance.wsAddr, nil)
 	if resErr != nil {
 		return nil, resErr
 	}
@@ -206,7 +260,6 @@ func NewConnection(opts ...ConnectionOption) (*Connection, error) {
 	}
 
 	instance.conn = conn
-	instance.addr = conn.RemoteAddr().String()
 
 	go instance.reader()
 	go instance.writer()
@@ -214,14 +267,8 @@ func NewConnection(opts ...ConnectionOption) (*Connection, error) {
 	return instance, nil
 }
 
-// IsPackageCompatible verifies remote protocol version
-// with package protocol version. Returns error if not same.
-func (c *Connection) IsPackageCompatible() error {
-	return c.isPackageCompatible()
-}
-
 type commandResponse struct {
-	ID     int                    `json:"id"`     // id of the command request or 0 in case of event
+	ID     int32                  `json:"id"`     // id of the command request or 0 in case of event
 	Method string                 `json:"method"` // command or event name
 	Result map[string]interface{} `json:"result"` // parameters returned for command
 	Error  *struct {
@@ -232,7 +279,7 @@ type commandResponse struct {
 }
 
 type commandRequest struct {
-	ID     int         `json:"id"`     // id of the command request, should be greater than 0
+	ID     int32       `json:"id"`     // id of the command request, should be greater than 0
 	Method string      `json:"method"` // method takes the command to be sent
 	Params interface{} `json:"params"` // params contains parameters taken by command
 
@@ -254,9 +301,9 @@ func (c *Connection) Send(command string, request, response interface{}) error {
 		timeoutTimer: time.NewTimer(c.cmdTimeout),
 	}
 
-	c.responseMap.Store(cmd.ID, cmd)
+	c.commands.addCommand(cmd)
 	defer func() {
-		c.responseMap.Delete(cmd.ID)
+		c.commands.deleteCommand(cmd.ID)
 	}()
 
 	if cmd.Params == nil {
@@ -281,8 +328,7 @@ func (c *Connection) Send(command string, request, response interface{}) error {
 }
 
 type eventRequest struct {
-	Method string
-
+	Method   string
 	eventChn chan commandResponse
 }
 
@@ -294,12 +340,12 @@ func (c *Connection) On(event string, closeChn chan struct{}) func(params interf
 		Method:   event,
 		eventChn: make(chan commandResponse, 1),
 	}
-	c.eventMap.addEvent(eve)
+	c.events.addEvent(eve)
 
 	defer func() {
 		go func() {
 			<-closeChn
-			c.eventMap.deleteEvent(eve)
+			c.events.deleteEvent(eve)
 		}()
 	}()
 
@@ -322,16 +368,12 @@ func (c *Connection) Close() error {
 	return nil
 }
 
-func (c *Connection) id() int {
-	c.counterLock.Lock()
-	defer c.counterLock.Unlock()
-	nextCount := c.counter + 1
-	if nextCount == maxIntValue {
-		c.counter = 1
+func (c *Connection) id() int32 {
+	if atomic.CompareAndSwapInt32(&c.counter, maxIntValue, 1) {
+		return 1
 	} else {
-		c.counter = nextCount
+		return atomic.AddInt32(&c.counter, 1)
 	}
-	return nextCount
 }
 
 func (c *Connection) writer() {
@@ -351,25 +393,28 @@ func (c *Connection) reader() {
 	for {
 		select {
 		case <-c.closeChn:
+			// TODO cleanup events and commands after shutdown
+			// any pending command or event should should raise
+			// shutting down error.
 			return
 		default:
 			var data commandResponse
 			if decodeErr := c.conn.ReadJSON(&data); decodeErr != nil {
-				fmt.Println("---", decodeErr.Error())
+				if c.log != nil {
+					c.log.Println(decodeErr.Error())
+				}
 			}
 
 			if data.ID > 0 {
-				if val, vok := c.responseMap.Load(data.ID); vok {
-					if req, rok := val.(commandRequest); rok {
-						if data.Error != nil {
-							req.errChn <- errors.New(data.Error.Message)
-						} else {
-							req.resChn <- data
-						}
+				if cmd, ok := c.commands.getCommand(data.ID); ok {
+					if data.Error != nil {
+						cmd.errChn <- errors.New(data.Error.Message)
+					} else {
+						cmd.resChn <- data
 					}
 				}
 			} else if len(data.Method) > 0 {
-				c.eventMap.forEvents(data.Method, func(val eventRequest) {
+				c.events.forEvents(data.Method, func(val eventRequest) {
 					val.eventChn <- data
 				})
 			}
@@ -377,7 +422,8 @@ func (c *Connection) reader() {
 	}
 }
 
-type versionResponse struct {
+// VersionResponse contains fields received in response to version query.
+type VersionResponse struct {
 	Browser              string `json:"Browser"`
 	ProtocolVersion      string `json:"Protocol-Version"`
 	UserAgent            string `json:"User-Agent"`
@@ -386,17 +432,22 @@ type versionResponse struct {
 	WebSocketDebuggerURL string `json:"webSocketDebuggerUrl"`
 }
 
-// getVersion fetches the protocol version of remote
-func (c *Connection) getVersion() (versionResponse, error) {
+// GetVersion fetches the protocol version of remote
+func GetVersion(opts ...ConnectionOption) (VersionResponse, error) {
+	opt := &ConnectionOptions{
+		Address: DefaultAddress,
+	}
+	opt.option(opts...)
+
 	client := &http.Client{}
-	if c.tlsConfig != nil {
+	if opt.TLSConfig != nil {
 		client.Transport = &http.Transport{
-			TLSClientConfig: c.tlsConfig,
+			TLSClientConfig: opt.TLSConfig,
 		}
 	}
 
-	var data versionResponse
-	res, resErr := client.Get(c.getAddress() + "/json/version")
+	var data VersionResponse
+	res, resErr := client.Get(getAddress(opt) + "/json/version")
 	if resErr != nil {
 		return data, resErr
 	}
@@ -410,8 +461,8 @@ func (c *Connection) getVersion() (versionResponse, error) {
 	return data, nil
 }
 
-// target represents a connectable resource
-type target struct {
+// Targets represent a list of connectable remotes
+type Targets []struct {
 	Description          string `json:"description"`
 	DevtoolsFrontendURL  string `json:"devtoolsFrontendUrl"`
 	ID                   string `json:"id"`
@@ -421,17 +472,22 @@ type target struct {
 	WebSocketDebuggerURL string `json:"webSocketDebuggerUrl"`
 }
 
-// getTargetsList retreives targets in remote connection
-func (c *Connection) getTargetsList() ([]target, error) {
+// GetTargets retreives targets in remote connection
+func GetTargets(opts ...ConnectionOption) (Targets, error) {
+	opt := &ConnectionOptions{
+		Address: DefaultAddress,
+	}
+	opt.option(opts...)
+
 	client := &http.Client{}
-	if c.tlsConfig != nil {
+	if opt.TLSConfig != nil {
 		client.Transport = &http.Transport{
-			TLSClientConfig: c.tlsConfig,
+			TLSClientConfig: opt.TLSConfig,
 		}
 	}
 
-	var data []target
-	res, resErr := client.Get(c.getAddress() + "/json/list")
+	var data Targets
+	res, resErr := client.Get(getAddress(opt) + "/json/list")
 	if resErr != nil {
 		return data, resErr
 	}
@@ -442,56 +498,17 @@ func (c *Connection) getTargetsList() ([]target, error) {
 		return data, decodeErr
 	}
 	if len(data) < 1 {
-		return data, errors.New("No valid socket addresses")
+		return data, errors.New("No valid targets")
 	}
 
 	return data, nil
 }
 
 // getAddress adds https if tls config is present
-func (c *Connection) getAddress() string {
-	if c.tlsConfig != nil {
-		return "https://" + c.addr
+func getAddress(opts *ConnectionOptions) string {
+	if opts.TLSConfig != nil {
+		return "https://" + opts.Address
 	} else {
-		return "http://" + c.addr
+		return "http://" + opts.Address
 	}
-}
-
-// getDefaultSocketAddress picks first element in target array
-func (c *Connection) getDefaultSocketAddress() (string, error) {
-	targets, targetsErr := c.getTargetsList()
-	if targetsErr != nil {
-		return "", targetsErr
-	}
-
-	return targets[0].WebSocketDebuggerURL, nil
-}
-
-func (c *Connection) getSocketAddressByTarget(target string) (string, error) {
-	targets, targetsErr := c.getTargetsList()
-	if targetsErr != nil {
-		return "", targetsErr
-	}
-
-	for i := 0; i < len(targets); i++ {
-		if targets[i].ID == target {
-			return targets[i].WebSocketDebuggerURL, nil
-		}
-	}
-
-	return "", errors.New("target not found")
-}
-
-func (c *Connection) isPackageCompatible() error {
-	verData, verErr := c.getVersion()
-	if verErr != nil {
-		return verErr
-	}
-
-	majorV, minorV := Version()
-	if verData.ProtocolVersion != (majorV + "." + minorV) {
-		return errors.New("Version Mismatch")
-	}
-
-	return nil
 }
