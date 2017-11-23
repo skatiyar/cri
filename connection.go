@@ -13,7 +13,6 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/mitchellh/mapstructure"
-	"golang.org/x/sync/syncmap"
 )
 
 // DefaultAddress for remote debugging protocol
@@ -95,6 +94,39 @@ func SetCommandTimeout(timeout time.Duration) ConnectionOption {
 	}
 }
 
+type commandsStore struct {
+	sync.RWMutex
+	commands map[int32]commandRequest
+}
+
+func (cs *commandsStore) addCommand(cmd commandRequest) {
+	cs.Lock()
+	defer cs.Unlock()
+	if cs.commands == nil {
+		cs.commands = make(map[int32]commandRequest)
+	}
+	cs.commands[cmd.ID] = cmd
+}
+
+func (cs *commandsStore) deleteCommand(id int32) {
+	cs.Lock()
+	defer cs.Unlock()
+	if cs.commands != nil {
+		delete(cs.commands, id)
+	}
+}
+
+func (cs *commandsStore) getCommand(id int32) (commandRequest, bool) {
+	cs.RLock()
+	defer cs.RUnlock()
+	if cs.commands != nil {
+		if val, ok := cs.commands[id]; ok {
+			return val, ok
+		}
+	}
+	return commandRequest{}, false
+}
+
 type eventsStore struct {
 	sync.RWMutex
 	events map[string]map[eventRequest]bool
@@ -149,8 +181,8 @@ type Connection struct {
 	reqChn   chan commandRequest
 	closeChn chan struct{}
 
-	responseMap syncmap.Map
-	eventMap    eventsStore
+	commands commandsStore
+	events   eventsStore
 
 	counter int32
 }
@@ -257,9 +289,9 @@ func (c *Connection) Send(command string, request, response interface{}) error {
 		timeoutTimer: time.NewTimer(c.cmdTimeout),
 	}
 
-	c.responseMap.Store(cmd.ID, cmd)
+	c.commands.addCommand(cmd)
 	defer func() {
-		c.responseMap.Delete(cmd.ID)
+		c.commands.deleteCommand(cmd.ID)
 	}()
 
 	if cmd.Params == nil {
@@ -297,12 +329,12 @@ func (c *Connection) On(event string, closeChn chan struct{}) func(params interf
 		Method:   event,
 		eventChn: make(chan commandResponse, 1),
 	}
-	c.eventMap.addEvent(eve)
+	c.events.addEvent(eve)
 
 	defer func() {
 		go func() {
 			<-closeChn
-			c.eventMap.deleteEvent(eve)
+			c.events.deleteEvent(eve)
 		}()
 	}()
 
@@ -358,17 +390,15 @@ func (c *Connection) reader() {
 			}
 
 			if data.ID > 0 {
-				if val, vok := c.responseMap.Load(data.ID); vok {
-					if req, rok := val.(commandRequest); rok {
-						if data.Error != nil {
-							req.errChn <- errors.New(data.Error.Message)
-						} else {
-							req.resChn <- data
-						}
+				if cmd, ok := c.commands.getCommand(data.ID); ok {
+					if data.Error != nil {
+						cmd.errChn <- errors.New(data.Error.Message)
+					} else {
+						cmd.resChn <- data
 					}
 				}
 			} else if len(data.Method) > 0 {
-				c.eventMap.forEvents(data.Method, func(val eventRequest) {
+				c.events.forEvents(data.Method, func(val eventRequest) {
 					val.eventChn <- data
 				})
 			}
