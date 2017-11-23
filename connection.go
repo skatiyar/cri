@@ -4,7 +4,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"errors"
-	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 	"sync"
@@ -43,6 +43,8 @@ type ConnectionOptions struct {
 	EventTimeout time.Duration
 	// CommandTimeout specifies duration to receive command response, default used is DefaultCommandTimeout
 	CommandTimeout time.Duration
+	// Logger if provided is used to print errors from connection reader.
+	Logger *log.Logger
 }
 
 // option iterates over all arguments to set final options
@@ -91,6 +93,13 @@ func SetEventTimeout(timeout time.Duration) ConnectionOption {
 func SetCommandTimeout(timeout time.Duration) ConnectionOption {
 	return func(co *ConnectionOptions) {
 		co.CommandTimeout = timeout
+	}
+}
+
+// SetLogger sets logging for connection
+func SetLogger(logger *log.Logger) ConnectionOption {
+	return func(co *ConnectionOptions) {
+		co.Logger = logger
 	}
 }
 
@@ -185,6 +194,8 @@ type Connection struct {
 	events   eventsStore
 
 	counter int32
+
+	log *log.Logger
 }
 
 // NewConnection creates a connection to remote target. Connection options can be
@@ -208,6 +219,7 @@ func NewConnection(opts ...ConnectionOption) (*Connection, error) {
 		tlsConfig:    opt.TLSConfig,
 		reqChn:       make(chan commandRequest),
 		closeChn:     make(chan struct{}),
+		log:          opt.Logger,
 	}
 
 	if len(opt.SocketAddress) != 0 {
@@ -316,8 +328,7 @@ func (c *Connection) Send(command string, request, response interface{}) error {
 }
 
 type eventRequest struct {
-	Method string
-
+	Method   string
 	eventChn chan commandResponse
 }
 
@@ -382,11 +393,16 @@ func (c *Connection) reader() {
 	for {
 		select {
 		case <-c.closeChn:
+			// TODO cleanup events and commands after shutdown
+			// any pending command or event should should raise
+			// shutting down error.
 			return
 		default:
 			var data commandResponse
 			if decodeErr := c.conn.ReadJSON(&data); decodeErr != nil {
-				fmt.Println("---", decodeErr.Error())
+				if c.log != nil {
+					c.log.Println(decodeErr.Error())
+				}
 			}
 
 			if data.ID > 0 {
