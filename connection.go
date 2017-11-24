@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"errors"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -25,6 +26,7 @@ const DefaultEventTimeout = 10 * time.Second
 const DefaultCommandTimeout = 10 * time.Second
 
 const maxIntValue = 1<<31 - 1
+const defaultLogger = log.New(ioutil.Discard, "", log.LstdFlags)
 
 // ConnectionOption defines a function type to set values of ConnectionOptions
 type ConnectionOption func(*ConnectionOptions)
@@ -210,6 +212,7 @@ func NewConnection(opts ...ConnectionOption) (*Connection, error) {
 		Address:        DefaultAddress,
 		EventTimeout:   DefaultEventTimeout,
 		CommandTimeout: DefaultCommandTimeout,
+		Logger:         defaultLogger,
 	}
 	opt.option(opts...)
 
@@ -400,8 +403,9 @@ func (c *Connection) reader() {
 		default:
 			var data commandResponse
 			if decodeErr := c.conn.ReadJSON(&data); decodeErr != nil {
-				if c.log != nil {
-					c.log.Println(decodeErr.Error())
+				c.log.Println(decodeErr.Error())
+				if err, ok := decodeErr.(*websocket.CloseError); ok {
+					return
 				}
 			}
 
