@@ -13,8 +13,8 @@ import (
 
 // List of commands in IO domain
 const (
-	Read        = "IO.read"
 	Close       = "IO.close"
+	Read        = "IO.read"
 	ResolveBlob = "IO.resolveBlob"
 )
 
@@ -26,6 +26,17 @@ type IO struct {
 // New creates a IO instance
 func New(conn cri.Connector) *IO {
 	return &IO{conn}
+}
+
+type CloseRequest struct {
+	// Handle of the stream to close.
+	Handle types.IO_StreamHandle `json:"handle"`
+}
+
+// Close the stream, discard any temporary backing storage.
+func (obj *IO) Close(request *CloseRequest) (err error) {
+	err = obj.conn.Send(Close, request, nil)
+	return
 }
 
 type ReadRequest struct {
@@ -49,17 +60,6 @@ type ReadResponse struct {
 // Read a chunk of the stream
 func (obj *IO) Read(request *ReadRequest) (response ReadResponse, err error) {
 	err = obj.conn.Send(Read, request, &response)
-	return
-}
-
-type CloseRequest struct {
-	// Handle of the stream to close.
-	Handle types.IO_StreamHandle `json:"handle"`
-}
-
-// Close the stream, discard any temporary backing storage.
-func (obj *IO) Close(request *CloseRequest) (err error) {
-	err = obj.conn.Send(Close, request, nil)
 	return
 }
 

@@ -13,9 +13,9 @@ type DOM_BackendNodeId int
 
 // Backend node with a friendly name.
 type DOM_BackendNode struct {
-	// <code>Node</code>'s nodeType.
+	// `Node`'s nodeType.
 	NodeType int `json:"nodeType"`
-	// <code>Node</code>'s nodeName.
+	// `Node`'s nodeName.
 	NodeName      string            `json:"nodeName"`
 	BackendNodeId DOM_BackendNodeId `json:"backendNodeId"`
 }
@@ -28,41 +28,41 @@ type DOM_ShadowRootType string
 
 // DOM interaction is implemented in terms of mirror objects that represent the actual DOM nodes. DOMNode is a base node mirror type.
 type DOM_Node struct {
-	// Node identifier that is passed into the rest of the DOM messages as the <code>nodeId</code>. Backend will only push node with given <code>id</code> once. It is aware of all requested nodes and will only fire DOM events for nodes known to the client.
+	// Node identifier that is passed into the rest of the DOM messages as the `nodeId`. Backend will only push node with given `id` once. It is aware of all requested nodes and will only fire DOM events for nodes known to the client.
 	NodeId DOM_NodeId `json:"nodeId"`
 	// The id of the parent node if any.
 	ParentId *DOM_NodeId `json:"parentId,omitempty"`
 	// The BackendNodeId for this node.
 	BackendNodeId DOM_BackendNodeId `json:"backendNodeId"`
-	// <code>Node</code>'s nodeType.
+	// `Node`'s nodeType.
 	NodeType int `json:"nodeType"`
-	// <code>Node</code>'s nodeName.
+	// `Node`'s nodeName.
 	NodeName string `json:"nodeName"`
-	// <code>Node</code>'s localName.
+	// `Node`'s localName.
 	LocalName string `json:"localName"`
-	// <code>Node</code>'s nodeValue.
+	// `Node`'s nodeValue.
 	NodeValue string `json:"nodeValue"`
-	// Child count for <code>Container</code> nodes.
+	// Child count for `Container` nodes.
 	ChildNodeCount *int `json:"childNodeCount,omitempty"`
 	// Child nodes of this node when requested with children.
 	Children []*DOM_Node `json:"children,omitempty"`
-	// Attributes of the <code>Element</code> node in the form of flat array <code>[name1, value1, name2, value2]</code>.
+	// Attributes of the `Element` node in the form of flat array `[name1, value1, name2, value2]`.
 	Attributes []string `json:"attributes,omitempty"`
-	// Document URL that <code>Document</code> or <code>FrameOwner</code> node points to.
+	// Document URL that `Document` or `FrameOwner` node points to.
 	DocumentURL *string `json:"documentURL,omitempty"`
-	// Base URL that <code>Document</code> or <code>FrameOwner</code> node uses for URL completion.
+	// Base URL that `Document` or `FrameOwner` node uses for URL completion.
 	BaseURL *string `json:"baseURL,omitempty"`
-	// <code>DocumentType</code>'s publicId.
+	// `DocumentType`'s publicId.
 	PublicId *string `json:"publicId,omitempty"`
-	// <code>DocumentType</code>'s systemId.
+	// `DocumentType`'s systemId.
 	SystemId *string `json:"systemId,omitempty"`
-	// <code>DocumentType</code>'s internalSubset.
+	// `DocumentType`'s internalSubset.
 	InternalSubset *string `json:"internalSubset,omitempty"`
-	// <code>Document</code>'s XML version in case of XML documents.
+	// `Document`'s XML version in case of XML documents.
 	XmlVersion *string `json:"xmlVersion,omitempty"`
-	// <code>Attr</code>'s name.
+	// `Attr`'s name.
 	Name *string `json:"name,omitempty"`
-	// <code>Attr</code>'s value.
+	// `Attr`'s value.
 	Value *string `json:"value,omitempty"`
 	// Pseudo element type for this node.
 	PseudoType *DOM_PseudoType `json:"pseudoType,omitempty"`

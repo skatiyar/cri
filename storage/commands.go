@@ -16,17 +16,17 @@ const (
 	ClearDataForOrigin           = "Storage.clearDataForOrigin"
 	GetUsageAndQuota             = "Storage.getUsageAndQuota"
 	TrackCacheStorageForOrigin   = "Storage.trackCacheStorageForOrigin"
-	UntrackCacheStorageForOrigin = "Storage.untrackCacheStorageForOrigin"
 	TrackIndexedDBForOrigin      = "Storage.trackIndexedDBForOrigin"
+	UntrackCacheStorageForOrigin = "Storage.untrackCacheStorageForOrigin"
 	UntrackIndexedDBForOrigin    = "Storage.untrackIndexedDBForOrigin"
 )
 
 // List of events in Storage domain
 const (
-	CacheStorageListUpdated    = "Storage.cacheStorageListUpdated"
 	CacheStorageContentUpdated = "Storage.cacheStorageContentUpdated"
-	IndexedDBListUpdated       = "Storage.indexedDBListUpdated"
+	CacheStorageListUpdated    = "Storage.cacheStorageListUpdated"
 	IndexedDBContentUpdated    = "Storage.indexedDBContentUpdated"
+	IndexedDBListUpdated       = "Storage.indexedDBListUpdated"
 )
 
 type Storage struct {
@@ -82,17 +82,6 @@ func (obj *Storage) TrackCacheStorageForOrigin(request *TrackCacheStorageForOrig
 	return
 }
 
-type UntrackCacheStorageForOriginRequest struct {
-	// Security origin.
-	Origin string `json:"origin"`
-}
-
-// Unregisters origin from receiving notifications for cache storage.
-func (obj *Storage) UntrackCacheStorageForOrigin(request *UntrackCacheStorageForOriginRequest) (err error) {
-	err = obj.conn.Send(UntrackCacheStorageForOrigin, request, nil)
-	return
-}
-
 type TrackIndexedDBForOriginRequest struct {
 	// Security origin.
 	Origin string `json:"origin"`
@@ -101,6 +90,17 @@ type TrackIndexedDBForOriginRequest struct {
 // Registers origin to be notified when an update occurs to its IndexedDB.
 func (obj *Storage) TrackIndexedDBForOrigin(request *TrackIndexedDBForOriginRequest) (err error) {
 	err = obj.conn.Send(TrackIndexedDBForOrigin, request, nil)
+	return
+}
+
+type UntrackCacheStorageForOriginRequest struct {
+	// Security origin.
+	Origin string `json:"origin"`
+}
+
+// Unregisters origin from receiving notifications for cache storage.
+func (obj *Storage) UntrackCacheStorageForOrigin(request *UntrackCacheStorageForOriginRequest) (err error) {
+	err = obj.conn.Send(UntrackCacheStorageForOrigin, request, nil)
 	return
 }
 
@@ -113,27 +113,6 @@ type UntrackIndexedDBForOriginRequest struct {
 func (obj *Storage) UntrackIndexedDBForOrigin(request *UntrackIndexedDBForOriginRequest) (err error) {
 	err = obj.conn.Send(UntrackIndexedDBForOrigin, request, nil)
 	return
-}
-
-type CacheStorageListUpdatedParams struct {
-	// Origin to update.
-	Origin string `json:"origin"`
-}
-
-// A cache has been added/deleted.
-func (obj *Storage) CacheStorageListUpdated(fn func(params *CacheStorageListUpdatedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(CacheStorageListUpdated, closeChn)
-	go func() {
-		for {
-			params := CacheStorageListUpdatedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
 }
 
 type CacheStorageContentUpdatedParams struct {
@@ -159,18 +138,18 @@ func (obj *Storage) CacheStorageContentUpdated(fn func(params *CacheStorageConte
 	}()
 }
 
-type IndexedDBListUpdatedParams struct {
+type CacheStorageListUpdatedParams struct {
 	// Origin to update.
 	Origin string `json:"origin"`
 }
 
-// The origin's IndexedDB database list has been modified.
-func (obj *Storage) IndexedDBListUpdated(fn func(params *IndexedDBListUpdatedParams, err error) bool) {
+// A cache has been added/deleted.
+func (obj *Storage) CacheStorageListUpdated(fn func(params *CacheStorageListUpdatedParams, err error) bool) {
 	closeChn := make(chan struct{})
-	decoder := obj.conn.On(IndexedDBListUpdated, closeChn)
+	decoder := obj.conn.On(CacheStorageListUpdated, closeChn)
 	go func() {
 		for {
-			params := IndexedDBListUpdatedParams{}
+			params := CacheStorageListUpdatedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				close(closeChn)
@@ -196,6 +175,27 @@ func (obj *Storage) IndexedDBContentUpdated(fn func(params *IndexedDBContentUpda
 	go func() {
 		for {
 			params := IndexedDBContentUpdatedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
+				close(closeChn)
+				break
+			}
+		}
+	}()
+}
+
+type IndexedDBListUpdatedParams struct {
+	// Origin to update.
+	Origin string `json:"origin"`
+}
+
+// The origin's IndexedDB database list has been modified.
+func (obj *Storage) IndexedDBListUpdated(fn func(params *IndexedDBListUpdatedParams, err error) bool) {
+	closeChn := make(chan struct{})
+	decoder := obj.conn.On(IndexedDBListUpdated, closeChn)
+	go func() {
+		for {
+			params := IndexedDBListUpdatedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				close(closeChn)

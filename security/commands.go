@@ -13,16 +13,16 @@ import (
 
 // List of commands in Security domain
 const (
-	Enable                       = "Security.enable"
 	Disable                      = "Security.disable"
+	Enable                       = "Security.enable"
 	HandleCertificateError       = "Security.handleCertificateError"
 	SetOverrideCertificateErrors = "Security.setOverrideCertificateErrors"
 )
 
 // List of events in Security domain
 const (
-	SecurityStateChanged = "Security.securityStateChanged"
 	CertificateError     = "Security.certificateError"
+	SecurityStateChanged = "Security.securityStateChanged"
 )
 
 // Security
@@ -35,15 +35,15 @@ func New(conn cri.Connector) *Security {
 	return &Security{conn}
 }
 
-// Enables tracking security state changes.
-func (obj *Security) Enable() (err error) {
-	err = obj.conn.Send(Enable, nil, nil)
-	return
-}
-
 // Disables tracking security state changes.
 func (obj *Security) Disable() (err error) {
 	err = obj.conn.Send(Disable, nil, nil)
+	return
+}
+
+// Enables tracking security state changes.
+func (obj *Security) Enable() (err error) {
+	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 
@@ -71,6 +71,31 @@ func (obj *Security) SetOverrideCertificateErrors(request *SetOverrideCertificat
 	return
 }
 
+type CertificateErrorParams struct {
+	// The ID of the event.
+	EventId int `json:"eventId"`
+	// The type of the error.
+	ErrorType string `json:"errorType"`
+	// The url that was requested.
+	RequestURL string `json:"requestURL"`
+}
+
+// There is a certificate error. If overriding certificate errors is enabled, then it should be handled with the handleCertificateError command. Note: this event does not fire if the certificate error has been allowed internally.
+func (obj *Security) CertificateError(fn func(params *CertificateErrorParams, err error) bool) {
+	closeChn := make(chan struct{})
+	decoder := obj.conn.On(CertificateError, closeChn)
+	go func() {
+		for {
+			params := CertificateErrorParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
+				close(closeChn)
+				break
+			}
+		}
+	}()
+}
+
 type SecurityStateChangedParams struct {
 	// Security state.
 	SecurityState types.Security_SecurityState `json:"securityState"`
@@ -91,31 +116,6 @@ func (obj *Security) SecurityStateChanged(fn func(params *SecurityStateChangedPa
 	go func() {
 		for {
 			params := SecurityStateChangedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
-}
-
-type CertificateErrorParams struct {
-	// The ID of the event.
-	EventId int `json:"eventId"`
-	// The type of the error.
-	ErrorType string `json:"errorType"`
-	// The url that was requested.
-	RequestURL string `json:"requestURL"`
-}
-
-// There is a certificate error. If overriding certificate errors is enabled, then it should be handled with the handleCertificateError command. Note: this event does not fire if the certificate error has been allowed internally.
-func (obj *Security) CertificateError(fn func(params *CertificateErrorParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(CertificateError, closeChn)
-	go func() {
-		for {
-			params := CertificateErrorParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				close(closeChn)

@@ -13,10 +13,10 @@ import (
 
 // List of commands in Database domain
 const (
-	Enable                = "Database.enable"
 	Disable               = "Database.disable"
-	GetDatabaseTableNames = "Database.getDatabaseTableNames"
+	Enable                = "Database.enable"
 	ExecuteSQL            = "Database.executeSQL"
+	GetDatabaseTableNames = "Database.getDatabaseTableNames"
 )
 
 // List of events in Database domain
@@ -33,28 +33,15 @@ func New(conn cri.Connector) *Database {
 	return &Database{conn}
 }
 
-// Enables database tracking, database events will now be delivered to the client.
-func (obj *Database) Enable() (err error) {
-	err = obj.conn.Send(Enable, nil, nil)
-	return
-}
-
 // Disables database tracking, prevents database events from being sent to the client.
 func (obj *Database) Disable() (err error) {
 	err = obj.conn.Send(Disable, nil, nil)
 	return
 }
 
-type GetDatabaseTableNamesRequest struct {
-	DatabaseId types.Database_DatabaseId `json:"databaseId"`
-}
-
-type GetDatabaseTableNamesResponse struct {
-	TableNames []string `json:"tableNames"`
-}
-
-func (obj *Database) GetDatabaseTableNames(request *GetDatabaseTableNamesRequest) (response GetDatabaseTableNamesResponse, err error) {
-	err = obj.conn.Send(GetDatabaseTableNames, request, &response)
+// Enables database tracking, database events will now be delivered to the client.
+func (obj *Database) Enable() (err error) {
+	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 
@@ -71,6 +58,19 @@ type ExecuteSQLResponse struct {
 
 func (obj *Database) ExecuteSQL(request *ExecuteSQLRequest) (response ExecuteSQLResponse, err error) {
 	err = obj.conn.Send(ExecuteSQL, request, &response)
+	return
+}
+
+type GetDatabaseTableNamesRequest struct {
+	DatabaseId types.Database_DatabaseId `json:"databaseId"`
+}
+
+type GetDatabaseTableNamesResponse struct {
+	TableNames []string `json:"tableNames"`
+}
+
+func (obj *Database) GetDatabaseTableNames(request *GetDatabaseTableNamesRequest) (response GetDatabaseTableNamesResponse, err error) {
+	err = obj.conn.Send(GetDatabaseTableNames, request, &response)
 	return
 }
 

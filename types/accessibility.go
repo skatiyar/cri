@@ -78,13 +78,13 @@ type Accessibility_AXNode struct {
 	Ignored bool `json:"ignored"`
 	// Collection of reasons why this node is hidden.
 	IgnoredReasons []Accessibility_AXProperty `json:"ignoredReasons,omitempty"`
-	// This <code>Node</code>'s role, whether explicit or implicit.
+	// This `Node`'s role, whether explicit or implicit.
 	Role *Accessibility_AXValue `json:"role,omitempty"`
-	// The accessible name for this <code>Node</code>.
+	// The accessible name for this `Node`.
 	Name *Accessibility_AXValue `json:"name,omitempty"`
-	// The accessible description for this <code>Node</code>.
+	// The accessible description for this `Node`.
 	Description *Accessibility_AXValue `json:"description,omitempty"`
-	// The value for this <code>Node</code>.
+	// The value for this `Node`.
 	Value *Accessibility_AXValue `json:"value,omitempty"`
 	// All other properties
 	Properties []Accessibility_AXProperty `json:"properties,omitempty"`

@@ -13,8 +13,8 @@ import (
 
 // List of commands in Performance domain
 const (
-	Enable     = "Performance.enable"
 	Disable    = "Performance.disable"
+	Enable     = "Performance.enable"
 	GetMetrics = "Performance.getMetrics"
 )
 
@@ -32,15 +32,15 @@ func New(conn cri.Connector) *Performance {
 	return &Performance{conn}
 }
 
-// Enable collecting and reporting metrics.
-func (obj *Performance) Enable() (err error) {
-	err = obj.conn.Send(Enable, nil, nil)
-	return
-}
-
 // Disable collecting and reporting metrics.
 func (obj *Performance) Disable() (err error) {
 	err = obj.conn.Send(Disable, nil, nil)
+	return
+}
+
+// Enable collecting and reporting metrics.
+func (obj *Performance) Enable() (err error) {
+	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 

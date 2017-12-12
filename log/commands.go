@@ -13,9 +13,9 @@ import (
 
 // List of commands in Log domain
 const (
-	Enable                = "Log.enable"
-	Disable               = "Log.disable"
 	Clear                 = "Log.clear"
+	Disable               = "Log.disable"
+	Enable                = "Log.enable"
 	StartViolationsReport = "Log.startViolationsReport"
 	StopViolationsReport  = "Log.stopViolationsReport"
 )
@@ -35,9 +35,9 @@ func New(conn cri.Connector) *Log {
 	return &Log{conn}
 }
 
-// Enables log domain, sends the entries collected so far to the client by means of the <code>entryAdded</code> notification.
-func (obj *Log) Enable() (err error) {
-	err = obj.conn.Send(Enable, nil, nil)
+// Clears the log.
+func (obj *Log) Clear() (err error) {
+	err = obj.conn.Send(Clear, nil, nil)
 	return
 }
 
@@ -47,9 +47,9 @@ func (obj *Log) Disable() (err error) {
 	return
 }
 
-// Clears the log.
-func (obj *Log) Clear() (err error) {
-	err = obj.conn.Send(Clear, nil, nil)
+// Enables log domain, sends the entries collected so far to the client by means of the `entryAdded` notification.
+func (obj *Log) Enable() (err error) {
+	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 

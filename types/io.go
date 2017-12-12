@@ -5,5 +5,5 @@
 
 package types
 
-// This is either obtained from another method or specifed as <code>blob:&lt;uuid&gt;</code> where <code>&lt;uuid&gt</code> is an UUID of a Blob.
+// This is either obtained from another method or specifed as `blob:&lt;uuid&gt;` where `&lt;uuid&gt` is an UUID of a Blob.
 type IO_StreamHandle string

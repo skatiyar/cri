@@ -33,7 +33,7 @@ type GetPartialAXTreeRequest struct {
 }
 
 type GetPartialAXTreeResponse struct {
-	// The <code>Accessibility.AXNode</code> for this DOM node, if it exists, plus its ancestors, siblings and children, if requested.
+	// The `Accessibility.AXNode` for this DOM node, if it exists, plus its ancestors, siblings and children, if requested.
 	Nodes []types.Accessibility_AXNode `json:"nodes"`
 }
 

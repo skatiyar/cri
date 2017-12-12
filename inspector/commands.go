@@ -12,8 +12,8 @@ import (
 
 // List of commands in Inspector domain
 const (
-	Enable  = "Inspector.enable"
 	Disable = "Inspector.disable"
+	Enable  = "Inspector.enable"
 )
 
 // List of events in Inspector domain
@@ -31,15 +31,15 @@ func New(conn cri.Connector) *Inspector {
 	return &Inspector{conn}
 }
 
-// Enables inspector domain notifications.
-func (obj *Inspector) Enable() (err error) {
-	err = obj.conn.Send(Enable, nil, nil)
-	return
-}
-
 // Disables inspector domain notifications.
 func (obj *Inspector) Disable() (err error) {
 	err = obj.conn.Send(Disable, nil, nil)
+	return
+}
+
+// Enables inspector domain notifications.
+func (obj *Inspector) Enable() (err error) {
+	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 

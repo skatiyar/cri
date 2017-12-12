@@ -13,7 +13,7 @@ type Debugger_CallFrameId string
 
 // Location in the source code.
 type Debugger_Location struct {
-	// Script identifier as reported in the <code>Debugger.scriptParsed</code>.
+	// Script identifier as reported in the `Debugger.scriptParsed`.
 	ScriptId Runtime_ScriptId `json:"scriptId"`
 	// Line number in the script (0-based).
 	LineNumber int `json:"lineNumber"`
@@ -41,7 +41,7 @@ type Debugger_CallFrame struct {
 	Url string `json:"url"`
 	// Scope chain for this call frame.
 	ScopeChain []Debugger_Scope `json:"scopeChain"`
-	// <code>this</code> object for this call frame.
+	// `this` object for this call frame.
 	This Runtime_RemoteObject `json:"this"`
 	// The value being returned, if the function is at return point.
 	ReturnValue *Runtime_RemoteObject `json:"returnValue,omitempty"`
@@ -51,7 +51,7 @@ type Debugger_CallFrame struct {
 type Debugger_Scope struct {
 	// Scope type.
 	Type string `json:"type"`
-	// Object representing the scope. For <code>global</code> and <code>with</code> scopes it represents the actual object; for the rest of the scopes, it is artificial transient object enumerating scope variables as its properties.
+	// Object representing the scope. For `global` and `with` scopes it represents the actual object; for the rest of the scopes, it is artificial transient object enumerating scope variables as its properties.
 	Object Runtime_RemoteObject `json:"object"`
 	Name   *string              `json:"name,omitempty"`
 	// Location in the source code where scope starts
@@ -69,7 +69,7 @@ type Debugger_SearchMatch struct {
 }
 
 type Debugger_BreakLocation struct {
-	// Script identifier as reported in the <code>Debugger.scriptParsed</code>.
+	// Script identifier as reported in the `Debugger.scriptParsed`.
 	ScriptId Runtime_ScriptId `json:"scriptId"`
 	// Line number in the script (0-based).
 	LineNumber int `json:"lineNumber"`

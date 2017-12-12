@@ -123,7 +123,7 @@ type CSS_ShorthandEntry struct {
 	Name string `json:"name"`
 	// Shorthand value.
 	Value string `json:"value"`
-	// Whether the property has "!important" annotation (implies <code>false</code> if absent).
+	// Whether the property has "!important" annotation (implies `false` if absent).
 	Important *bool `json:"important,omitempty"`
 }
 
@@ -154,13 +154,13 @@ type CSS_CSSProperty struct {
 	Name string `json:"name"`
 	// The property value.
 	Value string `json:"value"`
-	// Whether the property has "!important" annotation (implies <code>false</code> if absent).
+	// Whether the property has "!important" annotation (implies `false` if absent).
 	Important *bool `json:"important,omitempty"`
-	// Whether the property is implicit (implies <code>false</code> if absent).
+	// Whether the property is implicit (implies `false` if absent).
 	Implicit *bool `json:"implicit,omitempty"`
 	// The full property text as specified in the style.
 	Text *string `json:"text,omitempty"`
-	// Whether the property is understood by the browser (implies <code>true</code> if absent).
+	// Whether the property is understood by the browser (implies `true` if absent).
 	ParsedOk *bool `json:"parsedOk,omitempty"`
 	// Whether the property is disabled by the user (present for source-based properties only).
 	Disabled *bool `json:"disabled,omitempty"`

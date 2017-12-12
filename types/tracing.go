@@ -27,3 +27,6 @@ type Tracing_TraceConfig struct {
 	// Configuration for memory dump triggers. Used only when "memory-infra" category is enabled.
 	MemoryDumpConfig *Tracing_MemoryDumpConfig `json:"memoryDumpConfig,omitempty"`
 }
+
+// Compression type to use for traces returned via streams.
+type Tracing_StreamCompression string

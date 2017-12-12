@@ -13,24 +13,24 @@ import (
 
 // List of commands in Profiler domain
 const (
-	Enable                = "Profiler.enable"
 	Disable               = "Profiler.disable"
+	Enable                = "Profiler.enable"
+	GetBestEffortCoverage = "Profiler.getBestEffortCoverage"
 	SetSamplingInterval   = "Profiler.setSamplingInterval"
 	Start                 = "Profiler.start"
-	Stop                  = "Profiler.stop"
 	StartPreciseCoverage  = "Profiler.startPreciseCoverage"
-	StopPreciseCoverage   = "Profiler.stopPreciseCoverage"
-	TakePreciseCoverage   = "Profiler.takePreciseCoverage"
-	GetBestEffortCoverage = "Profiler.getBestEffortCoverage"
 	StartTypeProfile      = "Profiler.startTypeProfile"
+	Stop                  = "Profiler.stop"
+	StopPreciseCoverage   = "Profiler.stopPreciseCoverage"
 	StopTypeProfile       = "Profiler.stopTypeProfile"
+	TakePreciseCoverage   = "Profiler.takePreciseCoverage"
 	TakeTypeProfile       = "Profiler.takeTypeProfile"
 )
 
 // List of events in Profiler domain
 const (
-	ConsoleProfileStarted  = "Profiler.consoleProfileStarted"
 	ConsoleProfileFinished = "Profiler.consoleProfileFinished"
+	ConsoleProfileStarted  = "Profiler.consoleProfileStarted"
 )
 
 type Profiler struct {
@@ -42,13 +42,24 @@ func New(conn cri.Connector) *Profiler {
 	return &Profiler{conn}
 }
 
+func (obj *Profiler) Disable() (err error) {
+	err = obj.conn.Send(Disable, nil, nil)
+	return
+}
+
 func (obj *Profiler) Enable() (err error) {
 	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 
-func (obj *Profiler) Disable() (err error) {
-	err = obj.conn.Send(Disable, nil, nil)
+type GetBestEffortCoverageResponse struct {
+	// Coverage data for the current isolate.
+	Result []types.Profiler_ScriptCoverage `json:"result"`
+}
+
+// Collect coverage data for the current isolate. The coverage data may be incomplete due to garbage collection.
+func (obj *Profiler) GetBestEffortCoverage() (response GetBestEffortCoverageResponse, err error) {
+	err = obj.conn.Send(GetBestEffortCoverage, nil, &response)
 	return
 }
 
@@ -68,16 +79,6 @@ func (obj *Profiler) Start() (err error) {
 	return
 }
 
-type StopResponse struct {
-	// Recorded profile.
-	Profile types.Profiler_Profile `json:"profile"`
-}
-
-func (obj *Profiler) Stop() (response StopResponse, err error) {
-	err = obj.conn.Send(Stop, nil, &response)
-	return
-}
-
 type StartPreciseCoverageRequest struct {
 	// Collect accurate call counts beyond simple 'covered' or 'not covered'.
 	CallCount *bool `json:"callCount,omitempty"`
@@ -91,9 +92,31 @@ func (obj *Profiler) StartPreciseCoverage(request *StartPreciseCoverageRequest) 
 	return
 }
 
+// Enable type profile.
+func (obj *Profiler) StartTypeProfile() (err error) {
+	err = obj.conn.Send(StartTypeProfile, nil, nil)
+	return
+}
+
+type StopResponse struct {
+	// Recorded profile.
+	Profile types.Profiler_Profile `json:"profile"`
+}
+
+func (obj *Profiler) Stop() (response StopResponse, err error) {
+	err = obj.conn.Send(Stop, nil, &response)
+	return
+}
+
 // Disable precise code coverage. Disabling releases unnecessary execution count records and allows executing optimized code.
 func (obj *Profiler) StopPreciseCoverage() (err error) {
 	err = obj.conn.Send(StopPreciseCoverage, nil, nil)
+	return
+}
+
+// Disable type profile. Disabling releases type profile data collected so far.
+func (obj *Profiler) StopTypeProfile() (err error) {
+	err = obj.conn.Send(StopTypeProfile, nil, nil)
 	return
 }
 
@@ -108,29 +131,6 @@ func (obj *Profiler) TakePreciseCoverage() (response TakePreciseCoverageResponse
 	return
 }
 
-type GetBestEffortCoverageResponse struct {
-	// Coverage data for the current isolate.
-	Result []types.Profiler_ScriptCoverage `json:"result"`
-}
-
-// Collect coverage data for the current isolate. The coverage data may be incomplete due to garbage collection.
-func (obj *Profiler) GetBestEffortCoverage() (response GetBestEffortCoverageResponse, err error) {
-	err = obj.conn.Send(GetBestEffortCoverage, nil, &response)
-	return
-}
-
-// Enable type profile.
-func (obj *Profiler) StartTypeProfile() (err error) {
-	err = obj.conn.Send(StartTypeProfile, nil, nil)
-	return
-}
-
-// Disable type profile. Disabling releases type profile data collected so far.
-func (obj *Profiler) StopTypeProfile() (err error) {
-	err = obj.conn.Send(StopTypeProfile, nil, nil)
-	return
-}
-
 type TakeTypeProfileResponse struct {
 	// Type profile for all scripts since startTypeProfile() was turned on.
 	Result []types.Profiler_ScriptTypeProfile `json:"result"`
@@ -140,30 +140,6 @@ type TakeTypeProfileResponse struct {
 func (obj *Profiler) TakeTypeProfile() (response TakeTypeProfileResponse, err error) {
 	err = obj.conn.Send(TakeTypeProfile, nil, &response)
 	return
-}
-
-type ConsoleProfileStartedParams struct {
-	Id string `json:"id"`
-	// Location of console.profile().
-	Location types.Debugger_Location `json:"location"`
-	// Profile title passed as an argument to console.profile().
-	Title *string `json:"title,omitempty"`
-}
-
-// Sent when new profile recording is started using console.profile() call.
-func (obj *Profiler) ConsoleProfileStarted(fn func(params *ConsoleProfileStartedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(ConsoleProfileStarted, closeChn)
-	go func() {
-		for {
-			params := ConsoleProfileStartedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
 }
 
 type ConsoleProfileFinishedParams struct {
@@ -181,6 +157,30 @@ func (obj *Profiler) ConsoleProfileFinished(fn func(params *ConsoleProfileFinish
 	go func() {
 		for {
 			params := ConsoleProfileFinishedParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
+				close(closeChn)
+				break
+			}
+		}
+	}()
+}
+
+type ConsoleProfileStartedParams struct {
+	Id string `json:"id"`
+	// Location of console.profile().
+	Location types.Debugger_Location `json:"location"`
+	// Profile title passed as an argument to console.profile().
+	Title *string `json:"title,omitempty"`
+}
+
+// Sent when new profile recording is started using console.profile() call.
+func (obj *Profiler) ConsoleProfileStarted(fn func(params *ConsoleProfileStartedParams, err error) bool) {
+	closeChn := make(chan struct{})
+	decoder := obj.conn.On(ConsoleProfileStarted, closeChn)
+	go func() {
+		for {
+			params := ConsoleProfileStartedParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				close(closeChn)

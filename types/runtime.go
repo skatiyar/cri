@@ -18,19 +18,19 @@ type Runtime_UnserializableValue string
 type Runtime_RemoteObject struct {
 	// Object type.
 	Type string `json:"type"`
-	// Object subtype hint. Specified for <code>object</code> type values only.
+	// Object subtype hint. Specified for `object` type values only.
 	Subtype *string `json:"subtype,omitempty"`
-	// Object class (constructor) name. Specified for <code>object</code> type values only.
+	// Object class (constructor) name. Specified for `object` type values only.
 	ClassName *string `json:"className,omitempty"`
 	// Remote object value in case of primitive values or JSON values (if it was requested).
 	Value interface{} `json:"value,omitempty"`
-	// Primitive value which can not be JSON-stringified does not have <code>value</code>, but gets this property.
+	// Primitive value which can not be JSON-stringified does not have `value`, but gets this property.
 	UnserializableValue *Runtime_UnserializableValue `json:"unserializableValue,omitempty"`
 	// String representation of the object.
 	Description *string `json:"description,omitempty"`
 	// Unique object identifier (for non-primitive values).
 	ObjectId *Runtime_RemoteObjectId `json:"objectId,omitempty"`
-	// Preview containing abbreviated property values. Specified for <code>object</code> type values only.
+	// Preview containing abbreviated property values. Specified for `object` type values only.
 	// NOTE Experimental
 	Preview *Runtime_ObjectPreview `json:"preview,omitempty"`
 	// NOTE Experimental
@@ -49,7 +49,7 @@ type Runtime_CustomPreview struct {
 type Runtime_ObjectPreview struct {
 	// Object type.
 	Type string `json:"type"`
-	// Object subtype hint. Specified for <code>object</code> type values only.
+	// Object subtype hint. Specified for `object` type values only.
 	Subtype *string `json:"subtype,omitempty"`
 	// String representation of the object.
 	Description *string `json:"description,omitempty"`
@@ -57,7 +57,7 @@ type Runtime_ObjectPreview struct {
 	Overflow bool `json:"overflow"`
 	// List of the properties.
 	Properties []Runtime_PropertyPreview `json:"properties"`
-	// List of the entries. Specified for <code>map</code> and <code>set</code> subtype values only.
+	// List of the entries. Specified for `map` and `set` subtype values only.
 	Entries []Runtime_EntryPreview `json:"entries,omitempty"`
 }
 
@@ -70,7 +70,7 @@ type Runtime_PropertyPreview struct {
 	Value *string `json:"value,omitempty"`
 	// Nested value preview.
 	ValuePreview *Runtime_ObjectPreview `json:"valuePreview,omitempty"`
-	// Object subtype hint. Specified for <code>object</code> type values only.
+	// Object subtype hint. Specified for `object` type values only.
 	Subtype *string `json:"subtype,omitempty"`
 }
 
@@ -89,9 +89,9 @@ type Runtime_PropertyDescriptor struct {
 	Value *Runtime_RemoteObject `json:"value,omitempty"`
 	// True if the value associated with the property may be changed (data descriptors only).
 	Writable *bool `json:"writable,omitempty"`
-	// A function which serves as a getter for the property, or <code>undefined</code> if there is no getter (accessor descriptors only).
+	// A function which serves as a getter for the property, or `undefined` if there is no getter (accessor descriptors only).
 	Get *Runtime_RemoteObject `json:"get,omitempty"`
-	// A function which serves as a setter for the property, or <code>undefined</code> if there is no setter (accessor descriptors only).
+	// A function which serves as a setter for the property, or `undefined` if there is no setter (accessor descriptors only).
 	Set *Runtime_RemoteObject `json:"set,omitempty"`
 	// True if the type of this property descriptor may be changed and if the property may be deleted from the corresponding object.
 	Configurable bool `json:"configurable"`
@@ -101,7 +101,7 @@ type Runtime_PropertyDescriptor struct {
 	WasThrown *bool `json:"wasThrown,omitempty"`
 	// True if the property is owned for the object.
 	IsOwn *bool `json:"isOwn,omitempty"`
-	// Property symbol object, if the property is of the <code>symbol</code> type.
+	// Property symbol object, if the property is of the `symbol` type.
 	Symbol *Runtime_RemoteObject `json:"symbol,omitempty"`
 }
 
@@ -113,7 +113,7 @@ type Runtime_InternalPropertyDescriptor struct {
 	Value *Runtime_RemoteObject `json:"value,omitempty"`
 }
 
-// Represents function call argument. Either remote object id <code>objectId</code>, primitive <code>value</code>, unserializable primitive value or neither of (for undefined) them should be specified.
+// Represents function call argument. Either remote object id `objectId`, primitive `value`, unserializable primitive value or neither of (for undefined) them should be specified.
 type Runtime_CallArgument struct {
 	// Primitive value or serializable javascript object.
 	Value interface{} `json:"value,omitempty"`
@@ -193,7 +193,7 @@ type Runtime_StackTrace struct {
 // Unique identifier of current debugger.
 type Runtime_UniqueDebuggerId string
 
-// If <code>debuggerId</code> is set stack trace comes from another debugger and can be resolved there. This allows to track cross-debugger calls. See <code>Runtime.StackTrace</code> and <code>Debugger.paused</code> for usages.
+// If `debuggerId` is set stack trace comes from another debugger and can be resolved there. This allows to track cross-debugger calls. See `Runtime.StackTrace` and `Debugger.paused` for usages.
 type Runtime_StackTraceId struct {
 	Id         string                    `json:"id"`
 	DebuggerId *Runtime_UniqueDebuggerId `json:"debuggerId,omitempty"`

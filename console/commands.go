@@ -13,9 +13,9 @@ import (
 
 // List of commands in Console domain
 const (
-	Enable        = "Console.enable"
-	Disable       = "Console.disable"
 	ClearMessages = "Console.clearMessages"
+	Disable       = "Console.disable"
+	Enable        = "Console.enable"
 )
 
 // List of events in Console domain
@@ -33,9 +33,9 @@ func New(conn cri.Connector) *Console {
 	return &Console{conn}
 }
 
-// Enables console domain, sends the messages collected so far to the client by means of the <code>messageAdded</code> notification.
-func (obj *Console) Enable() (err error) {
-	err = obj.conn.Send(Enable, nil, nil)
+// Does nothing.
+func (obj *Console) ClearMessages() (err error) {
+	err = obj.conn.Send(ClearMessages, nil, nil)
 	return
 }
 
@@ -45,9 +45,9 @@ func (obj *Console) Disable() (err error) {
 	return
 }
 
-// Does nothing.
-func (obj *Console) ClearMessages() (err error) {
-	err = obj.conn.Send(ClearMessages, nil, nil)
+// Enables console domain, sends the messages collected so far to the client by means of the `messageAdded` notification.
+func (obj *Console) Enable() (err error) {
+	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 

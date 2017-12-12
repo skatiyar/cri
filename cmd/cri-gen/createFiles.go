@@ -31,7 +31,7 @@ func transformParameter(p Parameter, domain, structName string, notTypes bool) (
 	deps := make([]string, 0)
 
 	if len(p.Description) > 0 {
-		nField = append(nField, "// "+strings.Trim(p.Description, "\n"))
+		nField = append(nField, "// "+strings.Trim(strings.Replace(p.Description, "\n", " ", -1), "\n"))
 	}
 	if p.Experimental {
 		nField = append(nField, "// NOTE Experimental")
@@ -127,7 +127,7 @@ func transformTypes(d Domain) TypesData {
 			ID: d.Domain + "_" + typs[i].ID,
 		}
 		if len(typs[i].Description) > 0 {
-			typeSpec.Doc = "// " + typs[i].Description
+			typeSpec.Doc = "// " + strings.Replace(typs[i].Description, "\n", " ", -1)
 		}
 
 		if len(typs[i].Enum) != 0 {
@@ -223,7 +223,7 @@ func transformCommands(d Domain) CommandsData {
 	}
 
 	if len(d.Description) > 0 {
-		data.Doc = "// " + d.Description
+		data.Doc = "// " + strings.Replace(d.Description, "\n", " ", -1)
 	}
 
 	imports := make(map[string]bool)
@@ -235,7 +235,7 @@ func transformCommands(d Domain) CommandsData {
 			Types:   make([]TypeData, 0),
 		}
 		if len(d.Commands[i].Description) > 0 {
-			cmd.Doc = "// " + d.Commands[i].Description
+			cmd.Doc = "// " + strings.Replace(d.Commands[i].Description, "\n", " ", -1)
 		}
 		if len(d.Commands[i].Parameters) > 0 {
 			reqName := strings.Title(d.Commands[i].Name) + "Request"
@@ -287,7 +287,7 @@ func transformCommands(d Domain) CommandsData {
 			Command: d.Domain + "." + d.Events[i].Name,
 		}
 		if len(d.Events[i].Description) > 0 {
-			eve.Doc = "// " + d.Events[i].Description
+			eve.Doc = "// " + strings.Replace(d.Events[i].Description, "\n", " ", -1)
 		}
 		if d.Events[i].Experimental {
 			eve.Doc += "\n// NOTE Experimental"

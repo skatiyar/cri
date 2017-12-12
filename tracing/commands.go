@@ -13,18 +13,18 @@ import (
 
 // List of commands in Tracing domain
 const (
-	Start                 = "Tracing.start"
 	End                   = "Tracing.end"
 	GetCategories         = "Tracing.getCategories"
-	RequestMemoryDump     = "Tracing.requestMemoryDump"
 	RecordClockSyncMarker = "Tracing.recordClockSyncMarker"
+	RequestMemoryDump     = "Tracing.requestMemoryDump"
+	Start                 = "Tracing.start"
 )
 
 // List of events in Tracing domain
 const (
+	BufferUsage     = "Tracing.bufferUsage"
 	DataCollected   = "Tracing.dataCollected"
 	TracingComplete = "Tracing.tracingComplete"
-	BufferUsage     = "Tracing.bufferUsage"
 )
 
 type Tracing struct {
@@ -34,24 +34,6 @@ type Tracing struct {
 // New creates a Tracing instance
 func New(conn cri.Connector) *Tracing {
 	return &Tracing{conn}
-}
-
-type StartRequest struct {
-	// Category/tag filter
-	Categories *string `json:"categories,omitempty"`
-	// Tracing options
-	Options *string `json:"options,omitempty"`
-	// If set, the agent will issue bufferUsage events at this interval, specified in milliseconds
-	BufferUsageReportingInterval *float32 `json:"bufferUsageReportingInterval,omitempty"`
-	// Whether to report trace events as series of dataCollected events or to save trace to a stream (defaults to <code>ReportEvents</code>).
-	TransferMode *string                    `json:"transferMode,omitempty"`
-	TraceConfig  *types.Tracing_TraceConfig `json:"traceConfig,omitempty"`
-}
-
-// Start trace events collection.
-func (obj *Tracing) Start(request *StartRequest) (err error) {
-	err = obj.conn.Send(Start, request, nil)
-	return
 }
 
 // Stop trace events collection.
@@ -71,6 +53,17 @@ func (obj *Tracing) GetCategories() (response GetCategoriesResponse, err error) 
 	return
 }
 
+type RecordClockSyncMarkerRequest struct {
+	// The ID of this clock sync marker
+	SyncId string `json:"syncId"`
+}
+
+// Record a clock sync marker in the trace.
+func (obj *Tracing) RecordClockSyncMarker(request *RecordClockSyncMarkerRequest) (err error) {
+	err = obj.conn.Send(RecordClockSyncMarker, request, nil)
+	return
+}
+
 type RequestMemoryDumpResponse struct {
 	// GUID of the resulting global memory dump.
 	DumpGuid string `json:"dumpGuid"`
@@ -84,15 +77,48 @@ func (obj *Tracing) RequestMemoryDump() (response RequestMemoryDumpResponse, err
 	return
 }
 
-type RecordClockSyncMarkerRequest struct {
-	// The ID of this clock sync marker
-	SyncId string `json:"syncId"`
+type StartRequest struct {
+	// Category/tag filter
+	Categories *string `json:"categories,omitempty"`
+	// Tracing options
+	Options *string `json:"options,omitempty"`
+	// If set, the agent will issue bufferUsage events at this interval, specified in milliseconds
+	BufferUsageReportingInterval *float32 `json:"bufferUsageReportingInterval,omitempty"`
+	// Whether to report trace events as series of dataCollected events or to save trace to a stream (defaults to `ReportEvents`).
+	TransferMode *string `json:"transferMode,omitempty"`
+	// Compression format to use. This only applies when using `ReturnAsStream` transfer mode (defaults to `none`)
+	StreamCompression *types.Tracing_StreamCompression `json:"streamCompression,omitempty"`
+	TraceConfig       *types.Tracing_TraceConfig       `json:"traceConfig,omitempty"`
 }
 
-// Record a clock sync marker in the trace.
-func (obj *Tracing) RecordClockSyncMarker(request *RecordClockSyncMarkerRequest) (err error) {
-	err = obj.conn.Send(RecordClockSyncMarker, request, nil)
+// Start trace events collection.
+func (obj *Tracing) Start(request *StartRequest) (err error) {
+	err = obj.conn.Send(Start, request, nil)
 	return
+}
+
+type BufferUsageParams struct {
+	// A number in range [0..1] that indicates the used size of event buffer as a fraction of its total size.
+	PercentFull *float32 `json:"percentFull,omitempty"`
+	// An approximate number of events in the trace log.
+	EventCount *float32 `json:"eventCount,omitempty"`
+	// A number in range [0..1] that indicates the used size of event buffer as a fraction of its total size.
+	Value *float32 `json:"value,omitempty"`
+}
+
+func (obj *Tracing) BufferUsage(fn func(params *BufferUsageParams, err error) bool) {
+	closeChn := make(chan struct{})
+	decoder := obj.conn.On(BufferUsage, closeChn)
+	go func() {
+		for {
+			params := BufferUsageParams{}
+			readErr := decoder(&params)
+			if !fn(&params, readErr) {
+				close(closeChn)
+				break
+			}
+		}
+	}()
 }
 
 type DataCollectedParams struct {
@@ -118,6 +144,8 @@ func (obj *Tracing) DataCollected(fn func(params *DataCollectedParams, err error
 type TracingCompleteParams struct {
 	// A handle of the stream that holds resulting trace data.
 	Stream *types.IO_StreamHandle `json:"stream,omitempty"`
+	// Compression format of returned stream.
+	StreamCompression *types.Tracing_StreamCompression `json:"streamCompression,omitempty"`
 }
 
 // Signals that tracing is stopped and there is no trace buffers pending flush, all data were delivered via dataCollected events.
@@ -127,30 +155,6 @@ func (obj *Tracing) TracingComplete(fn func(params *TracingCompleteParams, err e
 	go func() {
 		for {
 			params := TracingCompleteParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
-}
-
-type BufferUsageParams struct {
-	// A number in range [0..1] that indicates the used size of event buffer as a fraction of its total size.
-	PercentFull *float32 `json:"percentFull,omitempty"`
-	// An approximate number of events in the trace log.
-	EventCount *float32 `json:"eventCount,omitempty"`
-	// A number in range [0..1] that indicates the used size of event buffer as a fraction of its total size.
-	Value *float32 `json:"value,omitempty"`
-}
-
-func (obj *Tracing) BufferUsage(fn func(params *BufferUsageParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(BufferUsage, closeChn)
-	go func() {
-		for {
-			params := BufferUsageParams{}
 			readErr := decoder(&params)
 			if !fn(&params, readErr) {
 				close(closeChn)
