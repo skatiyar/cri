@@ -14,7 +14,7 @@ addons:
 
 before_script:
     - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 &
-    - while ! lsof -i :9222; do sleep 1; done
 
 script:
+    - while ! lsof -i :9222; do sleep 1; done
     - go test -v
