@@ -40,12 +40,6 @@ func Example() {
 	}
 
 	for i := 0; i < len(urls); i++ {
-		doneChn := make(chan struct{})
-		pi.LoadEventFired(func(params *page.LoadEventFiredParams, err error) bool {
-			close(doneChn)
-			return false
-		})
-
 		_, navErr := pi.Navigate(&page.NavigateRequest{
 			Url: urls[i],
 		})
@@ -53,7 +47,10 @@ func Example() {
 			panic(navErr)
 		}
 
-		<-doneChn
+		_, loadErr := pi.LoadEventFired()
+		if loadErr != nil {
+			panic(loadErr)
+		}
 
 		pic, picErr := pi.CaptureScreenshot(nil)
 		if picErr != nil {

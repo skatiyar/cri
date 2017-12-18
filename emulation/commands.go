@@ -262,36 +262,16 @@ type VirtualTimeAdvancedParams struct {
 
 // Notification sent after the virtual time has advanced.
 // NOTE Experimental
-func (obj *Emulation) VirtualTimeAdvanced(fn func(params *VirtualTimeAdvancedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(VirtualTimeAdvanced, closeChn)
-	go func() {
-		for {
-			params := VirtualTimeAdvancedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Emulation) VirtualTimeAdvanced() (params VirtualTimeAdvancedParams, err error) {
+	err = obj.conn.On(VirtualTimeAdvanced, &params)
+	return
 }
 
 // Notification sent after the virtual time budget for the current VirtualTimePolicy has run out.
 // NOTE Experimental
-func (obj *Emulation) VirtualTimeBudgetExpired(fn func(err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(VirtualTimeBudgetExpired, closeChn)
-	go func() {
-		for {
-
-			readErr := decoder(nil)
-			if !fn(readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Emulation) VirtualTimeBudgetExpired() (err error) {
+	err = obj.conn.On(VirtualTimeBudgetExpired, nil)
+	return
 }
 
 type VirtualTimePausedParams struct {
@@ -301,17 +281,7 @@ type VirtualTimePausedParams struct {
 
 // Notification sent after the virtual time has paused.
 // NOTE Experimental
-func (obj *Emulation) VirtualTimePaused(fn func(params *VirtualTimePausedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(VirtualTimePaused, closeChn)
-	go func() {
-		for {
-			params := VirtualTimePausedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Emulation) VirtualTimePaused() (params VirtualTimePausedParams, err error) {
+	err = obj.conn.On(VirtualTimePaused, &params)
+	return
 }

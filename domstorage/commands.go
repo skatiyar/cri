@@ -100,19 +100,9 @@ type DomStorageItemAddedParams struct {
 	NewValue  string                     `json:"newValue"`
 }
 
-func (obj *DOMStorage) DomStorageItemAdded(fn func(params *DomStorageItemAddedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(DomStorageItemAdded, closeChn)
-	go func() {
-		for {
-			params := DomStorageItemAddedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *DOMStorage) DomStorageItemAdded() (params DomStorageItemAddedParams, err error) {
+	err = obj.conn.On(DomStorageItemAdded, &params)
+	return
 }
 
 type DomStorageItemRemovedParams struct {
@@ -120,19 +110,9 @@ type DomStorageItemRemovedParams struct {
 	Key       string                     `json:"key"`
 }
 
-func (obj *DOMStorage) DomStorageItemRemoved(fn func(params *DomStorageItemRemovedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(DomStorageItemRemoved, closeChn)
-	go func() {
-		for {
-			params := DomStorageItemRemovedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *DOMStorage) DomStorageItemRemoved() (params DomStorageItemRemovedParams, err error) {
+	err = obj.conn.On(DomStorageItemRemoved, &params)
+	return
 }
 
 type DomStorageItemUpdatedParams struct {
@@ -142,36 +122,16 @@ type DomStorageItemUpdatedParams struct {
 	NewValue  string                     `json:"newValue"`
 }
 
-func (obj *DOMStorage) DomStorageItemUpdated(fn func(params *DomStorageItemUpdatedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(DomStorageItemUpdated, closeChn)
-	go func() {
-		for {
-			params := DomStorageItemUpdatedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *DOMStorage) DomStorageItemUpdated() (params DomStorageItemUpdatedParams, err error) {
+	err = obj.conn.On(DomStorageItemUpdated, &params)
+	return
 }
 
 type DomStorageItemsClearedParams struct {
 	StorageId types.DOMStorage_StorageId `json:"storageId"`
 }
 
-func (obj *DOMStorage) DomStorageItemsCleared(fn func(params *DomStorageItemsClearedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(DomStorageItemsCleared, closeChn)
-	go func() {
-		for {
-			params := DomStorageItemsClearedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *DOMStorage) DomStorageItemsCleared() (params DomStorageItemsClearedParams, err error) {
+	err = obj.conn.On(DomStorageItemsCleared, &params)
+	return
 }

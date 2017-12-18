@@ -63,17 +63,7 @@ type MetricsParams struct {
 }
 
 // Current values of the metrics.
-func (obj *Performance) Metrics(fn func(params *MetricsParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(Metrics, closeChn)
-	go func() {
-		for {
-			params := MetricsParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Performance) Metrics() (params MetricsParams, err error) {
+	err = obj.conn.On(Metrics, &params)
+	return
 }

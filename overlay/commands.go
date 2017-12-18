@@ -244,19 +244,9 @@ type InspectNodeRequestedParams struct {
 }
 
 // Fired when the node should be inspected. This happens after call to `setInspectMode` or when user manually inspects an element.
-func (obj *Overlay) InspectNodeRequested(fn func(params *InspectNodeRequestedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(InspectNodeRequested, closeChn)
-	go func() {
-		for {
-			params := InspectNodeRequestedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Overlay) InspectNodeRequested() (params InspectNodeRequestedParams, err error) {
+	err = obj.conn.On(InspectNodeRequested, &params)
+	return
 }
 
 type NodeHighlightRequestedParams struct {
@@ -264,19 +254,9 @@ type NodeHighlightRequestedParams struct {
 }
 
 // Fired when the node should be highlighted. This happens after call to `setInspectMode`.
-func (obj *Overlay) NodeHighlightRequested(fn func(params *NodeHighlightRequestedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(NodeHighlightRequested, closeChn)
-	go func() {
-		for {
-			params := NodeHighlightRequestedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Overlay) NodeHighlightRequested() (params NodeHighlightRequestedParams, err error) {
+	err = obj.conn.On(NodeHighlightRequested, &params)
+	return
 }
 
 type ScreenshotRequestedParams struct {
@@ -285,17 +265,7 @@ type ScreenshotRequestedParams struct {
 }
 
 // Fired when user asks to capture screenshot of some area on the page.
-func (obj *Overlay) ScreenshotRequested(fn func(params *ScreenshotRequestedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(ScreenshotRequested, closeChn)
-	go func() {
-		for {
-			params := ScreenshotRequestedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Overlay) ScreenshotRequested() (params ScreenshotRequestedParams, err error) {
+	err = obj.conn.On(ScreenshotRequested, &params)
+	return
 }

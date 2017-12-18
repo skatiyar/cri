@@ -244,19 +244,9 @@ type AttachedToTargetParams struct {
 
 // Issued when attached to target because of auto-attach or `attachToTarget` command.
 // NOTE Experimental
-func (obj *Target) AttachedToTarget(fn func(params *AttachedToTargetParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(AttachedToTarget, closeChn)
-	go func() {
-		for {
-			params := AttachedToTargetParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Target) AttachedToTarget() (params AttachedToTargetParams, err error) {
+	err = obj.conn.On(AttachedToTarget, &params)
+	return
 }
 
 type DetachedFromTargetParams struct {
@@ -268,19 +258,9 @@ type DetachedFromTargetParams struct {
 
 // Issued when detached from target for any reason (including `detachFromTarget` command). Can be issued multiple times per target if multiple sessions have been attached to it.
 // NOTE Experimental
-func (obj *Target) DetachedFromTarget(fn func(params *DetachedFromTargetParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(DetachedFromTarget, closeChn)
-	go func() {
-		for {
-			params := DetachedFromTargetParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Target) DetachedFromTarget() (params DetachedFromTargetParams, err error) {
+	err = obj.conn.On(DetachedFromTarget, &params)
+	return
 }
 
 type ReceivedMessageFromTargetParams struct {
@@ -292,19 +272,9 @@ type ReceivedMessageFromTargetParams struct {
 }
 
 // Notifies about a new protocol message received from the session (as reported in `attachedToTarget` event).
-func (obj *Target) ReceivedMessageFromTarget(fn func(params *ReceivedMessageFromTargetParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(ReceivedMessageFromTarget, closeChn)
-	go func() {
-		for {
-			params := ReceivedMessageFromTargetParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Target) ReceivedMessageFromTarget() (params ReceivedMessageFromTargetParams, err error) {
+	err = obj.conn.On(ReceivedMessageFromTarget, &params)
+	return
 }
 
 type TargetCreatedParams struct {
@@ -312,19 +282,9 @@ type TargetCreatedParams struct {
 }
 
 // Issued when a possible inspection target is created.
-func (obj *Target) TargetCreated(fn func(params *TargetCreatedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(TargetCreated, closeChn)
-	go func() {
-		for {
-			params := TargetCreatedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Target) TargetCreated() (params TargetCreatedParams, err error) {
+	err = obj.conn.On(TargetCreated, &params)
+	return
 }
 
 type TargetDestroyedParams struct {
@@ -332,19 +292,9 @@ type TargetDestroyedParams struct {
 }
 
 // Issued when a target is destroyed.
-func (obj *Target) TargetDestroyed(fn func(params *TargetDestroyedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(TargetDestroyed, closeChn)
-	go func() {
-		for {
-			params := TargetDestroyedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Target) TargetDestroyed() (params TargetDestroyedParams, err error) {
+	err = obj.conn.On(TargetDestroyed, &params)
+	return
 }
 
 type TargetInfoChangedParams struct {
@@ -352,17 +302,7 @@ type TargetInfoChangedParams struct {
 }
 
 // Issued when some information about a target has changed. This only happens between `targetCreated` and `targetDestroyed`.
-func (obj *Target) TargetInfoChanged(fn func(params *TargetInfoChangedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(TargetInfoChanged, closeChn)
-	go func() {
-		for {
-			params := TargetInfoChangedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Target) TargetInfoChanged() (params TargetInfoChangedParams, err error) {
+	err = obj.conn.On(TargetInfoChanged, &params)
+	return
 }

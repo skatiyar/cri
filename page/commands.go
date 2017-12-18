@@ -376,6 +376,10 @@ type PrintToPDFRequest struct {
 	PageRanges *string `json:"pageRanges,omitempty"`
 	// Whether to silently ignore invalid but successfully parsed page ranges, such as '3-2'. Defaults to false.
 	IgnoreInvalidPageRanges *bool `json:"ignoreInvalidPageRanges,omitempty"`
+	// HTML template for the print header. Should be valid HTML markup with following classes used to inject printing values into them: - date - formatted print date - title - document title - url - document location - pageNumber - current page number - totalPages - total pages in the document  For example, <span class=title></span> would generate span containing the title.
+	HeaderTemplate *string `json:"headerTemplate,omitempty"`
+	// HTML template for the print footer. Should use the same format as the `headerTemplate`.
+	FooterTemplate *string `json:"footerTemplate,omitempty"`
 }
 
 type PrintToPDFResponse struct {
@@ -392,7 +396,7 @@ func (obj *Page) PrintToPDF(request *PrintToPDFRequest) (response PrintToPDFResp
 type ReloadRequest struct {
 	// If true, browser cache is ignored (as if the user pressed Shift+refresh).
 	IgnoreCache *bool `json:"ignoreCache,omitempty"`
-	// If set, the script will be injected into all frames of the inspected page after reload.
+	// If set, the script will be injected into all frames of the inspected page after reload. Argument will be ignored if reloading dataURL origin.
 	ScriptToEvaluateOnLoad *string `json:"scriptToEvaluateOnLoad,omitempty"`
 }
 
@@ -632,19 +636,9 @@ type DomContentEventFiredParams struct {
 	Timestamp types.Network_MonotonicTime `json:"timestamp"`
 }
 
-func (obj *Page) DomContentEventFired(fn func(params *DomContentEventFiredParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(DomContentEventFired, closeChn)
-	go func() {
-		for {
-			params := DomContentEventFiredParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Page) DomContentEventFired() (params DomContentEventFiredParams, err error) {
+	err = obj.conn.On(DomContentEventFired, &params)
+	return
 }
 
 type FrameAttachedParams struct {
@@ -657,19 +651,9 @@ type FrameAttachedParams struct {
 }
 
 // Fired when frame has been attached to its parent.
-func (obj *Page) FrameAttached(fn func(params *FrameAttachedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(FrameAttached, closeChn)
-	go func() {
-		for {
-			params := FrameAttachedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Page) FrameAttached() (params FrameAttachedParams, err error) {
+	err = obj.conn.On(FrameAttached, &params)
+	return
 }
 
 type FrameClearedScheduledNavigationParams struct {
@@ -679,19 +663,9 @@ type FrameClearedScheduledNavigationParams struct {
 
 // Fired when frame no longer has a scheduled navigation.
 // NOTE Experimental
-func (obj *Page) FrameClearedScheduledNavigation(fn func(params *FrameClearedScheduledNavigationParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(FrameClearedScheduledNavigation, closeChn)
-	go func() {
-		for {
-			params := FrameClearedScheduledNavigationParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Page) FrameClearedScheduledNavigation() (params FrameClearedScheduledNavigationParams, err error) {
+	err = obj.conn.On(FrameClearedScheduledNavigation, &params)
+	return
 }
 
 type FrameDetachedParams struct {
@@ -700,19 +674,9 @@ type FrameDetachedParams struct {
 }
 
 // Fired when frame has been detached from its parent.
-func (obj *Page) FrameDetached(fn func(params *FrameDetachedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(FrameDetached, closeChn)
-	go func() {
-		for {
-			params := FrameDetachedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Page) FrameDetached() (params FrameDetachedParams, err error) {
+	err = obj.conn.On(FrameDetached, &params)
+	return
 }
 
 type FrameNavigatedParams struct {
@@ -721,35 +685,15 @@ type FrameNavigatedParams struct {
 }
 
 // Fired once navigation of the frame has completed. Frame is now associated with the new loader.
-func (obj *Page) FrameNavigated(fn func(params *FrameNavigatedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(FrameNavigated, closeChn)
-	go func() {
-		for {
-			params := FrameNavigatedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Page) FrameNavigated() (params FrameNavigatedParams, err error) {
+	err = obj.conn.On(FrameNavigated, &params)
+	return
 }
 
 // NOTE Experimental
-func (obj *Page) FrameResized(fn func(err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(FrameResized, closeChn)
-	go func() {
-		for {
-
-			readErr := decoder(nil)
-			if !fn(readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Page) FrameResized() (err error) {
+	err = obj.conn.On(FrameResized, nil)
+	return
 }
 
 type FrameScheduledNavigationParams struct {
@@ -765,19 +709,9 @@ type FrameScheduledNavigationParams struct {
 
 // Fired when frame schedules a potential navigation.
 // NOTE Experimental
-func (obj *Page) FrameScheduledNavigation(fn func(params *FrameScheduledNavigationParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(FrameScheduledNavigation, closeChn)
-	go func() {
-		for {
-			params := FrameScheduledNavigationParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Page) FrameScheduledNavigation() (params FrameScheduledNavigationParams, err error) {
+	err = obj.conn.On(FrameScheduledNavigation, &params)
+	return
 }
 
 type FrameStartedLoadingParams struct {
@@ -787,19 +721,9 @@ type FrameStartedLoadingParams struct {
 
 // Fired when frame has started loading.
 // NOTE Experimental
-func (obj *Page) FrameStartedLoading(fn func(params *FrameStartedLoadingParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(FrameStartedLoading, closeChn)
-	go func() {
-		for {
-			params := FrameStartedLoadingParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Page) FrameStartedLoading() (params FrameStartedLoadingParams, err error) {
+	err = obj.conn.On(FrameStartedLoading, &params)
+	return
 }
 
 type FrameStoppedLoadingParams struct {
@@ -809,51 +733,21 @@ type FrameStoppedLoadingParams struct {
 
 // Fired when frame has stopped loading.
 // NOTE Experimental
-func (obj *Page) FrameStoppedLoading(fn func(params *FrameStoppedLoadingParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(FrameStoppedLoading, closeChn)
-	go func() {
-		for {
-			params := FrameStoppedLoadingParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Page) FrameStoppedLoading() (params FrameStoppedLoadingParams, err error) {
+	err = obj.conn.On(FrameStoppedLoading, &params)
+	return
 }
 
 // Fired when interstitial page was hidden
-func (obj *Page) InterstitialHidden(fn func(err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(InterstitialHidden, closeChn)
-	go func() {
-		for {
-
-			readErr := decoder(nil)
-			if !fn(readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Page) InterstitialHidden() (err error) {
+	err = obj.conn.On(InterstitialHidden, nil)
+	return
 }
 
 // Fired when interstitial page was shown
-func (obj *Page) InterstitialShown(fn func(err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(InterstitialShown, closeChn)
-	go func() {
-		for {
-
-			readErr := decoder(nil)
-			if !fn(readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Page) InterstitialShown() (err error) {
+	err = obj.conn.On(InterstitialShown, nil)
+	return
 }
 
 type JavascriptDialogClosedParams struct {
@@ -864,19 +758,9 @@ type JavascriptDialogClosedParams struct {
 }
 
 // Fired when a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload) has been closed.
-func (obj *Page) JavascriptDialogClosed(fn func(params *JavascriptDialogClosedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(JavascriptDialogClosed, closeChn)
-	go func() {
-		for {
-			params := JavascriptDialogClosedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Page) JavascriptDialogClosed() (params JavascriptDialogClosedParams, err error) {
+	err = obj.conn.On(JavascriptDialogClosed, &params)
+	return
 }
 
 type JavascriptDialogOpeningParams struct {
@@ -891,19 +775,9 @@ type JavascriptDialogOpeningParams struct {
 }
 
 // Fired when a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload) is about to open.
-func (obj *Page) JavascriptDialogOpening(fn func(params *JavascriptDialogOpeningParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(JavascriptDialogOpening, closeChn)
-	go func() {
-		for {
-			params := JavascriptDialogOpeningParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Page) JavascriptDialogOpening() (params JavascriptDialogOpeningParams, err error) {
+	err = obj.conn.On(JavascriptDialogOpening, &params)
+	return
 }
 
 type LifecycleEventParams struct {
@@ -916,38 +790,18 @@ type LifecycleEventParams struct {
 }
 
 // Fired for top level page lifecycle events such as navigation, load, paint, etc.
-func (obj *Page) LifecycleEvent(fn func(params *LifecycleEventParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(LifecycleEvent, closeChn)
-	go func() {
-		for {
-			params := LifecycleEventParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Page) LifecycleEvent() (params LifecycleEventParams, err error) {
+	err = obj.conn.On(LifecycleEvent, &params)
+	return
 }
 
 type LoadEventFiredParams struct {
 	Timestamp types.Network_MonotonicTime `json:"timestamp"`
 }
 
-func (obj *Page) LoadEventFired(fn func(params *LoadEventFiredParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(LoadEventFired, closeChn)
-	go func() {
-		for {
-			params := LoadEventFiredParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Page) LoadEventFired() (params LoadEventFiredParams, err error) {
+	err = obj.conn.On(LoadEventFired, &params)
+	return
 }
 
 type ScreencastFrameParams struct {
@@ -961,19 +815,9 @@ type ScreencastFrameParams struct {
 
 // Compressed image data requested by the `startScreencast`.
 // NOTE Experimental
-func (obj *Page) ScreencastFrame(fn func(params *ScreencastFrameParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(ScreencastFrame, closeChn)
-	go func() {
-		for {
-			params := ScreencastFrameParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Page) ScreencastFrame() (params ScreencastFrameParams, err error) {
+	err = obj.conn.On(ScreencastFrame, &params)
+	return
 }
 
 type ScreencastVisibilityChangedParams struct {
@@ -983,19 +827,9 @@ type ScreencastVisibilityChangedParams struct {
 
 // Fired when the page with currently enabled screencast was shown or hidden `.
 // NOTE Experimental
-func (obj *Page) ScreencastVisibilityChanged(fn func(params *ScreencastVisibilityChangedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(ScreencastVisibilityChanged, closeChn)
-	go func() {
-		for {
-			params := ScreencastVisibilityChangedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Page) ScreencastVisibilityChanged() (params ScreencastVisibilityChangedParams, err error) {
+	err = obj.conn.On(ScreencastVisibilityChanged, &params)
+	return
 }
 
 type WindowOpenParams struct {
@@ -1010,17 +844,7 @@ type WindowOpenParams struct {
 }
 
 // Fired when a new window is going to be opened, via window.open(), link click, form submission, etc.
-func (obj *Page) WindowOpen(fn func(params *WindowOpenParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(WindowOpen, closeChn)
-	go func() {
-		for {
-			params := WindowOpenParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Page) WindowOpen() (params WindowOpenParams, err error) {
+	err = obj.conn.On(WindowOpen, &params)
+	return
 }

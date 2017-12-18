@@ -106,19 +106,9 @@ type BufferUsageParams struct {
 	Value *float32 `json:"value,omitempty"`
 }
 
-func (obj *Tracing) BufferUsage(fn func(params *BufferUsageParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(BufferUsage, closeChn)
-	go func() {
-		for {
-			params := BufferUsageParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Tracing) BufferUsage() (params BufferUsageParams, err error) {
+	err = obj.conn.On(BufferUsage, &params)
+	return
 }
 
 type DataCollectedParams struct {
@@ -126,19 +116,9 @@ type DataCollectedParams struct {
 }
 
 // Contains an bucket of collected trace events. When tracing is stopped collected events will be send as a sequence of dataCollected events followed by tracingComplete event.
-func (obj *Tracing) DataCollected(fn func(params *DataCollectedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(DataCollected, closeChn)
-	go func() {
-		for {
-			params := DataCollectedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Tracing) DataCollected() (params DataCollectedParams, err error) {
+	err = obj.conn.On(DataCollected, &params)
+	return
 }
 
 type TracingCompleteParams struct {
@@ -149,17 +129,7 @@ type TracingCompleteParams struct {
 }
 
 // Signals that tracing is stopped and there is no trace buffers pending flush, all data were delivered via dataCollected events.
-func (obj *Tracing) TracingComplete(fn func(params *TracingCompleteParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(TracingComplete, closeChn)
-	go func() {
-		for {
-			params := TracingCompleteParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Tracing) TracingComplete() (params TracingCompleteParams, err error) {
+	err = obj.conn.On(TracingComplete, &params)
+	return
 }

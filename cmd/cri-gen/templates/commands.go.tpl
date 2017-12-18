@@ -57,18 +57,8 @@ func (obj *{{.Domain}}) {{.Name}}({{.RequestName}}) ({{.ResponseName}}) {
 type {{.ID}} {{.Type}}
 {{end}}
 {{.Doc}}
-func (obj *{{.Domain}}) {{.Name}}(fn func({{.EventParams}}) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On({{.Name}}, closeChn)
-	go func() {
-		for {
-            {{.ParamsDecl}}
-			readErr := decoder({{.ParamsValue}})
-            if !fn({{.CallParams}}) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *{{.Domain}}) {{.Name}}() ({{.ResponseName}}) {
+	err = obj.conn.On({{.Name}}, {{.ResponseValue}})
+    return
 }
 {{end -}}

@@ -176,19 +176,9 @@ type LayerPaintedParams struct {
 	Clip types.DOM_Rect `json:"clip"`
 }
 
-func (obj *LayerTree) LayerPainted(fn func(params *LayerPaintedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(LayerPainted, closeChn)
-	go func() {
-		for {
-			params := LayerPaintedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *LayerTree) LayerPainted() (params LayerPaintedParams, err error) {
+	err = obj.conn.On(LayerPainted, &params)
+	return
 }
 
 type LayerTreeDidChangeParams struct {
@@ -196,17 +186,7 @@ type LayerTreeDidChangeParams struct {
 	Layers []types.LayerTree_Layer `json:"layers,omitempty"`
 }
 
-func (obj *LayerTree) LayerTreeDidChange(fn func(params *LayerTreeDidChangeParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(LayerTreeDidChange, closeChn)
-	go func() {
-		for {
-			params := LayerTreeDidChangeParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *LayerTree) LayerTreeDidChange() (params LayerTreeDidChangeParams, err error) {
+	err = obj.conn.On(LayerTreeDidChange, &params)
+	return
 }

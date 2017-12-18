@@ -4,8 +4,6 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"errors"
-	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"sync"
@@ -26,7 +24,6 @@ const DefaultEventTimeout = 10 * time.Second
 const DefaultCommandTimeout = 10 * time.Second
 
 const maxIntValue = 1<<31 - 1
-const defaultLogger = log.New(ioutil.Discard, "", log.LstdFlags)
 
 // ConnectionOption defines a function type to set values of ConnectionOptions
 type ConnectionOption func(*ConnectionOptions)
@@ -45,8 +42,8 @@ type ConnectionOptions struct {
 	EventTimeout time.Duration
 	// CommandTimeout specifies duration to receive command response, default used is DefaultCommandTimeout
 	CommandTimeout time.Duration
-	// Logger if provided is used to print errors from connection reader.
-	Logger *log.Logger
+	// Error if provided, is called with errors from connection reader.
+	Error func(err error)
 }
 
 // option iterates over all arguments to set final options
@@ -99,9 +96,9 @@ func SetCommandTimeout(timeout time.Duration) ConnectionOption {
 }
 
 // SetLogger sets logging for connection
-func SetLogger(logger *log.Logger) ConnectionOption {
+func SetError(fn func(err error)) ConnectionOption {
 	return func(co *ConnectionOptions) {
-		co.Logger = logger
+		co.Error = fn
 	}
 }
 
@@ -181,6 +178,23 @@ func (es *eventsStore) forEvents(cmd string, fn func(eventRequest)) {
 	}
 }
 
+type closeStore struct {
+	sync.RWMutex
+	closed bool
+}
+
+func (cs *closeStore) markClosed() {
+	cs.Lock()
+	defer cs.Unlock()
+	cs.closed = true
+}
+
+func (cs *closeStore) isClosed() bool {
+	cs.RLock()
+	defer cs.RUnlock()
+	return cs.closed
+}
+
 // Connection contains socket connection to remote target. Its safe to share
 // same instance among multiple goroutines.
 type Connection struct {
@@ -188,16 +202,17 @@ type Connection struct {
 	tlsConfig                *tls.Config
 	eventTimeout, cmdTimeout time.Duration
 
-	conn     *websocket.Conn
-	reqChn   chan commandRequest
-	closeChn chan struct{}
+	conn   *websocket.Conn
+	reqChn chan commandRequest
 
 	commands commandsStore
 	events   eventsStore
 
+	closeStore
+
 	counter int32
 
-	log *log.Logger
+	errorFn func(err error)
 }
 
 // NewConnection creates a connection to remote target. Connection options can be
@@ -205,14 +220,15 @@ type Connection struct {
 // To see all options check ConnectionOptions.
 //
 // When no arguments are provided, connection is created using DefaultAddress.
-// If TargetID is provided, connection looks for remote target and connects to it.
+// If TargetID is provided, connection looks for remote target and connects to it,
+// incase the target is not found, first target returned by remote is used.
 // If SocketAddress is provided then Address and TargetID are ignored.
 func NewConnection(opts ...ConnectionOption) (*Connection, error) {
 	opt := &ConnectionOptions{
 		Address:        DefaultAddress,
 		EventTimeout:   DefaultEventTimeout,
 		CommandTimeout: DefaultCommandTimeout,
-		Logger:         defaultLogger,
+		Error:          nopError,
 	}
 	opt.option(opts...)
 
@@ -221,8 +237,7 @@ func NewConnection(opts ...ConnectionOption) (*Connection, error) {
 		cmdTimeout:   opt.CommandTimeout,
 		tlsConfig:    opt.TLSConfig,
 		reqChn:       make(chan commandRequest),
-		closeChn:     make(chan struct{}),
-		log:          opt.Logger,
+		errorFn:      opt.Error,
 	}
 
 	if len(opt.SocketAddress) != 0 {
@@ -295,6 +310,10 @@ type commandRequest struct {
 // It waits for command response and decodes it in response argument.
 // Timeout error is returned if response is not received.
 func (c *Connection) Send(command string, request, response interface{}) error {
+	if c.isClosed() {
+		return errors.New("connection closed")
+	}
+
 	cmd := commandRequest{
 		ID:           c.id(),
 		Method:       command,
@@ -331,39 +350,46 @@ func (c *Connection) Send(command string, request, response interface{}) error {
 }
 
 type eventRequest struct {
-	Method   string
-	eventChn chan commandResponse
+	Method       string
+	eventChn     chan commandResponse
+	timeoutTimer *time.Timer
 }
 
 // On listens for subscribed event. It takes event name and a non nil channel as arguments.
 // It returns a function, which blocks current routine till channel is closed.
 // When event is received, parameters are decoded in params argument or error is returned.
-func (c *Connection) On(event string, closeChn chan struct{}) func(params interface{}) error {
-	eve := eventRequest{
-		Method:   event,
-		eventChn: make(chan commandResponse, 1),
+func (c *Connection) On(event string, params interface{}) error {
+	if c.isClosed() {
+		return errors.New("connection closed")
 	}
-	c.events.addEvent(eve)
 
+	eve := eventRequest{
+		Method:       event,
+		eventChn:     make(chan commandResponse, 1),
+		timeoutTimer: time.NewTimer(c.eventTimeout),
+	}
+
+	c.events.addEvent(eve)
 	defer func() {
-		go func() {
-			<-closeChn
-			c.events.deleteEvent(eve)
-		}()
+		c.events.deleteEvent(eve)
 	}()
 
-	return func(params interface{}) error {
-		res := <-eve.eventChn
-		if params != nil {
-			return mapstructure.Decode(res.Params, params)
+	select {
+	case pRes := <-eve.eventChn:
+		eve.timeoutTimer.Stop()
+		if params == nil {
+			return nil
 		}
-		return nil
+		return mapstructure.Decode(pRes.Result, params)
+	case <-eve.timeoutTimer.C:
+		return errors.New("event response timeout")
 	}
 }
 
 // Close stops websocket connection.
 func (c *Connection) Close() error {
-	close(c.closeChn)
+	c.markClosed()
+	c.clean()
 	if closeErr := c.conn.Close(); closeErr != nil {
 		return closeErr
 	}
@@ -380,11 +406,9 @@ func (c *Connection) id() int32 {
 }
 
 func (c *Connection) writer() {
-	for {
-		select {
-		case <-c.closeChn:
-			return
-		case req := <-c.reqChn:
+	for !c.isClosed() {
+		if req, ok := <-c.reqChn; ok {
+			// NOTE writer doesn't throw error on connection close.
 			if writeErr := c.conn.WriteJSON(req); writeErr != nil {
 				req.errChn <- writeErr
 			}
@@ -393,37 +417,41 @@ func (c *Connection) writer() {
 }
 
 func (c *Connection) reader() {
-	for {
-		select {
-		case <-c.closeChn:
-			// TODO cleanup events and commands after shutdown
-			// any pending command or event should should raise
-			// shutting down error.
-			return
-		default:
-			var data commandResponse
-			if decodeErr := c.conn.ReadJSON(&data); decodeErr != nil {
-				c.log.Println(decodeErr.Error())
-				if err, ok := decodeErr.(*websocket.CloseError); ok {
-					return
-				}
+	for !c.isClosed() {
+		var data commandResponse
+		if decodeErr := c.conn.ReadJSON(&data); decodeErr != nil {
+			if err, ok := decodeErr.(*websocket.CloseError); ok {
+				c.errorFn(err)
+				c.markClosed()
+				c.clean()
+				return
 			}
+			c.errorFn(decodeErr)
+		}
 
-			if data.ID > 0 {
-				if cmd, ok := c.commands.getCommand(data.ID); ok {
-					if data.Error != nil {
-						cmd.errChn <- errors.New(data.Error.Message)
-					} else {
-						cmd.resChn <- data
-					}
+		if data.ID > 0 {
+			if cmd, ok := c.commands.getCommand(data.ID); ok {
+				if data.Error != nil {
+					cmd.errChn <- errors.New(data.Error.Message)
+				} else {
+					cmd.resChn <- data
 				}
-			} else if len(data.Method) > 0 {
-				c.events.forEvents(data.Method, func(val eventRequest) {
-					val.eventChn <- data
-				})
 			}
+		} else if len(data.Method) > 0 {
+			c.events.forEvents(data.Method, func(val eventRequest) {
+				val.eventChn <- data
+			})
 		}
 	}
+}
+
+func (c *Connection) clean() {
+	c.commands.Lock()
+	for id, cmd := range c.commands.commands {
+		cmd.errChn <- errors.New("connection closed")
+		delete(c.commands.commands, id)
+	}
+	c.commands.Unlock()
 }
 
 // VersionResponse contains fields received in response to version query.
@@ -516,3 +544,5 @@ func getAddress(opts *ConnectionOptions) string {
 		return "http://" + opts.Address
 	}
 }
+
+func nopError(err error) {}

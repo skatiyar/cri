@@ -54,16 +54,6 @@ func ExampleConnection_On() {
 	conn, _ := cri.NewConnection()
 
 	// listen for page load
-	// create close channel
-	closeChn := make(chan struct{})
-	// start listening
-	decoder := conn.On(page.LoadEventFired, closeChn)
-	for {
-		var params page.LoadEventFiredParams
-		if readErr := decoder(&params); readErr != nil {
-			// if error occurs, signal close.
-			close(closeChn)
-			break
-		}
-	}
+	var params page.LoadEventFiredParams
+	conn.On(page.LoadEventFired, &params)
 }

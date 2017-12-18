@@ -148,55 +148,25 @@ type WorkerErrorReportedParams struct {
 	ErrorMessage types.ServiceWorker_ServiceWorkerErrorMessage `json:"errorMessage"`
 }
 
-func (obj *ServiceWorker) WorkerErrorReported(fn func(params *WorkerErrorReportedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(WorkerErrorReported, closeChn)
-	go func() {
-		for {
-			params := WorkerErrorReportedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *ServiceWorker) WorkerErrorReported() (params WorkerErrorReportedParams, err error) {
+	err = obj.conn.On(WorkerErrorReported, &params)
+	return
 }
 
 type WorkerRegistrationUpdatedParams struct {
 	Registrations []types.ServiceWorker_ServiceWorkerRegistration `json:"registrations"`
 }
 
-func (obj *ServiceWorker) WorkerRegistrationUpdated(fn func(params *WorkerRegistrationUpdatedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(WorkerRegistrationUpdated, closeChn)
-	go func() {
-		for {
-			params := WorkerRegistrationUpdatedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *ServiceWorker) WorkerRegistrationUpdated() (params WorkerRegistrationUpdatedParams, err error) {
+	err = obj.conn.On(WorkerRegistrationUpdated, &params)
+	return
 }
 
 type WorkerVersionUpdatedParams struct {
 	Versions []types.ServiceWorker_ServiceWorkerVersion `json:"versions"`
 }
 
-func (obj *ServiceWorker) WorkerVersionUpdated(fn func(params *WorkerVersionUpdatedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(WorkerVersionUpdated, closeChn)
-	go func() {
-		for {
-			params := WorkerVersionUpdatedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *ServiceWorker) WorkerVersionUpdated() (params WorkerVersionUpdatedParams, err error) {
+	err = obj.conn.On(WorkerVersionUpdated, &params)
+	return
 }

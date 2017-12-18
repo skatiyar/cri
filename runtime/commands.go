@@ -331,19 +331,9 @@ type ConsoleAPICalledParams struct {
 }
 
 // Issued when console API was called.
-func (obj *Runtime) ConsoleAPICalled(fn func(params *ConsoleAPICalledParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(ConsoleAPICalled, closeChn)
-	go func() {
-		for {
-			params := ConsoleAPICalledParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Runtime) ConsoleAPICalled() (params ConsoleAPICalledParams, err error) {
+	err = obj.conn.On(ConsoleAPICalled, &params)
+	return
 }
 
 type ExceptionRevokedParams struct {
@@ -354,19 +344,9 @@ type ExceptionRevokedParams struct {
 }
 
 // Issued when unhandled exception was revoked.
-func (obj *Runtime) ExceptionRevoked(fn func(params *ExceptionRevokedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(ExceptionRevoked, closeChn)
-	go func() {
-		for {
-			params := ExceptionRevokedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Runtime) ExceptionRevoked() (params ExceptionRevokedParams, err error) {
+	err = obj.conn.On(ExceptionRevoked, &params)
+	return
 }
 
 type ExceptionThrownParams struct {
@@ -376,19 +356,9 @@ type ExceptionThrownParams struct {
 }
 
 // Issued when exception was thrown and unhandled.
-func (obj *Runtime) ExceptionThrown(fn func(params *ExceptionThrownParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(ExceptionThrown, closeChn)
-	go func() {
-		for {
-			params := ExceptionThrownParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Runtime) ExceptionThrown() (params ExceptionThrownParams, err error) {
+	err = obj.conn.On(ExceptionThrown, &params)
+	return
 }
 
 type ExecutionContextCreatedParams struct {
@@ -397,19 +367,9 @@ type ExecutionContextCreatedParams struct {
 }
 
 // Issued when new execution context is created.
-func (obj *Runtime) ExecutionContextCreated(fn func(params *ExecutionContextCreatedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(ExecutionContextCreated, closeChn)
-	go func() {
-		for {
-			params := ExecutionContextCreatedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Runtime) ExecutionContextCreated() (params ExecutionContextCreatedParams, err error) {
+	err = obj.conn.On(ExecutionContextCreated, &params)
+	return
 }
 
 type ExecutionContextDestroyedParams struct {
@@ -418,35 +378,15 @@ type ExecutionContextDestroyedParams struct {
 }
 
 // Issued when execution context is destroyed.
-func (obj *Runtime) ExecutionContextDestroyed(fn func(params *ExecutionContextDestroyedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(ExecutionContextDestroyed, closeChn)
-	go func() {
-		for {
-			params := ExecutionContextDestroyedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Runtime) ExecutionContextDestroyed() (params ExecutionContextDestroyedParams, err error) {
+	err = obj.conn.On(ExecutionContextDestroyed, &params)
+	return
 }
 
 // Issued when all executionContexts were cleared in browser
-func (obj *Runtime) ExecutionContextsCleared(fn func(err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(ExecutionContextsCleared, closeChn)
-	go func() {
-		for {
-
-			readErr := decoder(nil)
-			if !fn(readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Runtime) ExecutionContextsCleared() (err error) {
+	err = obj.conn.On(ExecutionContextsCleared, nil)
+	return
 }
 
 type InspectRequestedParams struct {
@@ -455,17 +395,7 @@ type InspectRequestedParams struct {
 }
 
 // Issued when object should be inspected (for example, as a result of inspect() command line API call).
-func (obj *Runtime) InspectRequested(fn func(params *InspectRequestedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(InspectRequested, closeChn)
-	go func() {
-		for {
-			params := InspectRequestedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Runtime) InspectRequested() (params InspectRequestedParams, err error) {
+	err = obj.conn.On(InspectRequested, &params)
+	return
 }

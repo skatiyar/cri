@@ -442,19 +442,9 @@ type DataReceivedParams struct {
 }
 
 // Fired when data chunk was received over the network.
-func (obj *Network) DataReceived(fn func(params *DataReceivedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(DataReceived, closeChn)
-	go func() {
-		for {
-			params := DataReceivedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Network) DataReceived() (params DataReceivedParams, err error) {
+	err = obj.conn.On(DataReceived, &params)
+	return
 }
 
 type EventSourceMessageReceivedParams struct {
@@ -471,19 +461,9 @@ type EventSourceMessageReceivedParams struct {
 }
 
 // Fired when EventSource message is received.
-func (obj *Network) EventSourceMessageReceived(fn func(params *EventSourceMessageReceivedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(EventSourceMessageReceived, closeChn)
-	go func() {
-		for {
-			params := EventSourceMessageReceivedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Network) EventSourceMessageReceived() (params EventSourceMessageReceivedParams, err error) {
+	err = obj.conn.On(EventSourceMessageReceived, &params)
+	return
 }
 
 type LoadingFailedParams struct {
@@ -502,19 +482,9 @@ type LoadingFailedParams struct {
 }
 
 // Fired when HTTP request has failed to load.
-func (obj *Network) LoadingFailed(fn func(params *LoadingFailedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(LoadingFailed, closeChn)
-	go func() {
-		for {
-			params := LoadingFailedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Network) LoadingFailed() (params LoadingFailedParams, err error) {
+	err = obj.conn.On(LoadingFailed, &params)
+	return
 }
 
 type LoadingFinishedParams struct {
@@ -527,19 +497,9 @@ type LoadingFinishedParams struct {
 }
 
 // Fired when HTTP request has finished loading.
-func (obj *Network) LoadingFinished(fn func(params *LoadingFinishedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(LoadingFinished, closeChn)
-	go func() {
-		for {
-			params := LoadingFinishedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Network) LoadingFinished() (params LoadingFinishedParams, err error) {
+	err = obj.conn.On(LoadingFinished, &params)
+	return
 }
 
 type RequestInterceptedParams struct {
@@ -566,19 +526,9 @@ type RequestInterceptedParams struct {
 
 // Details of an intercepted HTTP request, which must be either allowed, blocked, modified or mocked.
 // NOTE Experimental
-func (obj *Network) RequestIntercepted(fn func(params *RequestInterceptedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(RequestIntercepted, closeChn)
-	go func() {
-		for {
-			params := RequestInterceptedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Network) RequestIntercepted() (params RequestInterceptedParams, err error) {
+	err = obj.conn.On(RequestIntercepted, &params)
+	return
 }
 
 type RequestServedFromCacheParams struct {
@@ -587,19 +537,9 @@ type RequestServedFromCacheParams struct {
 }
 
 // Fired if request ended up loading from cache.
-func (obj *Network) RequestServedFromCache(fn func(params *RequestServedFromCacheParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(RequestServedFromCache, closeChn)
-	go func() {
-		for {
-			params := RequestServedFromCacheParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Network) RequestServedFromCache() (params RequestServedFromCacheParams, err error) {
+	err = obj.conn.On(RequestServedFromCache, &params)
+	return
 }
 
 type RequestWillBeSentParams struct {
@@ -626,19 +566,9 @@ type RequestWillBeSentParams struct {
 }
 
 // Fired when page is about to send HTTP request.
-func (obj *Network) RequestWillBeSent(fn func(params *RequestWillBeSentParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(RequestWillBeSent, closeChn)
-	go func() {
-		for {
-			params := RequestWillBeSentParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Network) RequestWillBeSent() (params RequestWillBeSentParams, err error) {
+	err = obj.conn.On(RequestWillBeSent, &params)
+	return
 }
 
 type ResourceChangedPriorityParams struct {
@@ -652,19 +582,9 @@ type ResourceChangedPriorityParams struct {
 
 // Fired when resource loading priority is changed
 // NOTE Experimental
-func (obj *Network) ResourceChangedPriority(fn func(params *ResourceChangedPriorityParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(ResourceChangedPriority, closeChn)
-	go func() {
-		for {
-			params := ResourceChangedPriorityParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Network) ResourceChangedPriority() (params ResourceChangedPriorityParams, err error) {
+	err = obj.conn.On(ResourceChangedPriority, &params)
+	return
 }
 
 type ResponseReceivedParams struct {
@@ -683,19 +603,9 @@ type ResponseReceivedParams struct {
 }
 
 // Fired when HTTP response is available.
-func (obj *Network) ResponseReceived(fn func(params *ResponseReceivedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(ResponseReceived, closeChn)
-	go func() {
-		for {
-			params := ResponseReceivedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Network) ResponseReceived() (params ResponseReceivedParams, err error) {
+	err = obj.conn.On(ResponseReceived, &params)
+	return
 }
 
 type WebSocketClosedParams struct {
@@ -706,19 +616,9 @@ type WebSocketClosedParams struct {
 }
 
 // Fired when WebSocket is closed.
-func (obj *Network) WebSocketClosed(fn func(params *WebSocketClosedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(WebSocketClosed, closeChn)
-	go func() {
-		for {
-			params := WebSocketClosedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Network) WebSocketClosed() (params WebSocketClosedParams, err error) {
+	err = obj.conn.On(WebSocketClosed, &params)
+	return
 }
 
 type WebSocketCreatedParams struct {
@@ -731,19 +631,9 @@ type WebSocketCreatedParams struct {
 }
 
 // Fired upon WebSocket creation.
-func (obj *Network) WebSocketCreated(fn func(params *WebSocketCreatedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(WebSocketCreated, closeChn)
-	go func() {
-		for {
-			params := WebSocketCreatedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Network) WebSocketCreated() (params WebSocketCreatedParams, err error) {
+	err = obj.conn.On(WebSocketCreated, &params)
+	return
 }
 
 type WebSocketFrameErrorParams struct {
@@ -756,19 +646,9 @@ type WebSocketFrameErrorParams struct {
 }
 
 // Fired when WebSocket frame error occurs.
-func (obj *Network) WebSocketFrameError(fn func(params *WebSocketFrameErrorParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(WebSocketFrameError, closeChn)
-	go func() {
-		for {
-			params := WebSocketFrameErrorParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Network) WebSocketFrameError() (params WebSocketFrameErrorParams, err error) {
+	err = obj.conn.On(WebSocketFrameError, &params)
+	return
 }
 
 type WebSocketFrameReceivedParams struct {
@@ -781,19 +661,9 @@ type WebSocketFrameReceivedParams struct {
 }
 
 // Fired when WebSocket frame is received.
-func (obj *Network) WebSocketFrameReceived(fn func(params *WebSocketFrameReceivedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(WebSocketFrameReceived, closeChn)
-	go func() {
-		for {
-			params := WebSocketFrameReceivedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Network) WebSocketFrameReceived() (params WebSocketFrameReceivedParams, err error) {
+	err = obj.conn.On(WebSocketFrameReceived, &params)
+	return
 }
 
 type WebSocketFrameSentParams struct {
@@ -806,19 +676,9 @@ type WebSocketFrameSentParams struct {
 }
 
 // Fired when WebSocket frame is sent.
-func (obj *Network) WebSocketFrameSent(fn func(params *WebSocketFrameSentParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(WebSocketFrameSent, closeChn)
-	go func() {
-		for {
-			params := WebSocketFrameSentParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Network) WebSocketFrameSent() (params WebSocketFrameSentParams, err error) {
+	err = obj.conn.On(WebSocketFrameSent, &params)
+	return
 }
 
 type WebSocketHandshakeResponseReceivedParams struct {
@@ -831,19 +691,9 @@ type WebSocketHandshakeResponseReceivedParams struct {
 }
 
 // Fired when WebSocket handshake response becomes available.
-func (obj *Network) WebSocketHandshakeResponseReceived(fn func(params *WebSocketHandshakeResponseReceivedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(WebSocketHandshakeResponseReceived, closeChn)
-	go func() {
-		for {
-			params := WebSocketHandshakeResponseReceivedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Network) WebSocketHandshakeResponseReceived() (params WebSocketHandshakeResponseReceivedParams, err error) {
+	err = obj.conn.On(WebSocketHandshakeResponseReceived, &params)
+	return
 }
 
 type WebSocketWillSendHandshakeRequestParams struct {
@@ -858,17 +708,7 @@ type WebSocketWillSendHandshakeRequestParams struct {
 }
 
 // Fired when WebSocket is about to initiate handshake.
-func (obj *Network) WebSocketWillSendHandshakeRequest(fn func(params *WebSocketWillSendHandshakeRequestParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(WebSocketWillSendHandshakeRequest, closeChn)
-	go func() {
-		for {
-			params := WebSocketWillSendHandshakeRequestParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Network) WebSocketWillSendHandshakeRequest() (params WebSocketWillSendHandshakeRequestParams, err error) {
+	err = obj.conn.On(WebSocketWillSendHandshakeRequest, &params)
+	return
 }

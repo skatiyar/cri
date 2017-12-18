@@ -78,17 +78,7 @@ type AddDatabaseParams struct {
 	Database types.Database_Database `json:"database"`
 }
 
-func (obj *Database) AddDatabase(fn func(params *AddDatabaseParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(AddDatabase, closeChn)
-	go func() {
-		for {
-			params := AddDatabaseParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *Database) AddDatabase() (params AddDatabaseParams, err error) {
+	err = obj.conn.On(AddDatabase, &params)
+	return
 }
