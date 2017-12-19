@@ -352,6 +352,7 @@ func (c *Connection) Send(command string, request, response interface{}) error {
 type eventRequest struct {
 	Method       string
 	eventChn     chan commandResponse
+	errChn       chan error
 	timeoutTimer *time.Timer
 }
 
@@ -366,6 +367,7 @@ func (c *Connection) On(event string, params interface{}) error {
 	eve := eventRequest{
 		Method:       event,
 		eventChn:     make(chan commandResponse, 1),
+		errChn:       make(chan error, 1),
 		timeoutTimer: time.NewTimer(c.eventTimeout),
 	}
 
@@ -381,6 +383,9 @@ func (c *Connection) On(event string, params interface{}) error {
 			return nil
 		}
 		return mapstructure.Decode(pRes.Result, params)
+	case eveErr := <-eve.errChn:
+		eve.timeoutTimer.Stop()
+		return eveErr
 	case <-eve.timeoutTimer.C:
 		return errors.New("event response timeout")
 	}
@@ -388,7 +393,6 @@ func (c *Connection) On(event string, params interface{}) error {
 
 // Close stops websocket connection.
 func (c *Connection) Close() error {
-	c.markClosed()
 	c.clean()
 	if closeErr := c.conn.Close(); closeErr != nil {
 		return closeErr
@@ -422,7 +426,6 @@ func (c *Connection) reader() {
 		if decodeErr := c.conn.ReadJSON(&data); decodeErr != nil {
 			if err, ok := decodeErr.(*websocket.CloseError); ok {
 				c.errorFn(err)
-				c.markClosed()
 				c.clean()
 				return
 			}
@@ -446,12 +449,21 @@ func (c *Connection) reader() {
 }
 
 func (c *Connection) clean() {
+	c.markClosed()
 	c.commands.Lock()
 	for id, cmd := range c.commands.commands {
 		cmd.errChn <- errors.New("connection closed")
 		delete(c.commands.commands, id)
 	}
 	c.commands.Unlock()
+	c.events.Lock()
+	for id, list := range c.events.events {
+		for eve, _ := range list {
+			eve.errChn <- errors.New("connection closed")
+			delete(c.events.events[id], eve)
+		}
+	}
+	c.events.Unlock()
 }
 
 // VersionResponse contains fields received in response to version query.
