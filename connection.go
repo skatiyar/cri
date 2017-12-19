@@ -458,7 +458,7 @@ func (c *Connection) clean() {
 	c.commands.Unlock()
 	c.events.Lock()
 	for id, list := range c.events.events {
-		for eve, _ := range list {
+		for eve := range list {
 			eve.errChn <- errors.New("connection closed")
 			delete(c.events.events[id], eve)
 		}

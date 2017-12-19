@@ -41,6 +41,7 @@ func Example() {
 	}
 
 	for i := 0; i < len(urls); i++ {
+		fmt.Println(urls[i])
 		_, navErr := pi.Navigate(&page.NavigateRequest{
 			Url: urls[i],
 		})
@@ -76,8 +77,12 @@ func Example() {
 	}
 
 	// Unordered output:
+	// https://www.google.com
 	// 0.png
+	// https://www.chromestatus.com
 	// 1.png
+	// https://www.facebook.com
 	// 2.png
+	// https://www.example.com
 	// 3.png
 }
