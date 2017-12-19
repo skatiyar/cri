@@ -174,7 +174,7 @@ func (es *eventsStore) forEvents(cmd string, fn func(eventRequest)) {
 		return
 	}
 	for eve := range es.events[cmd] {
-		go fn(eve)
+		fn(eve)
 	}
 }
 

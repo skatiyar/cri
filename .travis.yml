@@ -16,5 +16,5 @@ before_script:
     - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 &
 
 script:
-    - while ! lsof -i :9222; do sleep 1; done
+    - sleep 10
     - go test -v
