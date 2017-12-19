@@ -51,7 +51,7 @@ func Example() {
 
 		_, loadErr := pi.LoadEventFired()
 		if loadErr != nil {
-			panic(loadErr)
+			panic(loadErr.Error() + urls[i])
 		}
 
 		pic, picErr := pi.CaptureScreenshot(nil)
