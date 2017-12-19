@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/SKatiyar/cri"
 	"github.com/SKatiyar/cri/emulation"
@@ -14,7 +15,7 @@ import (
 
 // Example shows steps to take screenshot of a page.
 func Example() {
-	conn, connErr := cri.NewConnection()
+	conn, connErr := cri.NewConnection(cri.SetEventTimeout(20 * time.Second))
 	if connErr != nil {
 		panic(connErr)
 	}
