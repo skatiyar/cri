@@ -16,7 +16,7 @@ func TestNewConnection(t *testing.T) {
 
 	defaultConn, defaultConnErr := cri.NewConnection()
 	assert.Nil(defaultConnErr)
-	assert.NotNil(defaultConn, "connection object should returned for default address")
+	assert.NotNil(defaultConn, "connection object should be returned for default address")
 
 	defaultCloseErr := defaultConn.Close()
 	assert.Nil(defaultCloseErr)

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/SKatiyar/cri"
@@ -34,25 +33,33 @@ func Example() {
 	}
 
 	urls := []string{
-		"https://www.google.com",
-		"https://www.chromestatus.com",
-		"https://www.facebook.com",
-		"https://www.example.com",
+		"www.google.com",
+		"www.chromestatus.com",
+		"www.facebook.com",
+		"www.example.com",
 	}
 
 	for i := 0; i < len(urls); i++ {
-		fmt.Println(urls[i])
+		eventChn := make(chan page.LoadEventFiredParams)
+		go func() {
+			for {
+				eve, loadErr := pi.LoadEventFired()
+				if loadErr != nil {
+					panic(loadErr.Error() + urls[i])
+				}
+
+				eventChn <- eve
+			}
+		}()
+
 		_, navErr := pi.Navigate(&page.NavigateRequest{
-			Url: urls[i],
+			Url: "https://" + urls[i],
 		})
 		if navErr != nil {
 			panic(navErr)
 		}
 
-		_, loadErr := pi.LoadEventFired()
-		if loadErr != nil {
-			panic(loadErr.Error() + urls[i])
-		}
+		<-eventChn
 
 		pic, picErr := pi.CaptureScreenshot(nil)
 		if picErr != nil {
@@ -64,7 +71,7 @@ func Example() {
 			panic(imgErr)
 		}
 
-		fileName := strconv.Itoa(i) + ".png"
+		fileName := urls[i] + ".png"
 		if writeErr := ioutil.WriteFile(fileName, img, 0700); writeErr != nil {
 			panic(writeErr)
 		}
@@ -77,12 +84,8 @@ func Example() {
 	}
 
 	// Unordered output:
-	// https://www.google.com
-	// 0.png
-	// https://www.chromestatus.com
-	// 1.png
-	// https://www.facebook.com
-	// 2.png
-	// https://www.example.com
-	// 3.png
+	// www.google.com.png
+	// www.chromestatus.com.png
+	// www.facebook.com.png
+	// www.example.com.png
 }
