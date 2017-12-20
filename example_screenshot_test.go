@@ -49,6 +49,7 @@ func Example() {
 				}
 
 				eventChn <- eve
+				break
 			}
 		}()
 

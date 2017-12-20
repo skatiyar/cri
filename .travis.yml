@@ -16,5 +16,5 @@ before_script:
     - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 &
 
 script:
-    - sleep 10
+    - sleep 20
     - go test -v
