@@ -18,8 +18,9 @@ const (
 
 // List of events in Inspector domain
 const (
-	Detached      = "Inspector.detached"
-	TargetCrashed = "Inspector.targetCrashed"
+	Detached                 = "Inspector.detached"
+	TargetCrashed            = "Inspector.targetCrashed"
+	TargetReloadedAfterCrash = "Inspector.targetReloadedAfterCrash"
 )
 
 type Inspector struct {
@@ -49,13 +50,41 @@ type DetachedParams struct {
 }
 
 // Fired when remote debugging connection is about to be terminated. Contains detach reason.
-func (obj *Inspector) Detached() (params DetachedParams, err error) {
-	err = obj.conn.On(Detached, &params)
-	return
+func (obj *Inspector) Detached(fn func(event string, params DetachedParams, err error) bool) {
+	listen, closer := obj.conn.On(Detached)
+	go func() {
+		defer closer()
+		for {
+			var params DetachedParams
+			if !fn(Detached, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 // Fired when debugging target has crashed
-func (obj *Inspector) TargetCrashed() (err error) {
-	err = obj.conn.On(TargetCrashed, nil)
-	return
+func (obj *Inspector) TargetCrashed(fn func(event string, err error) bool) {
+	listen, closer := obj.conn.On(TargetCrashed)
+	go func() {
+		defer closer()
+		for {
+			if !fn(TargetCrashed, listen(nil)) {
+				return
+			}
+		}
+	}()
+}
+
+// Fired when debugging target has reloaded after crash
+func (obj *Inspector) TargetReloadedAfterCrash(fn func(event string, err error) bool) {
+	listen, closer := obj.conn.On(TargetReloadedAfterCrash)
+	go func() {
+		defer closer()
+		for {
+			if !fn(TargetReloadedAfterCrash, listen(nil)) {
+				return
+			}
+		}
+	}()
 }

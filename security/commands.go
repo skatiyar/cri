@@ -15,6 +15,7 @@ import (
 const (
 	Disable                      = "Security.disable"
 	Enable                       = "Security.enable"
+	SetIgnoreCertificateErrors   = "Security.setIgnoreCertificateErrors"
 	HandleCertificateError       = "Security.handleCertificateError"
 	SetOverrideCertificateErrors = "Security.setOverrideCertificateErrors"
 )
@@ -44,6 +45,17 @@ func (obj *Security) Disable() (err error) {
 // Enables tracking security state changes.
 func (obj *Security) Enable() (err error) {
 	err = obj.conn.Send(Enable, nil, nil)
+	return
+}
+
+type SetIgnoreCertificateErrorsRequest struct {
+	// If true, all certificate errors will be ignored.
+	Ignore bool `json:"ignore"`
+}
+
+// Enable/disable whether all certificate errors should be ignored.
+func (obj *Security) SetIgnoreCertificateErrors(request *SetIgnoreCertificateErrorsRequest) (err error) {
+	err = obj.conn.Send(SetIgnoreCertificateErrors, request, nil)
 	return
 }
 
@@ -80,10 +92,18 @@ type CertificateErrorParams struct {
 	RequestURL string `json:"requestURL"`
 }
 
-// There is a certificate error. If overriding certificate errors is enabled, then it should be handled with the handleCertificateError command. Note: this event does not fire if the certificate error has been allowed internally.
-func (obj *Security) CertificateError() (params CertificateErrorParams, err error) {
-	err = obj.conn.On(CertificateError, &params)
-	return
+// There is a certificate error. If overriding certificate errors is enabled, then it should be handled with the handleCertificateError command. Note: this event does not fire if the certificate error has been allowed internally. Only one client per target should override certificate errors at the same time.
+func (obj *Security) CertificateError(fn func(event string, params CertificateErrorParams, err error) bool) {
+	listen, closer := obj.conn.On(CertificateError)
+	go func() {
+		defer closer()
+		for {
+			var params CertificateErrorParams
+			if !fn(CertificateError, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type SecurityStateChangedParams struct {
@@ -100,7 +120,15 @@ type SecurityStateChangedParams struct {
 }
 
 // The security state of the page changed.
-func (obj *Security) SecurityStateChanged() (params SecurityStateChangedParams, err error) {
-	err = obj.conn.On(SecurityStateChanged, &params)
-	return
+func (obj *Security) SecurityStateChanged(fn func(event string, params SecurityStateChangedParams, err error) bool) {
+	listen, closer := obj.conn.On(SecurityStateChanged)
+	go func() {
+		defer closer()
+		for {
+			var params SecurityStateChangedParams
+			if !fn(SecurityStateChanged, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }

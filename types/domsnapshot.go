@@ -53,17 +53,23 @@ type DOMSnapshot_DOMNode struct {
 	TemplateContentIndex *int `json:"templateContentIndex,omitempty"`
 	// Type of a pseudo element node.
 	PseudoType *DOM_PseudoType `json:"pseudoType,omitempty"`
+	// Shadow root type.
+	ShadowRootType *DOM_ShadowRootType `json:"shadowRootType,omitempty"`
 	// Whether this DOM node responds to mouse clicks. This includes nodes that have had click event listeners attached via JavaScript as well as anchor tags that naturally navigate when clicked.
 	IsClickable *bool `json:"isClickable,omitempty"`
+	// Details of the node's event listeners, if any.
+	EventListeners []DOMDebugger_EventListener `json:"eventListeners,omitempty"`
+	// The selected url for nodes with a srcset attribute.
+	CurrentSourceURL *string `json:"currentSourceURL,omitempty"`
 }
 
 // Details of post layout rendered text positions. The exact layout should not be regarded as stable and may change between versions.
 type DOMSnapshot_InlineTextBox struct {
 	// The absolute position bounding box.
 	BoundingBox DOM_Rect `json:"boundingBox"`
-	// The starting index in characters, for this post layout textbox substring.
+	// The starting index in characters, for this post layout textbox substring. Characters that would be represented as a surrogate pair in UTF-16 have length 2.
 	StartCharacterIndex int `json:"startCharacterIndex"`
-	// The number of characters in this post layout textbox substring.
+	// The number of characters in this post layout textbox substring. Characters that would be represented as a surrogate pair in UTF-16 have length 2.
 	NumCharacters int `json:"numCharacters"`
 }
 
@@ -79,6 +85,8 @@ type DOMSnapshot_LayoutTreeNode struct {
 	InlineTextNodes []DOMSnapshot_InlineTextBox `json:"inlineTextNodes,omitempty"`
 	// Index into the `computedStyles` array returned by `getSnapshot`.
 	StyleIndex *int `json:"styleIndex,omitempty"`
+	// Global paint order index, which is determined by the stacking order of the nodes. Nodes that are painted together will have the same index. Only provided if includePaintOrder in getSnapshot was true.
+	PaintOrder *int `json:"paintOrder,omitempty"`
 }
 
 // A subset of the full ComputedStyle as defined by the request whitelist.

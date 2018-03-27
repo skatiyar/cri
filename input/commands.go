@@ -120,10 +120,10 @@ type EmulateTouchFromMouseEventRequest struct {
 	X int `json:"x"`
 	// Y coordinate of the mouse pointer in DIP.
 	Y int `json:"y"`
-	// Time at which the event occurred.
-	Timestamp types.Input_TimeSinceEpoch `json:"timestamp"`
 	// Mouse button.
 	Button string `json:"button"`
+	// Time at which the event occurred (default: current time).
+	Timestamp *types.Input_TimeSinceEpoch `json:"timestamp,omitempty"`
 	// X delta in DIP for mouse wheel event (default: 0).
 	DeltaX *float32 `json:"deltaX,omitempty"`
 	// Y delta in DIP for mouse wheel event (default: 0).

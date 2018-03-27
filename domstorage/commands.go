@@ -100,9 +100,17 @@ type DomStorageItemAddedParams struct {
 	NewValue  string                     `json:"newValue"`
 }
 
-func (obj *DOMStorage) DomStorageItemAdded() (params DomStorageItemAddedParams, err error) {
-	err = obj.conn.On(DomStorageItemAdded, &params)
-	return
+func (obj *DOMStorage) DomStorageItemAdded(fn func(event string, params DomStorageItemAddedParams, err error) bool) {
+	listen, closer := obj.conn.On(DomStorageItemAdded)
+	go func() {
+		defer closer()
+		for {
+			var params DomStorageItemAddedParams
+			if !fn(DomStorageItemAdded, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type DomStorageItemRemovedParams struct {
@@ -110,9 +118,17 @@ type DomStorageItemRemovedParams struct {
 	Key       string                     `json:"key"`
 }
 
-func (obj *DOMStorage) DomStorageItemRemoved() (params DomStorageItemRemovedParams, err error) {
-	err = obj.conn.On(DomStorageItemRemoved, &params)
-	return
+func (obj *DOMStorage) DomStorageItemRemoved(fn func(event string, params DomStorageItemRemovedParams, err error) bool) {
+	listen, closer := obj.conn.On(DomStorageItemRemoved)
+	go func() {
+		defer closer()
+		for {
+			var params DomStorageItemRemovedParams
+			if !fn(DomStorageItemRemoved, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type DomStorageItemUpdatedParams struct {
@@ -122,16 +138,32 @@ type DomStorageItemUpdatedParams struct {
 	NewValue  string                     `json:"newValue"`
 }
 
-func (obj *DOMStorage) DomStorageItemUpdated() (params DomStorageItemUpdatedParams, err error) {
-	err = obj.conn.On(DomStorageItemUpdated, &params)
-	return
+func (obj *DOMStorage) DomStorageItemUpdated(fn func(event string, params DomStorageItemUpdatedParams, err error) bool) {
+	listen, closer := obj.conn.On(DomStorageItemUpdated)
+	go func() {
+		defer closer()
+		for {
+			var params DomStorageItemUpdatedParams
+			if !fn(DomStorageItemUpdated, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type DomStorageItemsClearedParams struct {
 	StorageId types.DOMStorage_StorageId `json:"storageId"`
 }
 
-func (obj *DOMStorage) DomStorageItemsCleared() (params DomStorageItemsClearedParams, err error) {
-	err = obj.conn.On(DomStorageItemsCleared, &params)
-	return
+func (obj *DOMStorage) DomStorageItemsCleared(fn func(event string, params DomStorageItemsClearedParams, err error) bool) {
+	listen, closer := obj.conn.On(DomStorageItemsCleared)
+	go func() {
+		defer closer()
+		for {
+			var params DomStorageItemsClearedParams
+			if !fn(DomStorageItemsCleared, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }

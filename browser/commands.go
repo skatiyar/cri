@@ -13,11 +13,14 @@ import (
 
 // List of commands in Browser domain
 const (
-	Close              = "Browser.close"
-	GetVersion         = "Browser.getVersion"
-	GetWindowBounds    = "Browser.getWindowBounds"
-	GetWindowForTarget = "Browser.getWindowForTarget"
-	SetWindowBounds    = "Browser.setWindowBounds"
+	Close                 = "Browser.close"
+	GetVersion            = "Browser.getVersion"
+	GetBrowserCommandLine = "Browser.getBrowserCommandLine"
+	GetHistograms         = "Browser.getHistograms"
+	GetHistogram          = "Browser.getHistogram"
+	GetWindowBounds       = "Browser.getWindowBounds"
+	GetWindowForTarget    = "Browser.getWindowForTarget"
+	SetWindowBounds       = "Browser.setWindowBounds"
 )
 
 // The Browser domain defines methods and events for browser managing.
@@ -52,6 +55,49 @@ type GetVersionResponse struct {
 // Returns version information.
 func (obj *Browser) GetVersion() (response GetVersionResponse, err error) {
 	err = obj.conn.Send(GetVersion, nil, &response)
+	return
+}
+
+type GetBrowserCommandLineResponse struct {
+	// Commandline parameters
+	Arguments []string `json:"arguments"`
+}
+
+// Returns the command line switches for the browser process if, and only if --enable-automation is on the commandline.
+func (obj *Browser) GetBrowserCommandLine() (response GetBrowserCommandLineResponse, err error) {
+	err = obj.conn.Send(GetBrowserCommandLine, nil, &response)
+	return
+}
+
+type GetHistogramsRequest struct {
+	// Requested substring in name. Only histograms which have query as a substring in their name are extracted. An empty or absent query returns all histograms.
+	Query *string `json:"query,omitempty"`
+}
+
+type GetHistogramsResponse struct {
+	// Histograms.
+	Histograms []types.Browser_Histogram `json:"histograms"`
+}
+
+// Get Chrome histograms.
+func (obj *Browser) GetHistograms(request *GetHistogramsRequest) (response GetHistogramsResponse, err error) {
+	err = obj.conn.Send(GetHistograms, request, &response)
+	return
+}
+
+type GetHistogramRequest struct {
+	// Requested histogram name.
+	Name string `json:"name"`
+}
+
+type GetHistogramResponse struct {
+	// Histogram.
+	Histogram types.Browser_Histogram `json:"histogram"`
+}
+
+// Get a Chrome histogram by name.
+func (obj *Browser) GetHistogram(request *GetHistogramRequest) (response GetHistogramResponse, err error) {
+	err = obj.conn.Send(GetHistogram, request, &response)
 	return
 }
 

@@ -165,9 +165,17 @@ type AnimationCanceledParams struct {
 }
 
 // Event for when an animation has been cancelled.
-func (obj *Animation) AnimationCanceled() (params AnimationCanceledParams, err error) {
-	err = obj.conn.On(AnimationCanceled, &params)
-	return
+func (obj *Animation) AnimationCanceled(fn func(event string, params AnimationCanceledParams, err error) bool) {
+	listen, closer := obj.conn.On(AnimationCanceled)
+	go func() {
+		defer closer()
+		for {
+			var params AnimationCanceledParams
+			if !fn(AnimationCanceled, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type AnimationCreatedParams struct {
@@ -176,9 +184,17 @@ type AnimationCreatedParams struct {
 }
 
 // Event for each animation that has been created.
-func (obj *Animation) AnimationCreated() (params AnimationCreatedParams, err error) {
-	err = obj.conn.On(AnimationCreated, &params)
-	return
+func (obj *Animation) AnimationCreated(fn func(event string, params AnimationCreatedParams, err error) bool) {
+	listen, closer := obj.conn.On(AnimationCreated)
+	go func() {
+		defer closer()
+		for {
+			var params AnimationCreatedParams
+			if !fn(AnimationCreated, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type AnimationStartedParams struct {
@@ -187,7 +203,15 @@ type AnimationStartedParams struct {
 }
 
 // Event for animation that has been started.
-func (obj *Animation) AnimationStarted() (params AnimationStartedParams, err error) {
-	err = obj.conn.On(AnimationStarted, &params)
-	return
+func (obj *Animation) AnimationStarted(fn func(event string, params AnimationStartedParams, err error) bool) {
+	listen, closer := obj.conn.On(AnimationStarted)
+	go func() {
+		defer closer()
+		for {
+			var params AnimationStartedParams
+			if !fn(AnimationStarted, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }

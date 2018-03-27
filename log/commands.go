@@ -76,7 +76,15 @@ type EntryAddedParams struct {
 }
 
 // Issued when new message was logged.
-func (obj *Log) EntryAdded() (params EntryAddedParams, err error) {
-	err = obj.conn.On(EntryAdded, &params)
-	return
+func (obj *Log) EntryAdded(fn func(event string, params EntryAddedParams, err error) bool) {
+	listen, closer := obj.conn.On(EntryAdded)
+	go func() {
+		defer closer()
+		for {
+			var params EntryAddedParams
+			if !fn(EntryAdded, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }

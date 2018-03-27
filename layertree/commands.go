@@ -176,9 +176,17 @@ type LayerPaintedParams struct {
 	Clip types.DOM_Rect `json:"clip"`
 }
 
-func (obj *LayerTree) LayerPainted() (params LayerPaintedParams, err error) {
-	err = obj.conn.On(LayerPainted, &params)
-	return
+func (obj *LayerTree) LayerPainted(fn func(event string, params LayerPaintedParams, err error) bool) {
+	listen, closer := obj.conn.On(LayerPainted)
+	go func() {
+		defer closer()
+		for {
+			var params LayerPaintedParams
+			if !fn(LayerPainted, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type LayerTreeDidChangeParams struct {
@@ -186,7 +194,15 @@ type LayerTreeDidChangeParams struct {
 	Layers []types.LayerTree_Layer `json:"layers,omitempty"`
 }
 
-func (obj *LayerTree) LayerTreeDidChange() (params LayerTreeDidChangeParams, err error) {
-	err = obj.conn.On(LayerTreeDidChange, &params)
-	return
+func (obj *LayerTree) LayerTreeDidChange(fn func(event string, params LayerTreeDidChangeParams, err error) bool) {
+	listen, closer := obj.conn.On(LayerTreeDidChange)
+	go func() {
+		defer closer()
+		for {
+			var params LayerTreeDidChangeParams
+			if !fn(LayerTreeDidChange, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }

@@ -27,6 +27,7 @@ const (
 	GetCertificate                 = "Network.getCertificate"
 	GetCookies                     = "Network.getCookies"
 	GetResponseBody                = "Network.getResponseBody"
+	GetRequestPostData             = "Network.getRequestPostData"
 	GetResponseBodyForInterception = "Network.getResponseBodyForInterception"
 	ReplayXHR                      = "Network.replayXHR"
 	SearchInResponseBody           = "Network.searchInResponseBody"
@@ -189,6 +190,8 @@ type EnableRequest struct {
 	// Per-resource buffer size in bytes to use when preserving network payloads (XHRs, etc).
 	// NOTE Experimental
 	MaxResourceBufferSize *int `json:"maxResourceBufferSize,omitempty"`
+	// Longest post body size (in bytes) that would be included in requestWillBeSent notification
+	MaxPostDataSize *int `json:"maxPostDataSize,omitempty"`
 }
 
 // Enables network tracking, network events will now be delivered to the client.
@@ -254,6 +257,22 @@ type GetResponseBodyResponse struct {
 // Returns content served for the given request.
 func (obj *Network) GetResponseBody(request *GetResponseBodyRequest) (response GetResponseBodyResponse, err error) {
 	err = obj.conn.Send(GetResponseBody, request, &response)
+	return
+}
+
+type GetRequestPostDataRequest struct {
+	// Identifier of the network request to get content for.
+	RequestId types.Network_RequestId `json:"requestId"`
+}
+
+type GetRequestPostDataResponse struct {
+	// Base64-encoded request body.
+	PostData string `json:"postData"`
+}
+
+// Returns post data sent with the request. Returns an error when no data was sent with the request.
+func (obj *Network) GetRequestPostData(request *GetRequestPostDataRequest) (response GetRequestPostDataResponse, err error) {
+	err = obj.conn.Send(GetRequestPostData, request, &response)
 	return
 }
 
@@ -442,9 +461,17 @@ type DataReceivedParams struct {
 }
 
 // Fired when data chunk was received over the network.
-func (obj *Network) DataReceived() (params DataReceivedParams, err error) {
-	err = obj.conn.On(DataReceived, &params)
-	return
+func (obj *Network) DataReceived(fn func(event string, params DataReceivedParams, err error) bool) {
+	listen, closer := obj.conn.On(DataReceived)
+	go func() {
+		defer closer()
+		for {
+			var params DataReceivedParams
+			if !fn(DataReceived, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type EventSourceMessageReceivedParams struct {
@@ -461,9 +488,17 @@ type EventSourceMessageReceivedParams struct {
 }
 
 // Fired when EventSource message is received.
-func (obj *Network) EventSourceMessageReceived() (params EventSourceMessageReceivedParams, err error) {
-	err = obj.conn.On(EventSourceMessageReceived, &params)
-	return
+func (obj *Network) EventSourceMessageReceived(fn func(event string, params EventSourceMessageReceivedParams, err error) bool) {
+	listen, closer := obj.conn.On(EventSourceMessageReceived)
+	go func() {
+		defer closer()
+		for {
+			var params EventSourceMessageReceivedParams
+			if !fn(EventSourceMessageReceived, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type LoadingFailedParams struct {
@@ -482,9 +517,17 @@ type LoadingFailedParams struct {
 }
 
 // Fired when HTTP request has failed to load.
-func (obj *Network) LoadingFailed() (params LoadingFailedParams, err error) {
-	err = obj.conn.On(LoadingFailed, &params)
-	return
+func (obj *Network) LoadingFailed(fn func(event string, params LoadingFailedParams, err error) bool) {
+	listen, closer := obj.conn.On(LoadingFailed)
+	go func() {
+		defer closer()
+		for {
+			var params LoadingFailedParams
+			if !fn(LoadingFailed, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type LoadingFinishedParams struct {
@@ -494,12 +537,22 @@ type LoadingFinishedParams struct {
 	Timestamp types.Network_MonotonicTime `json:"timestamp"`
 	// Total number of bytes received for this request.
 	EncodedDataLength float32 `json:"encodedDataLength"`
+	// Set when response was blocked due to being cross-site document response.
+	BlockedCrossSiteDocument *bool `json:"blockedCrossSiteDocument,omitempty"`
 }
 
 // Fired when HTTP request has finished loading.
-func (obj *Network) LoadingFinished() (params LoadingFinishedParams, err error) {
-	err = obj.conn.On(LoadingFinished, &params)
-	return
+func (obj *Network) LoadingFinished(fn func(event string, params LoadingFinishedParams, err error) bool) {
+	listen, closer := obj.conn.On(LoadingFinished)
+	go func() {
+		defer closer()
+		for {
+			var params LoadingFinishedParams
+			if !fn(LoadingFinished, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type RequestInterceptedParams struct {
@@ -526,9 +579,17 @@ type RequestInterceptedParams struct {
 
 // Details of an intercepted HTTP request, which must be either allowed, blocked, modified or mocked.
 // NOTE Experimental
-func (obj *Network) RequestIntercepted() (params RequestInterceptedParams, err error) {
-	err = obj.conn.On(RequestIntercepted, &params)
-	return
+func (obj *Network) RequestIntercepted(fn func(event string, params RequestInterceptedParams, err error) bool) {
+	listen, closer := obj.conn.On(RequestIntercepted)
+	go func() {
+		defer closer()
+		for {
+			var params RequestInterceptedParams
+			if !fn(RequestIntercepted, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type RequestServedFromCacheParams struct {
@@ -537,9 +598,17 @@ type RequestServedFromCacheParams struct {
 }
 
 // Fired if request ended up loading from cache.
-func (obj *Network) RequestServedFromCache() (params RequestServedFromCacheParams, err error) {
-	err = obj.conn.On(RequestServedFromCache, &params)
-	return
+func (obj *Network) RequestServedFromCache(fn func(event string, params RequestServedFromCacheParams, err error) bool) {
+	listen, closer := obj.conn.On(RequestServedFromCache)
+	go func() {
+		defer closer()
+		for {
+			var params RequestServedFromCacheParams
+			if !fn(RequestServedFromCache, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type RequestWillBeSentParams struct {
@@ -563,12 +632,22 @@ type RequestWillBeSentParams struct {
 	Type *types.Page_ResourceType `json:"type,omitempty"`
 	// Frame identifier.
 	FrameId *types.Page_FrameId `json:"frameId,omitempty"`
+	// Whether the request is initiated by a user gesture. Defaults to false.
+	HasUserGesture *bool `json:"hasUserGesture,omitempty"`
 }
 
 // Fired when page is about to send HTTP request.
-func (obj *Network) RequestWillBeSent() (params RequestWillBeSentParams, err error) {
-	err = obj.conn.On(RequestWillBeSent, &params)
-	return
+func (obj *Network) RequestWillBeSent(fn func(event string, params RequestWillBeSentParams, err error) bool) {
+	listen, closer := obj.conn.On(RequestWillBeSent)
+	go func() {
+		defer closer()
+		for {
+			var params RequestWillBeSentParams
+			if !fn(RequestWillBeSent, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type ResourceChangedPriorityParams struct {
@@ -582,9 +661,17 @@ type ResourceChangedPriorityParams struct {
 
 // Fired when resource loading priority is changed
 // NOTE Experimental
-func (obj *Network) ResourceChangedPriority() (params ResourceChangedPriorityParams, err error) {
-	err = obj.conn.On(ResourceChangedPriority, &params)
-	return
+func (obj *Network) ResourceChangedPriority(fn func(event string, params ResourceChangedPriorityParams, err error) bool) {
+	listen, closer := obj.conn.On(ResourceChangedPriority)
+	go func() {
+		defer closer()
+		for {
+			var params ResourceChangedPriorityParams
+			if !fn(ResourceChangedPriority, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type ResponseReceivedParams struct {
@@ -603,9 +690,17 @@ type ResponseReceivedParams struct {
 }
 
 // Fired when HTTP response is available.
-func (obj *Network) ResponseReceived() (params ResponseReceivedParams, err error) {
-	err = obj.conn.On(ResponseReceived, &params)
-	return
+func (obj *Network) ResponseReceived(fn func(event string, params ResponseReceivedParams, err error) bool) {
+	listen, closer := obj.conn.On(ResponseReceived)
+	go func() {
+		defer closer()
+		for {
+			var params ResponseReceivedParams
+			if !fn(ResponseReceived, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type WebSocketClosedParams struct {
@@ -616,9 +711,17 @@ type WebSocketClosedParams struct {
 }
 
 // Fired when WebSocket is closed.
-func (obj *Network) WebSocketClosed() (params WebSocketClosedParams, err error) {
-	err = obj.conn.On(WebSocketClosed, &params)
-	return
+func (obj *Network) WebSocketClosed(fn func(event string, params WebSocketClosedParams, err error) bool) {
+	listen, closer := obj.conn.On(WebSocketClosed)
+	go func() {
+		defer closer()
+		for {
+			var params WebSocketClosedParams
+			if !fn(WebSocketClosed, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type WebSocketCreatedParams struct {
@@ -631,9 +734,17 @@ type WebSocketCreatedParams struct {
 }
 
 // Fired upon WebSocket creation.
-func (obj *Network) WebSocketCreated() (params WebSocketCreatedParams, err error) {
-	err = obj.conn.On(WebSocketCreated, &params)
-	return
+func (obj *Network) WebSocketCreated(fn func(event string, params WebSocketCreatedParams, err error) bool) {
+	listen, closer := obj.conn.On(WebSocketCreated)
+	go func() {
+		defer closer()
+		for {
+			var params WebSocketCreatedParams
+			if !fn(WebSocketCreated, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type WebSocketFrameErrorParams struct {
@@ -646,9 +757,17 @@ type WebSocketFrameErrorParams struct {
 }
 
 // Fired when WebSocket frame error occurs.
-func (obj *Network) WebSocketFrameError() (params WebSocketFrameErrorParams, err error) {
-	err = obj.conn.On(WebSocketFrameError, &params)
-	return
+func (obj *Network) WebSocketFrameError(fn func(event string, params WebSocketFrameErrorParams, err error) bool) {
+	listen, closer := obj.conn.On(WebSocketFrameError)
+	go func() {
+		defer closer()
+		for {
+			var params WebSocketFrameErrorParams
+			if !fn(WebSocketFrameError, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type WebSocketFrameReceivedParams struct {
@@ -661,9 +780,17 @@ type WebSocketFrameReceivedParams struct {
 }
 
 // Fired when WebSocket frame is received.
-func (obj *Network) WebSocketFrameReceived() (params WebSocketFrameReceivedParams, err error) {
-	err = obj.conn.On(WebSocketFrameReceived, &params)
-	return
+func (obj *Network) WebSocketFrameReceived(fn func(event string, params WebSocketFrameReceivedParams, err error) bool) {
+	listen, closer := obj.conn.On(WebSocketFrameReceived)
+	go func() {
+		defer closer()
+		for {
+			var params WebSocketFrameReceivedParams
+			if !fn(WebSocketFrameReceived, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type WebSocketFrameSentParams struct {
@@ -676,9 +803,17 @@ type WebSocketFrameSentParams struct {
 }
 
 // Fired when WebSocket frame is sent.
-func (obj *Network) WebSocketFrameSent() (params WebSocketFrameSentParams, err error) {
-	err = obj.conn.On(WebSocketFrameSent, &params)
-	return
+func (obj *Network) WebSocketFrameSent(fn func(event string, params WebSocketFrameSentParams, err error) bool) {
+	listen, closer := obj.conn.On(WebSocketFrameSent)
+	go func() {
+		defer closer()
+		for {
+			var params WebSocketFrameSentParams
+			if !fn(WebSocketFrameSent, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type WebSocketHandshakeResponseReceivedParams struct {
@@ -691,9 +826,17 @@ type WebSocketHandshakeResponseReceivedParams struct {
 }
 
 // Fired when WebSocket handshake response becomes available.
-func (obj *Network) WebSocketHandshakeResponseReceived() (params WebSocketHandshakeResponseReceivedParams, err error) {
-	err = obj.conn.On(WebSocketHandshakeResponseReceived, &params)
-	return
+func (obj *Network) WebSocketHandshakeResponseReceived(fn func(event string, params WebSocketHandshakeResponseReceivedParams, err error) bool) {
+	listen, closer := obj.conn.On(WebSocketHandshakeResponseReceived)
+	go func() {
+		defer closer()
+		for {
+			var params WebSocketHandshakeResponseReceivedParams
+			if !fn(WebSocketHandshakeResponseReceived, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type WebSocketWillSendHandshakeRequestParams struct {
@@ -708,7 +851,15 @@ type WebSocketWillSendHandshakeRequestParams struct {
 }
 
 // Fired when WebSocket is about to initiate handshake.
-func (obj *Network) WebSocketWillSendHandshakeRequest() (params WebSocketWillSendHandshakeRequestParams, err error) {
-	err = obj.conn.On(WebSocketWillSendHandshakeRequest, &params)
-	return
+func (obj *Network) WebSocketWillSendHandshakeRequest(fn func(event string, params WebSocketWillSendHandshakeRequestParams, err error) bool) {
+	listen, closer := obj.conn.On(WebSocketWillSendHandshakeRequest)
+	go func() {
+		defer closer()
+		for {
+			var params WebSocketWillSendHandshakeRequestParams
+			if !fn(WebSocketWillSendHandshakeRequest, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }

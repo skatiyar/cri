@@ -23,7 +23,6 @@ const (
 	GetTargetInfo         = "Target.getTargetInfo"
 	GetTargets            = "Target.getTargets"
 	SendMessageToTarget   = "Target.sendMessageToTarget"
-	SetAttachToFrames     = "Target.setAttachToFrames"
 	SetAutoAttach         = "Target.setAutoAttach"
 	SetDiscoverTargets    = "Target.setDiscoverTargets"
 	SetRemoteLocations    = "Target.setRemoteLocations"
@@ -190,16 +189,6 @@ func (obj *Target) SendMessageToTarget(request *SendMessageToTargetRequest) (err
 	return
 }
 
-type SetAttachToFramesRequest struct {
-	// Whether to attach to frames.
-	Value bool `json:"value"`
-}
-
-func (obj *Target) SetAttachToFrames(request *SetAttachToFramesRequest) (err error) {
-	err = obj.conn.Send(SetAttachToFrames, request, nil)
-	return
-}
-
 type SetAutoAttachRequest struct {
 	// Whether to auto-attach to related targets.
 	AutoAttach bool `json:"autoAttach"`
@@ -244,9 +233,17 @@ type AttachedToTargetParams struct {
 
 // Issued when attached to target because of auto-attach or `attachToTarget` command.
 // NOTE Experimental
-func (obj *Target) AttachedToTarget() (params AttachedToTargetParams, err error) {
-	err = obj.conn.On(AttachedToTarget, &params)
-	return
+func (obj *Target) AttachedToTarget(fn func(event string, params AttachedToTargetParams, err error) bool) {
+	listen, closer := obj.conn.On(AttachedToTarget)
+	go func() {
+		defer closer()
+		for {
+			var params AttachedToTargetParams
+			if !fn(AttachedToTarget, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type DetachedFromTargetParams struct {
@@ -258,9 +255,17 @@ type DetachedFromTargetParams struct {
 
 // Issued when detached from target for any reason (including `detachFromTarget` command). Can be issued multiple times per target if multiple sessions have been attached to it.
 // NOTE Experimental
-func (obj *Target) DetachedFromTarget() (params DetachedFromTargetParams, err error) {
-	err = obj.conn.On(DetachedFromTarget, &params)
-	return
+func (obj *Target) DetachedFromTarget(fn func(event string, params DetachedFromTargetParams, err error) bool) {
+	listen, closer := obj.conn.On(DetachedFromTarget)
+	go func() {
+		defer closer()
+		for {
+			var params DetachedFromTargetParams
+			if !fn(DetachedFromTarget, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type ReceivedMessageFromTargetParams struct {
@@ -272,9 +277,17 @@ type ReceivedMessageFromTargetParams struct {
 }
 
 // Notifies about a new protocol message received from the session (as reported in `attachedToTarget` event).
-func (obj *Target) ReceivedMessageFromTarget() (params ReceivedMessageFromTargetParams, err error) {
-	err = obj.conn.On(ReceivedMessageFromTarget, &params)
-	return
+func (obj *Target) ReceivedMessageFromTarget(fn func(event string, params ReceivedMessageFromTargetParams, err error) bool) {
+	listen, closer := obj.conn.On(ReceivedMessageFromTarget)
+	go func() {
+		defer closer()
+		for {
+			var params ReceivedMessageFromTargetParams
+			if !fn(ReceivedMessageFromTarget, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type TargetCreatedParams struct {
@@ -282,9 +295,17 @@ type TargetCreatedParams struct {
 }
 
 // Issued when a possible inspection target is created.
-func (obj *Target) TargetCreated() (params TargetCreatedParams, err error) {
-	err = obj.conn.On(TargetCreated, &params)
-	return
+func (obj *Target) TargetCreated(fn func(event string, params TargetCreatedParams, err error) bool) {
+	listen, closer := obj.conn.On(TargetCreated)
+	go func() {
+		defer closer()
+		for {
+			var params TargetCreatedParams
+			if !fn(TargetCreated, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type TargetDestroyedParams struct {
@@ -292,9 +313,17 @@ type TargetDestroyedParams struct {
 }
 
 // Issued when a target is destroyed.
-func (obj *Target) TargetDestroyed() (params TargetDestroyedParams, err error) {
-	err = obj.conn.On(TargetDestroyed, &params)
-	return
+func (obj *Target) TargetDestroyed(fn func(event string, params TargetDestroyedParams, err error) bool) {
+	listen, closer := obj.conn.On(TargetDestroyed)
+	go func() {
+		defer closer()
+		for {
+			var params TargetDestroyedParams
+			if !fn(TargetDestroyed, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type TargetInfoChangedParams struct {
@@ -302,7 +331,15 @@ type TargetInfoChangedParams struct {
 }
 
 // Issued when some information about a target has changed. This only happens between `targetCreated` and `targetDestroyed`.
-func (obj *Target) TargetInfoChanged() (params TargetInfoChangedParams, err error) {
-	err = obj.conn.On(TargetInfoChanged, &params)
-	return
+func (obj *Target) TargetInfoChanged(fn func(event string, params TargetInfoChangedParams, err error) bool) {
+	listen, closer := obj.conn.On(TargetInfoChanged)
+	go func() {
+		defer closer()
+		for {
+			var params TargetInfoChangedParams
+			if !fn(TargetInfoChanged, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }

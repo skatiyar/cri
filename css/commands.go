@@ -355,7 +355,7 @@ type StopRuleUsageTrackingResponse struct {
 	RuleUsage []types.CSS_RuleUsage `json:"ruleUsage"`
 }
 
-// The list of rules with an indication of whether these were used
+// Stop tracking rule usage and return the list of rules that were used since last call to `takeCoverageDelta` (or since start of coverage instrumentation)
 func (obj *CSS) StopRuleUsageTracking() (response StopRuleUsageTrackingResponse, err error) {
 	err = obj.conn.Send(StopRuleUsageTracking, nil, &response)
 	return
@@ -371,16 +371,36 @@ func (obj *CSS) TakeCoverageDelta() (response TakeCoverageDeltaResponse, err err
 	return
 }
 
-// Fires whenever a web font gets loaded.
-func (obj *CSS) FontsUpdated() (err error) {
-	err = obj.conn.On(FontsUpdated, nil)
-	return
+type FontsUpdatedParams struct {
+	// The web font that has loaded.
+	Font *types.CSS_FontFace `json:"font,omitempty"`
+}
+
+// Fires whenever a web font is updated.  A non-empty font parameter indicates a successfully loaded web font
+func (obj *CSS) FontsUpdated(fn func(event string, params FontsUpdatedParams, err error) bool) {
+	listen, closer := obj.conn.On(FontsUpdated)
+	go func() {
+		defer closer()
+		for {
+			var params FontsUpdatedParams
+			if !fn(FontsUpdated, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 // Fires whenever a MediaQuery result changes (for example, after a browser window has been resized.) The current implementation considers only viewport-dependent media features.
-func (obj *CSS) MediaQueryResultChanged() (err error) {
-	err = obj.conn.On(MediaQueryResultChanged, nil)
-	return
+func (obj *CSS) MediaQueryResultChanged(fn func(event string, err error) bool) {
+	listen, closer := obj.conn.On(MediaQueryResultChanged)
+	go func() {
+		defer closer()
+		for {
+			if !fn(MediaQueryResultChanged, listen(nil)) {
+				return
+			}
+		}
+	}()
 }
 
 type StyleSheetAddedParams struct {
@@ -389,9 +409,17 @@ type StyleSheetAddedParams struct {
 }
 
 // Fired whenever an active document stylesheet is added.
-func (obj *CSS) StyleSheetAdded() (params StyleSheetAddedParams, err error) {
-	err = obj.conn.On(StyleSheetAdded, &params)
-	return
+func (obj *CSS) StyleSheetAdded(fn func(event string, params StyleSheetAddedParams, err error) bool) {
+	listen, closer := obj.conn.On(StyleSheetAdded)
+	go func() {
+		defer closer()
+		for {
+			var params StyleSheetAddedParams
+			if !fn(StyleSheetAdded, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type StyleSheetChangedParams struct {
@@ -399,9 +427,17 @@ type StyleSheetChangedParams struct {
 }
 
 // Fired whenever a stylesheet is changed as a result of the client operation.
-func (obj *CSS) StyleSheetChanged() (params StyleSheetChangedParams, err error) {
-	err = obj.conn.On(StyleSheetChanged, &params)
-	return
+func (obj *CSS) StyleSheetChanged(fn func(event string, params StyleSheetChangedParams, err error) bool) {
+	listen, closer := obj.conn.On(StyleSheetChanged)
+	go func() {
+		defer closer()
+		for {
+			var params StyleSheetChangedParams
+			if !fn(StyleSheetChanged, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type StyleSheetRemovedParams struct {
@@ -410,7 +446,15 @@ type StyleSheetRemovedParams struct {
 }
 
 // Fired whenever an active document stylesheet is removed.
-func (obj *CSS) StyleSheetRemoved() (params StyleSheetRemovedParams, err error) {
-	err = obj.conn.On(StyleSheetRemoved, &params)
-	return
+func (obj *CSS) StyleSheetRemoved(fn func(event string, params StyleSheetRemovedParams, err error) bool) {
+	listen, closer := obj.conn.On(StyleSheetRemoved)
+	go func() {
+		defer closer()
+		for {
+			var params StyleSheetRemovedParams
+			if !fn(StyleSheetRemoved, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }

@@ -279,8 +279,7 @@ func NewConnection(opts ...ConnectionOption) (*Connection, error) {
 
 	instance.conn = conn
 
-	go instance.reader()
-	go instance.writer()
+	go instance.runner()
 
 	return instance, nil
 }
@@ -350,45 +349,42 @@ func (c *Connection) Send(command string, request, response interface{}) error {
 }
 
 type eventRequest struct {
-	Method       string
-	eventChn     chan commandResponse
-	errChn       chan error
-	timeoutTimer *time.Timer
+	Method   string
+	eventChn chan commandResponse
+	errChn   chan error
 }
 
 // On listens for subscribed event. It takes event name and a non nil channel as arguments.
 // It returns a function, which blocks current routine till channel is closed.
 // When event is received, parameters are decoded in params argument or error is returned.
-func (c *Connection) On(event string, params interface{}) error {
-	if c.isClosed() {
-		return errors.New("connection closed")
-	}
-
+func (c *Connection) On(event string) (listen func(params interface{}) error, close func()) {
 	eve := eventRequest{
-		Method:       event,
-		eventChn:     make(chan commandResponse, 1),
-		errChn:       make(chan error, 1),
-		timeoutTimer: time.NewTimer(c.eventTimeout),
+		Method:   event,
+		eventChn: make(chan commandResponse, 1),
+		errChn:   make(chan error, 1),
 	}
-
 	c.events.addEvent(eve)
-	defer func() {
-		c.events.deleteEvent(eve)
-	}()
 
-	select {
-	case pRes := <-eve.eventChn:
-		eve.timeoutTimer.Stop()
-		if params == nil {
-			return nil
+	listen = func(params interface{}) error {
+		timeoutTimer := time.NewTimer(c.eventTimeout)
+		select {
+		case pRes := <-eve.eventChn:
+			timeoutTimer.Stop()
+			if params == nil {
+				return nil
+			}
+			return mapstructure.Decode(pRes.Result, params)
+		case eveErr := <-eve.errChn:
+			timeoutTimer.Stop()
+			return eveErr
+		case <-timeoutTimer.C:
+			return errors.New("event response timeout")
 		}
-		return mapstructure.Decode(pRes.Result, params)
-	case eveErr := <-eve.errChn:
-		eve.timeoutTimer.Stop()
-		return eveErr
-	case <-eve.timeoutTimer.C:
-		return errors.New("event response timeout")
 	}
+	close = func() {
+		c.events.deleteEvent(eve)
+	}
+	return
 }
 
 // Close stops websocket connection.
@@ -409,18 +405,51 @@ func (c *Connection) id() int32 {
 	}
 }
 
-func (c *Connection) writer() {
-	for !c.isClosed() {
-		if req, ok := <-c.reqChn; ok {
-			// NOTE writer doesn't throw error on connection close.
-			if writeErr := c.conn.WriteJSON(req); writeErr != nil {
-				req.errChn <- writeErr
+func (c *Connection) runner() {
+	writeChn := make(chan commandRequest, 10)
+	readChn := make(chan commandResponse, 10)
+
+	go c.writer(writeChn)
+	go c.reader(readChn)
+
+	commands := make(map[int32]commandRequest)
+
+	for {
+		select {
+		case req, ok := <-c.reqChn:
+			if ok {
+				commands[req.ID] = req
+				writeChn <- req
+			}
+		case res, ok := <-readChn:
+			if res.ID > 0 {
+				if cmd, ok := commands[res.ID]; ok {
+					if res.Error != nil {
+						cmd.errChn <- errors.New(res.Error.Message)
+					} else {
+						cmd.resChn <- res
+					}
+					delete(commands, res.ID)
+				}
+			} else if len(res.Method) > 0 {
+				c.events.forEvents(res.Method, func(val eventRequest) {
+					val.eventChn <- res
+				})
 			}
 		}
 	}
 }
 
-func (c *Connection) reader() {
+func (c *Connection) writer(chn chan commandRequest) {
+	for req := range chn {
+		// NOTE writer doesn't throw error on connection close.
+		if writeErr := c.conn.WriteJSON(req); writeErr != nil {
+			req.errChn <- writeErr
+		}
+	}
+}
+
+func (c *Connection) reader(chn chan commandResponse) {
 	for !c.isClosed() {
 		var data commandResponse
 		if decodeErr := c.conn.ReadJSON(&data); decodeErr != nil {
@@ -432,19 +461,6 @@ func (c *Connection) reader() {
 			c.errorFn(decodeErr)
 		}
 
-		if data.ID > 0 {
-			if cmd, ok := c.commands.getCommand(data.ID); ok {
-				if data.Error != nil {
-					cmd.errChn <- errors.New(data.Error.Message)
-				} else {
-					cmd.resChn <- data
-				}
-			}
-		} else if len(data.Method) > 0 {
-			c.events.forEvents(data.Method, func(val eventRequest) {
-				val.eventChn <- data
-			})
-		}
 	}
 }
 
