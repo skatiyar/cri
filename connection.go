@@ -17,9 +17,6 @@ import (
 // DefaultAddress for remote debugging protocol
 const DefaultAddress = "127.0.0.1:9222"
 
-// DefaultEventTimeout specifies default duration to receive an event
-const DefaultEventTimeout = 10 * time.Second
-
 // DefaultCommandTimeout specifies default duration to receive command response
 const DefaultCommandTimeout = 10 * time.Second
 
@@ -38,8 +35,6 @@ type ConnectionOptions struct {
 	SocketAddress string
 	// TLSClientConfig specifies TLS configuration to use
 	TLSConfig *tls.Config
-	// EventTimeout specifies duration to receive an event, default used is DefaultEventTimeout
-	EventTimeout time.Duration
 	// CommandTimeout specifies duration to receive command response, default used is DefaultCommandTimeout
 	CommandTimeout time.Duration
 	// Error if provided, is called with errors from connection reader.
@@ -102,81 +97,9 @@ func SetError(fn func(err error)) ConnectionOption {
 	}
 }
 
-type commandsStore struct {
-	sync.RWMutex
-	commands map[int32]commandRequest
-}
-
-func (cs *commandsStore) addCommand(cmd commandRequest) {
-	cs.Lock()
-	defer cs.Unlock()
-	if cs.commands == nil {
-		cs.commands = make(map[int32]commandRequest)
-	}
-	cs.commands[cmd.ID] = cmd
-}
-
-func (cs *commandsStore) deleteCommand(id int32) {
-	cs.Lock()
-	defer cs.Unlock()
-	if cs.commands != nil {
-		delete(cs.commands, id)
-	}
-}
-
-func (cs *commandsStore) getCommand(id int32) (commandRequest, bool) {
-	cs.RLock()
-	defer cs.RUnlock()
-	if cs.commands != nil {
-		if val, ok := cs.commands[id]; ok {
-			return val, ok
-		}
-	}
-	return commandRequest{}, false
-}
-
-type eventsStore struct {
-	sync.RWMutex
-	events map[string]map[eventRequest]bool
-}
-
-func (es *eventsStore) addEvent(ereq eventRequest) {
-	es.Lock()
-	defer es.Unlock()
-	if es.events == nil {
-		es.events = make(map[string]map[eventRequest]bool)
-	}
-	if _, ok := es.events[ereq.Method]; !ok {
-		es.events[ereq.Method] = make(map[eventRequest]bool)
-	}
-	es.events[ereq.Method][ereq] = true
-}
-
-func (es *eventsStore) deleteEvent(ereq eventRequest) {
-	es.Lock()
-	defer es.Unlock()
-	if es.events == nil {
-		return
-	}
-	if _, ok := es.events[ereq.Method]; !ok {
-		return
-	}
-	delete(es.events[ereq.Method], ereq)
-}
-
-func (es *eventsStore) forEvents(cmd string, fn func(eventRequest)) {
-	es.RLock()
-	defer es.RUnlock()
-	if es.events == nil {
-		return
-	}
-	if _, ok := es.events[cmd]; !ok {
-		return
-	}
-	for eve := range es.events[cmd] {
-		fn(eve)
-	}
-}
+var (
+	ErrConnectionClosed = errors.New("Connection closed")
+)
 
 type closeStore struct {
 	sync.RWMutex
@@ -202,11 +125,9 @@ type Connection struct {
 	tlsConfig                *tls.Config
 	eventTimeout, cmdTimeout time.Duration
 
-	conn   *websocket.Conn
-	reqChn chan commandRequest
+	conn *websocket.Conn
 
-	commands commandsStore
-	events   eventsStore
+	reqChn chan commandRequest
 
 	closeStore
 
@@ -226,7 +147,6 @@ type Connection struct {
 func NewConnection(opts ...ConnectionOption) (*Connection, error) {
 	opt := &ConnectionOptions{
 		Address:        DefaultAddress,
-		EventTimeout:   DefaultEventTimeout,
 		CommandTimeout: DefaultCommandTimeout,
 		Error:          nopError,
 	}
@@ -321,12 +241,6 @@ func (c *Connection) Send(command string, request, response interface{}) error {
 		errChn:       make(chan error, 1),
 		timeoutTimer: time.NewTimer(c.cmdTimeout),
 	}
-
-	c.commands.addCommand(cmd)
-	defer func() {
-		c.commands.deleteCommand(cmd.ID)
-	}()
-
 	if cmd.Params == nil {
 		cmd.Params = struct{}{}
 	}
