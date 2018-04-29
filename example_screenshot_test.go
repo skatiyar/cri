@@ -14,7 +14,7 @@ import (
 
 // Example shows steps to take screenshot of a page.
 func Example() {
-	conn, connErr := cri.NewConnection(cri.SetEventTimeout(20 * time.Second))
+	conn, connErr := cri.NewConnection(cri.SetCommandTimeout(20 * time.Second))
 	if connErr != nil {
 		panic(connErr)
 	}

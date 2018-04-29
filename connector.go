@@ -1,7 +1,7 @@
 package cri
 
 type Decoder func(params interface{}) error
-type Closer func() error
+type Closer func()
 
 // Connector interface defines methods required by command packages.
 type Connector interface {
