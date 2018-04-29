@@ -57,7 +57,15 @@ type MessageAddedParams struct {
 }
 
 // Issued when new console message is added.
-func (obj *Console) MessageAdded() (params MessageAddedParams, err error) {
-	err = obj.conn.On(MessageAdded, &params)
-	return
+func (obj *Console) MessageAdded(fn func(event string, params MessageAddedParams, err error) bool) {
+	listen, closer := obj.conn.On(MessageAdded)
+	go func() {
+		defer closer()
+		for {
+			var params MessageAddedParams
+			if !fn(MessageAdded, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }

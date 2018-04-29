@@ -216,6 +216,26 @@ type CSS_PlatformFontUsage struct {
 	GlyphCount float32 `json:"glyphCount"`
 }
 
+// Properties of a web font: https://www.w3.org/TR/2008/REC-CSS2-20080411/fonts.html#font-descriptions
+type CSS_FontFace struct {
+	// The font-family.
+	FontFamily string `json:"fontFamily"`
+	// The font-style.
+	FontStyle string `json:"fontStyle"`
+	// The font-variant.
+	FontVariant string `json:"fontVariant"`
+	// The font-weight.
+	FontWeight string `json:"fontWeight"`
+	// The font-stretch.
+	FontStretch string `json:"fontStretch"`
+	// The unicode-range.
+	UnicodeRange string `json:"unicodeRange"`
+	// The src.
+	Src string `json:"src"`
+	// The resolved platform font family
+	PlatformFontFamily string `json:"platformFontFamily"`
+}
+
 // CSS keyframes rule representation.
 type CSS_CSSKeyframesRule struct {
 	// Animation name.

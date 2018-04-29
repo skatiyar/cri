@@ -11,7 +11,7 @@ type Runtime_ScriptId string
 // Unique object identifier.
 type Runtime_RemoteObjectId string
 
-// Primitive value which cannot be JSON-stringified.
+// Primitive value which cannot be JSON-stringified. Includes values `-0`, `NaN`, `Infinity`, `-Infinity`, and bigint literals.
 type Runtime_UnserializableValue string
 
 // Mirror object referencing original JavaScript object.

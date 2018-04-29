@@ -460,9 +460,17 @@ type BreakpointResolvedParams struct {
 }
 
 // Fired when breakpoint is resolved to an actual script and location.
-func (obj *Debugger) BreakpointResolved() (params BreakpointResolvedParams, err error) {
-	err = obj.conn.On(BreakpointResolved, &params)
-	return
+func (obj *Debugger) BreakpointResolved(fn func(event string, params BreakpointResolvedParams, err error) bool) {
+	listen, closer := obj.conn.On(BreakpointResolved)
+	go func() {
+		defer closer()
+		for {
+			var params BreakpointResolvedParams
+			if !fn(BreakpointResolved, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type PausedParams struct {
@@ -485,15 +493,30 @@ type PausedParams struct {
 }
 
 // Fired when the virtual machine stopped on breakpoint or exception or any other stop criteria.
-func (obj *Debugger) Paused() (params PausedParams, err error) {
-	err = obj.conn.On(Paused, &params)
-	return
+func (obj *Debugger) Paused(fn func(event string, params PausedParams, err error) bool) {
+	listen, closer := obj.conn.On(Paused)
+	go func() {
+		defer closer()
+		for {
+			var params PausedParams
+			if !fn(Paused, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 // Fired when the virtual machine resumed execution.
-func (obj *Debugger) Resumed() (err error) {
-	err = obj.conn.On(Resumed, nil)
-	return
+func (obj *Debugger) Resumed(fn func(event string, err error) bool) {
+	listen, closer := obj.conn.On(Resumed)
+	go func() {
+		defer closer()
+		for {
+			if !fn(Resumed, listen(nil)) {
+				return
+			}
+		}
+	}()
 }
 
 type ScriptFailedToParseParams struct {
@@ -529,9 +552,17 @@ type ScriptFailedToParseParams struct {
 }
 
 // Fired when virtual machine fails to parse the script.
-func (obj *Debugger) ScriptFailedToParse() (params ScriptFailedToParseParams, err error) {
-	err = obj.conn.On(ScriptFailedToParse, &params)
-	return
+func (obj *Debugger) ScriptFailedToParse(fn func(event string, params ScriptFailedToParseParams, err error) bool) {
+	listen, closer := obj.conn.On(ScriptFailedToParse)
+	go func() {
+		defer closer()
+		for {
+			var params ScriptFailedToParseParams
+			if !fn(ScriptFailedToParse, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type ScriptParsedParams struct {
@@ -570,7 +601,15 @@ type ScriptParsedParams struct {
 }
 
 // Fired when virtual machine parses script. This event is also fired for all known and uncollected scripts upon enabling debugger.
-func (obj *Debugger) ScriptParsed() (params ScriptParsedParams, err error) {
-	err = obj.conn.On(ScriptParsed, &params)
-	return
+func (obj *Debugger) ScriptParsed(fn func(event string, params ScriptParsedParams, err error) bool) {
+	listen, closer := obj.conn.On(ScriptParsed)
+	go func() {
+		defer closer()
+		for {
+			var params ScriptParsedParams
+			if !fn(ScriptParsed, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }

@@ -20,6 +20,8 @@ const (
 	DiscardConsoleEntries           = "Runtime.discardConsoleEntries"
 	Enable                          = "Runtime.enable"
 	Evaluate                        = "Runtime.evaluate"
+	GetIsolateId                    = "Runtime.getIsolateId"
+	GetHeapUsage                    = "Runtime.getHeapUsage"
 	GetProperties                   = "Runtime.getProperties"
 	GlobalLexicalScopeNames         = "Runtime.globalLexicalScopeNames"
 	QueryObjects                    = "Runtime.queryObjects"
@@ -28,6 +30,7 @@ const (
 	RunIfWaitingForDebugger         = "Runtime.runIfWaitingForDebugger"
 	RunScript                       = "Runtime.runScript"
 	SetCustomObjectFormatterEnabled = "Runtime.setCustomObjectFormatterEnabled"
+	TerminateExecution              = "Runtime.terminateExecution"
 )
 
 // List of events in Runtime domain
@@ -172,6 +175,9 @@ type EvaluateRequest struct {
 	UserGesture *bool `json:"userGesture,omitempty"`
 	// Whether execution should `await` for resulting value and return once awaited promise is resolved.
 	AwaitPromise *bool `json:"awaitPromise,omitempty"`
+	// Whether to throw an exception if side effect cannot be ruled out during evaluation.
+	// NOTE Experimental
+	ThrowOnSideEffect *bool `json:"throwOnSideEffect,omitempty"`
 }
 
 type EvaluateResponse struct {
@@ -184,6 +190,30 @@ type EvaluateResponse struct {
 // Evaluates expression on global object.
 func (obj *Runtime) Evaluate(request *EvaluateRequest) (response EvaluateResponse, err error) {
 	err = obj.conn.Send(Evaluate, request, &response)
+	return
+}
+
+type GetIsolateIdResponse struct {
+	// The isolate id.
+	Id string `json:"id"`
+}
+
+// Returns the isolate id.
+func (obj *Runtime) GetIsolateId() (response GetIsolateIdResponse, err error) {
+	err = obj.conn.Send(GetIsolateId, nil, &response)
+	return
+}
+
+type GetHeapUsageResponse struct {
+	// Used heap size in bytes.
+	UsedSize float32 `json:"usedSize"`
+	// Allocated heap size in bytes.
+	TotalSize float32 `json:"totalSize"`
+}
+
+// Returns the JavaScript heap usage. It is the total usage of the corresponding isolate not scoped to a particular Runtime.
+func (obj *Runtime) GetHeapUsage() (response GetHeapUsageResponse, err error) {
+	err = obj.conn.Send(GetHeapUsage, nil, &response)
 	return
 }
 
@@ -233,6 +263,8 @@ func (obj *Runtime) GlobalLexicalScopeNames(request *GlobalLexicalScopeNamesRequ
 type QueryObjectsRequest struct {
 	// Identifier of the prototype to return objects for.
 	PrototypeObjectId types.Runtime_RemoteObjectId `json:"prototypeObjectId"`
+	// Symbolic group name that can be used to release the results.
+	ObjectGroup *string `json:"objectGroup,omitempty"`
 }
 
 type QueryObjectsResponse struct {
@@ -314,6 +346,12 @@ func (obj *Runtime) SetCustomObjectFormatterEnabled(request *SetCustomObjectForm
 	return
 }
 
+// Terminate current or next JavaScript execution. Will cancel the termination when the outer-most script execution ends.
+func (obj *Runtime) TerminateExecution() (err error) {
+	err = obj.conn.Send(TerminateExecution, nil, nil)
+	return
+}
+
 type ConsoleAPICalledParams struct {
 	// Type of the call.
 	Type string `json:"type"`
@@ -331,9 +369,17 @@ type ConsoleAPICalledParams struct {
 }
 
 // Issued when console API was called.
-func (obj *Runtime) ConsoleAPICalled() (params ConsoleAPICalledParams, err error) {
-	err = obj.conn.On(ConsoleAPICalled, &params)
-	return
+func (obj *Runtime) ConsoleAPICalled(fn func(event string, params ConsoleAPICalledParams, err error) bool) {
+	listen, closer := obj.conn.On(ConsoleAPICalled)
+	go func() {
+		defer closer()
+		for {
+			var params ConsoleAPICalledParams
+			if !fn(ConsoleAPICalled, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type ExceptionRevokedParams struct {
@@ -344,9 +390,17 @@ type ExceptionRevokedParams struct {
 }
 
 // Issued when unhandled exception was revoked.
-func (obj *Runtime) ExceptionRevoked() (params ExceptionRevokedParams, err error) {
-	err = obj.conn.On(ExceptionRevoked, &params)
-	return
+func (obj *Runtime) ExceptionRevoked(fn func(event string, params ExceptionRevokedParams, err error) bool) {
+	listen, closer := obj.conn.On(ExceptionRevoked)
+	go func() {
+		defer closer()
+		for {
+			var params ExceptionRevokedParams
+			if !fn(ExceptionRevoked, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type ExceptionThrownParams struct {
@@ -356,9 +410,17 @@ type ExceptionThrownParams struct {
 }
 
 // Issued when exception was thrown and unhandled.
-func (obj *Runtime) ExceptionThrown() (params ExceptionThrownParams, err error) {
-	err = obj.conn.On(ExceptionThrown, &params)
-	return
+func (obj *Runtime) ExceptionThrown(fn func(event string, params ExceptionThrownParams, err error) bool) {
+	listen, closer := obj.conn.On(ExceptionThrown)
+	go func() {
+		defer closer()
+		for {
+			var params ExceptionThrownParams
+			if !fn(ExceptionThrown, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type ExecutionContextCreatedParams struct {
@@ -367,9 +429,17 @@ type ExecutionContextCreatedParams struct {
 }
 
 // Issued when new execution context is created.
-func (obj *Runtime) ExecutionContextCreated() (params ExecutionContextCreatedParams, err error) {
-	err = obj.conn.On(ExecutionContextCreated, &params)
-	return
+func (obj *Runtime) ExecutionContextCreated(fn func(event string, params ExecutionContextCreatedParams, err error) bool) {
+	listen, closer := obj.conn.On(ExecutionContextCreated)
+	go func() {
+		defer closer()
+		for {
+			var params ExecutionContextCreatedParams
+			if !fn(ExecutionContextCreated, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type ExecutionContextDestroyedParams struct {
@@ -378,15 +448,30 @@ type ExecutionContextDestroyedParams struct {
 }
 
 // Issued when execution context is destroyed.
-func (obj *Runtime) ExecutionContextDestroyed() (params ExecutionContextDestroyedParams, err error) {
-	err = obj.conn.On(ExecutionContextDestroyed, &params)
-	return
+func (obj *Runtime) ExecutionContextDestroyed(fn func(event string, params ExecutionContextDestroyedParams, err error) bool) {
+	listen, closer := obj.conn.On(ExecutionContextDestroyed)
+	go func() {
+		defer closer()
+		for {
+			var params ExecutionContextDestroyedParams
+			if !fn(ExecutionContextDestroyed, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 // Issued when all executionContexts were cleared in browser
-func (obj *Runtime) ExecutionContextsCleared() (err error) {
-	err = obj.conn.On(ExecutionContextsCleared, nil)
-	return
+func (obj *Runtime) ExecutionContextsCleared(fn func(event string, err error) bool) {
+	listen, closer := obj.conn.On(ExecutionContextsCleared)
+	go func() {
+		defer closer()
+		for {
+			if !fn(ExecutionContextsCleared, listen(nil)) {
+				return
+			}
+		}
+	}()
 }
 
 type InspectRequestedParams struct {
@@ -395,7 +480,15 @@ type InspectRequestedParams struct {
 }
 
 // Issued when object should be inspected (for example, as a result of inspect() command line API call).
-func (obj *Runtime) InspectRequested() (params InspectRequestedParams, err error) {
-	err = obj.conn.On(InspectRequested, &params)
-	return
+func (obj *Runtime) InspectRequested(fn func(event string, params InspectRequestedParams, err error) bool) {
+	listen, closer := obj.conn.On(InspectRequested)
+	go func() {
+		defer closer()
+		for {
+			var params InspectRequestedParams
+			if !fn(InspectRequested, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }

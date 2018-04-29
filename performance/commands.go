@@ -63,7 +63,15 @@ type MetricsParams struct {
 }
 
 // Current values of the metrics.
-func (obj *Performance) Metrics() (params MetricsParams, err error) {
-	err = obj.conn.On(Metrics, &params)
-	return
+func (obj *Performance) Metrics(fn func(event string, params MetricsParams, err error) bool) {
+	listen, closer := obj.conn.On(Metrics)
+	go func() {
+		defer closer()
+		for {
+			var params MetricsParams
+			if !fn(Metrics, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }

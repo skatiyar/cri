@@ -106,9 +106,17 @@ type BufferUsageParams struct {
 	Value *float32 `json:"value,omitempty"`
 }
 
-func (obj *Tracing) BufferUsage() (params BufferUsageParams, err error) {
-	err = obj.conn.On(BufferUsage, &params)
-	return
+func (obj *Tracing) BufferUsage(fn func(event string, params BufferUsageParams, err error) bool) {
+	listen, closer := obj.conn.On(BufferUsage)
+	go func() {
+		defer closer()
+		for {
+			var params BufferUsageParams
+			if !fn(BufferUsage, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type DataCollectedParams struct {
@@ -116,9 +124,17 @@ type DataCollectedParams struct {
 }
 
 // Contains an bucket of collected trace events. When tracing is stopped collected events will be send as a sequence of dataCollected events followed by tracingComplete event.
-func (obj *Tracing) DataCollected() (params DataCollectedParams, err error) {
-	err = obj.conn.On(DataCollected, &params)
-	return
+func (obj *Tracing) DataCollected(fn func(event string, params DataCollectedParams, err error) bool) {
+	listen, closer := obj.conn.On(DataCollected)
+	go func() {
+		defer closer()
+		for {
+			var params DataCollectedParams
+			if !fn(DataCollected, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type TracingCompleteParams struct {
@@ -129,7 +145,15 @@ type TracingCompleteParams struct {
 }
 
 // Signals that tracing is stopped and there is no trace buffers pending flush, all data were delivered via dataCollected events.
-func (obj *Tracing) TracingComplete() (params TracingCompleteParams, err error) {
-	err = obj.conn.On(TracingComplete, &params)
-	return
+func (obj *Tracing) TracingComplete(fn func(event string, params TracingCompleteParams, err error) bool) {
+	listen, closer := obj.conn.On(TracingComplete)
+	go func() {
+		defer closer()
+		for {
+			var params TracingCompleteParams
+			if !fn(TracingComplete, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }

@@ -229,6 +229,8 @@ type SetVirtualTimePolicyRequest struct {
 	Budget *float32 `json:"budget,omitempty"`
 	// If set this specifies the maximum number of tasks that can be run before virtual is forced forwards to prevent deadlock.
 	MaxVirtualTimeTaskStarvationCount *int `json:"maxVirtualTimeTaskStarvationCount,omitempty"`
+	// If set the virtual time policy change should be deferred until any frame starts navigating. Note any previous deferred policy change is superseded.
+	WaitForNavigation *bool `json:"waitForNavigation,omitempty"`
 }
 
 type SetVirtualTimePolicyResponse struct {
@@ -262,16 +264,31 @@ type VirtualTimeAdvancedParams struct {
 
 // Notification sent after the virtual time has advanced.
 // NOTE Experimental
-func (obj *Emulation) VirtualTimeAdvanced() (params VirtualTimeAdvancedParams, err error) {
-	err = obj.conn.On(VirtualTimeAdvanced, &params)
-	return
+func (obj *Emulation) VirtualTimeAdvanced(fn func(event string, params VirtualTimeAdvancedParams, err error) bool) {
+	listen, closer := obj.conn.On(VirtualTimeAdvanced)
+	go func() {
+		defer closer()
+		for {
+			var params VirtualTimeAdvancedParams
+			if !fn(VirtualTimeAdvanced, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 // Notification sent after the virtual time budget for the current VirtualTimePolicy has run out.
 // NOTE Experimental
-func (obj *Emulation) VirtualTimeBudgetExpired() (err error) {
-	err = obj.conn.On(VirtualTimeBudgetExpired, nil)
-	return
+func (obj *Emulation) VirtualTimeBudgetExpired(fn func(event string, err error) bool) {
+	listen, closer := obj.conn.On(VirtualTimeBudgetExpired)
+	go func() {
+		defer closer()
+		for {
+			if !fn(VirtualTimeBudgetExpired, listen(nil)) {
+				return
+			}
+		}
+	}()
 }
 
 type VirtualTimePausedParams struct {
@@ -281,7 +298,15 @@ type VirtualTimePausedParams struct {
 
 // Notification sent after the virtual time has paused.
 // NOTE Experimental
-func (obj *Emulation) VirtualTimePaused() (params VirtualTimePausedParams, err error) {
-	err = obj.conn.On(VirtualTimePaused, &params)
-	return
+func (obj *Emulation) VirtualTimePaused(fn func(event string, params VirtualTimePausedParams, err error) bool) {
+	listen, closer := obj.conn.On(VirtualTimePaused)
+	go func() {
+		defer closer()
+		for {
+			var params VirtualTimePausedParams
+			if !fn(VirtualTimePaused, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }

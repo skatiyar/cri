@@ -52,6 +52,7 @@ const (
 	SetNodeValue                    = "DOM.setNodeValue"
 	SetOuterHTML                    = "DOM.setOuterHTML"
 	Undo                            = "DOM.undo"
+	GetFrameOwner                   = "DOM.getFrameOwner"
 )
 
 // List of events in DOM domain
@@ -649,6 +650,20 @@ func (obj *DOM) Undo() (err error) {
 	return
 }
 
+type GetFrameOwnerRequest struct {
+	FrameId types.Page_FrameId `json:"frameId"`
+}
+
+type GetFrameOwnerResponse struct {
+	NodeId types.DOM_NodeId `json:"nodeId"`
+}
+
+// Returns iframe node that owns iframe with the given domain.
+func (obj *DOM) GetFrameOwner(request *GetFrameOwnerRequest) (response GetFrameOwnerResponse, err error) {
+	err = obj.conn.Send(GetFrameOwner, request, &response)
+	return
+}
+
 type AttributeModifiedParams struct {
 	// Id of the node that has changed.
 	NodeId types.DOM_NodeId `json:"nodeId"`
@@ -659,9 +674,17 @@ type AttributeModifiedParams struct {
 }
 
 // Fired when `Element`'s attribute is modified.
-func (obj *DOM) AttributeModified() (params AttributeModifiedParams, err error) {
-	err = obj.conn.On(AttributeModified, &params)
-	return
+func (obj *DOM) AttributeModified(fn func(event string, params AttributeModifiedParams, err error) bool) {
+	listen, closer := obj.conn.On(AttributeModified)
+	go func() {
+		defer closer()
+		for {
+			var params AttributeModifiedParams
+			if !fn(AttributeModified, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type AttributeRemovedParams struct {
@@ -672,9 +695,17 @@ type AttributeRemovedParams struct {
 }
 
 // Fired when `Element`'s attribute is removed.
-func (obj *DOM) AttributeRemoved() (params AttributeRemovedParams, err error) {
-	err = obj.conn.On(AttributeRemoved, &params)
-	return
+func (obj *DOM) AttributeRemoved(fn func(event string, params AttributeRemovedParams, err error) bool) {
+	listen, closer := obj.conn.On(AttributeRemoved)
+	go func() {
+		defer closer()
+		for {
+			var params AttributeRemovedParams
+			if !fn(AttributeRemoved, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type CharacterDataModifiedParams struct {
@@ -685,9 +716,17 @@ type CharacterDataModifiedParams struct {
 }
 
 // Mirrors `DOMCharacterDataModified` event.
-func (obj *DOM) CharacterDataModified() (params CharacterDataModifiedParams, err error) {
-	err = obj.conn.On(CharacterDataModified, &params)
-	return
+func (obj *DOM) CharacterDataModified(fn func(event string, params CharacterDataModifiedParams, err error) bool) {
+	listen, closer := obj.conn.On(CharacterDataModified)
+	go func() {
+		defer closer()
+		for {
+			var params CharacterDataModifiedParams
+			if !fn(CharacterDataModified, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type ChildNodeCountUpdatedParams struct {
@@ -698,9 +737,17 @@ type ChildNodeCountUpdatedParams struct {
 }
 
 // Fired when `Container`'s child node count has changed.
-func (obj *DOM) ChildNodeCountUpdated() (params ChildNodeCountUpdatedParams, err error) {
-	err = obj.conn.On(ChildNodeCountUpdated, &params)
-	return
+func (obj *DOM) ChildNodeCountUpdated(fn func(event string, params ChildNodeCountUpdatedParams, err error) bool) {
+	listen, closer := obj.conn.On(ChildNodeCountUpdated)
+	go func() {
+		defer closer()
+		for {
+			var params ChildNodeCountUpdatedParams
+			if !fn(ChildNodeCountUpdated, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type ChildNodeInsertedParams struct {
@@ -713,9 +760,17 @@ type ChildNodeInsertedParams struct {
 }
 
 // Mirrors `DOMNodeInserted` event.
-func (obj *DOM) ChildNodeInserted() (params ChildNodeInsertedParams, err error) {
-	err = obj.conn.On(ChildNodeInserted, &params)
-	return
+func (obj *DOM) ChildNodeInserted(fn func(event string, params ChildNodeInsertedParams, err error) bool) {
+	listen, closer := obj.conn.On(ChildNodeInserted)
+	go func() {
+		defer closer()
+		for {
+			var params ChildNodeInsertedParams
+			if !fn(ChildNodeInserted, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type ChildNodeRemovedParams struct {
@@ -726,9 +781,17 @@ type ChildNodeRemovedParams struct {
 }
 
 // Mirrors `DOMNodeRemoved` event.
-func (obj *DOM) ChildNodeRemoved() (params ChildNodeRemovedParams, err error) {
-	err = obj.conn.On(ChildNodeRemoved, &params)
-	return
+func (obj *DOM) ChildNodeRemoved(fn func(event string, params ChildNodeRemovedParams, err error) bool) {
+	listen, closer := obj.conn.On(ChildNodeRemoved)
+	go func() {
+		defer closer()
+		for {
+			var params ChildNodeRemovedParams
+			if !fn(ChildNodeRemoved, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type DistributedNodesUpdatedParams struct {
@@ -740,15 +803,30 @@ type DistributedNodesUpdatedParams struct {
 
 // Called when distrubution is changed.
 // NOTE Experimental
-func (obj *DOM) DistributedNodesUpdated() (params DistributedNodesUpdatedParams, err error) {
-	err = obj.conn.On(DistributedNodesUpdated, &params)
-	return
+func (obj *DOM) DistributedNodesUpdated(fn func(event string, params DistributedNodesUpdatedParams, err error) bool) {
+	listen, closer := obj.conn.On(DistributedNodesUpdated)
+	go func() {
+		defer closer()
+		for {
+			var params DistributedNodesUpdatedParams
+			if !fn(DistributedNodesUpdated, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 // Fired when `Document` has been totally updated. Node ids are no longer valid.
-func (obj *DOM) DocumentUpdated() (err error) {
-	err = obj.conn.On(DocumentUpdated, nil)
-	return
+func (obj *DOM) DocumentUpdated(fn func(event string, err error) bool) {
+	listen, closer := obj.conn.On(DocumentUpdated)
+	go func() {
+		defer closer()
+		for {
+			if !fn(DocumentUpdated, listen(nil)) {
+				return
+			}
+		}
+	}()
 }
 
 type InlineStyleInvalidatedParams struct {
@@ -758,9 +836,17 @@ type InlineStyleInvalidatedParams struct {
 
 // Fired when `Element`'s inline style is modified via a CSS property modification.
 // NOTE Experimental
-func (obj *DOM) InlineStyleInvalidated() (params InlineStyleInvalidatedParams, err error) {
-	err = obj.conn.On(InlineStyleInvalidated, &params)
-	return
+func (obj *DOM) InlineStyleInvalidated(fn func(event string, params InlineStyleInvalidatedParams, err error) bool) {
+	listen, closer := obj.conn.On(InlineStyleInvalidated)
+	go func() {
+		defer closer()
+		for {
+			var params InlineStyleInvalidatedParams
+			if !fn(InlineStyleInvalidated, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type PseudoElementAddedParams struct {
@@ -772,9 +858,17 @@ type PseudoElementAddedParams struct {
 
 // Called when a pseudo element is added to an element.
 // NOTE Experimental
-func (obj *DOM) PseudoElementAdded() (params PseudoElementAddedParams, err error) {
-	err = obj.conn.On(PseudoElementAdded, &params)
-	return
+func (obj *DOM) PseudoElementAdded(fn func(event string, params PseudoElementAddedParams, err error) bool) {
+	listen, closer := obj.conn.On(PseudoElementAdded)
+	go func() {
+		defer closer()
+		for {
+			var params PseudoElementAddedParams
+			if !fn(PseudoElementAdded, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type PseudoElementRemovedParams struct {
@@ -786,9 +880,17 @@ type PseudoElementRemovedParams struct {
 
 // Called when a pseudo element is removed from an element.
 // NOTE Experimental
-func (obj *DOM) PseudoElementRemoved() (params PseudoElementRemovedParams, err error) {
-	err = obj.conn.On(PseudoElementRemoved, &params)
-	return
+func (obj *DOM) PseudoElementRemoved(fn func(event string, params PseudoElementRemovedParams, err error) bool) {
+	listen, closer := obj.conn.On(PseudoElementRemoved)
+	go func() {
+		defer closer()
+		for {
+			var params PseudoElementRemovedParams
+			if !fn(PseudoElementRemoved, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type SetChildNodesParams struct {
@@ -799,9 +901,17 @@ type SetChildNodesParams struct {
 }
 
 // Fired when backend wants to provide client with the missing DOM structure. This happens upon most of the calls requesting node ids.
-func (obj *DOM) SetChildNodes() (params SetChildNodesParams, err error) {
-	err = obj.conn.On(SetChildNodes, &params)
-	return
+func (obj *DOM) SetChildNodes(fn func(event string, params SetChildNodesParams, err error) bool) {
+	listen, closer := obj.conn.On(SetChildNodes)
+	go func() {
+		defer closer()
+		for {
+			var params SetChildNodesParams
+			if !fn(SetChildNodes, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type ShadowRootPoppedParams struct {
@@ -813,9 +923,17 @@ type ShadowRootPoppedParams struct {
 
 // Called when shadow root is popped from the element.
 // NOTE Experimental
-func (obj *DOM) ShadowRootPopped() (params ShadowRootPoppedParams, err error) {
-	err = obj.conn.On(ShadowRootPopped, &params)
-	return
+func (obj *DOM) ShadowRootPopped(fn func(event string, params ShadowRootPoppedParams, err error) bool) {
+	listen, closer := obj.conn.On(ShadowRootPopped)
+	go func() {
+		defer closer()
+		for {
+			var params ShadowRootPoppedParams
+			if !fn(ShadowRootPopped, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type ShadowRootPushedParams struct {
@@ -827,7 +945,15 @@ type ShadowRootPushedParams struct {
 
 // Called when shadow root is pushed into the element.
 // NOTE Experimental
-func (obj *DOM) ShadowRootPushed() (params ShadowRootPushedParams, err error) {
-	err = obj.conn.On(ShadowRootPushed, &params)
-	return
+func (obj *DOM) ShadowRootPushed(fn func(event string, params ShadowRootPushedParams, err error) bool) {
+	listen, closer := obj.conn.On(ShadowRootPushed)
+	go func() {
+		defer closer()
+		for {
+			var params ShadowRootPushedParams
+			if !fn(ShadowRootPushed, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }

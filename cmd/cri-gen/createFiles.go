@@ -199,6 +199,7 @@ type EventData struct {
 	Name          string
 	ResponseName  string
 	ResponseValue string
+	CallParams    string
 	Types         []TypeData
 }
 
@@ -293,7 +294,8 @@ func transformCommands(d Domain) CommandsData {
 		if len(d.Events[i].Parameters) > 0 {
 			paramsName := strings.Title(d.Events[i].Name) + "Params"
 			eve.ResponseName = "params " + paramsName + ", err error"
-			eve.ResponseValue = "&params"
+			eve.ResponseValue = "params, listen(&params)"
+			eve.CallParams = "var params " + paramsName
 			properties := make([]string, 0)
 			for j := 0; j < len(d.Events[i].Parameters); j++ {
 				param, paramDeps := transformParameter(d.Events[i].Parameters[j], d.Domain, paramsName, true)
@@ -307,8 +309,9 @@ func transformCommands(d Domain) CommandsData {
 				Type: "struct {\n" + strings.Join(properties, "\n") + "\n}",
 			})
 		} else {
-			eve.ResponseValue = "nil"
 			eve.ResponseName = "err error"
+			eve.ResponseValue = "listen(nil)"
+			eve.CallParams = ""
 		}
 
 		data.Events = append(data.Events, eve)

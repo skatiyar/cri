@@ -86,6 +86,8 @@ type Network_Request struct {
 	Headers Network_Headers `json:"headers"`
 	// HTTP POST request data.
 	PostData *string `json:"postData,omitempty"`
+	// True when the request has POST data. Note that postData might still be omitted when this flag is true when the data is too long.
+	HasPostData *bool `json:"hasPostData,omitempty"`
 	// The mixed content type of the request.
 	MixedContentType *Security_MixedContentType `json:"mixedContentType,omitempty"`
 	// Priority of the resource request at the time request is sent.

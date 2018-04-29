@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"errors"
+	"math"
 	"net/http"
 	"net/url"
 	"sync"
@@ -17,13 +18,8 @@ import (
 // DefaultAddress for remote debugging protocol
 const DefaultAddress = "127.0.0.1:9222"
 
-// DefaultEventTimeout specifies default duration to receive an event
-const DefaultEventTimeout = 10 * time.Second
-
 // DefaultCommandTimeout specifies default duration to receive command response
 const DefaultCommandTimeout = 10 * time.Second
-
-const maxIntValue = 1<<31 - 1
 
 // ConnectionOption defines a function type to set values of ConnectionOptions
 type ConnectionOption func(*ConnectionOptions)
@@ -38,8 +34,6 @@ type ConnectionOptions struct {
 	SocketAddress string
 	// TLSClientConfig specifies TLS configuration to use
 	TLSConfig *tls.Config
-	// EventTimeout specifies duration to receive an event, default used is DefaultEventTimeout
-	EventTimeout time.Duration
 	// CommandTimeout specifies duration to receive command response, default used is DefaultCommandTimeout
 	CommandTimeout time.Duration
 	// Error if provided, is called with errors from connection reader.
@@ -81,13 +75,6 @@ func SetTLSConfig(config *tls.Config) ConnectionOption {
 	}
 }
 
-// SetEventTimeout sets eventTimeout for connection
-func SetEventTimeout(timeout time.Duration) ConnectionOption {
-	return func(co *ConnectionOptions) {
-		co.EventTimeout = timeout
-	}
-}
-
 // SetCommandTimeout sets commandTimeout for connection
 func SetCommandTimeout(timeout time.Duration) ConnectionOption {
 	return func(co *ConnectionOptions) {
@@ -102,81 +89,10 @@ func SetError(fn func(err error)) ConnectionOption {
 	}
 }
 
-type commandsStore struct {
-	sync.RWMutex
-	commands map[int32]commandRequest
-}
-
-func (cs *commandsStore) addCommand(cmd commandRequest) {
-	cs.Lock()
-	defer cs.Unlock()
-	if cs.commands == nil {
-		cs.commands = make(map[int32]commandRequest)
-	}
-	cs.commands[cmd.ID] = cmd
-}
-
-func (cs *commandsStore) deleteCommand(id int32) {
-	cs.Lock()
-	defer cs.Unlock()
-	if cs.commands != nil {
-		delete(cs.commands, id)
-	}
-}
-
-func (cs *commandsStore) getCommand(id int32) (commandRequest, bool) {
-	cs.RLock()
-	defer cs.RUnlock()
-	if cs.commands != nil {
-		if val, ok := cs.commands[id]; ok {
-			return val, ok
-		}
-	}
-	return commandRequest{}, false
-}
-
-type eventsStore struct {
-	sync.RWMutex
-	events map[string]map[eventRequest]bool
-}
-
-func (es *eventsStore) addEvent(ereq eventRequest) {
-	es.Lock()
-	defer es.Unlock()
-	if es.events == nil {
-		es.events = make(map[string]map[eventRequest]bool)
-	}
-	if _, ok := es.events[ereq.Method]; !ok {
-		es.events[ereq.Method] = make(map[eventRequest]bool)
-	}
-	es.events[ereq.Method][ereq] = true
-}
-
-func (es *eventsStore) deleteEvent(ereq eventRequest) {
-	es.Lock()
-	defer es.Unlock()
-	if es.events == nil {
-		return
-	}
-	if _, ok := es.events[ereq.Method]; !ok {
-		return
-	}
-	delete(es.events[ereq.Method], ereq)
-}
-
-func (es *eventsStore) forEvents(cmd string, fn func(eventRequest)) {
-	es.RLock()
-	defer es.RUnlock()
-	if es.events == nil {
-		return
-	}
-	if _, ok := es.events[cmd]; !ok {
-		return
-	}
-	for eve := range es.events[cmd] {
-		fn(eve)
-	}
-}
+var (
+	ErrConnectionClosed = errors.New("Connection closed")
+	ErrCommandTimeout   = errors.New("Command response timeout")
+)
 
 type closeStore struct {
 	sync.RWMutex
@@ -198,21 +114,30 @@ func (cs *closeStore) isClosed() bool {
 // Connection contains socket connection to remote target. Its safe to share
 // same instance among multiple goroutines.
 type Connection struct {
-	addr, wsAddr             string
-	tlsConfig                *tls.Config
-	eventTimeout, cmdTimeout time.Duration
+	addr, wsAddr string
+	tlsConfig    *tls.Config
+	cmdTimeout   time.Duration
 
-	conn   *websocket.Conn
-	reqChn chan commandRequest
+	conn *websocket.Conn
 
-	commands commandsStore
-	events   eventsStore
+	cmdChn chan commandRequest
+	eveChn chan eventRequest
 
 	closeStore
 
 	counter int32
 
 	errorFn func(err error)
+}
+
+// function id return monotonically increasing integers
+// till max int32 value
+func (c *Connection) id() int32 {
+	if atomic.CompareAndSwapInt32(&c.counter, math.MaxInt32, 1) {
+		return 1
+	} else {
+		return atomic.AddInt32(&c.counter, 1)
+	}
 }
 
 // NewConnection creates a connection to remote target. Connection options can be
@@ -226,18 +151,17 @@ type Connection struct {
 func NewConnection(opts ...ConnectionOption) (*Connection, error) {
 	opt := &ConnectionOptions{
 		Address:        DefaultAddress,
-		EventTimeout:   DefaultEventTimeout,
 		CommandTimeout: DefaultCommandTimeout,
 		Error:          nopError,
 	}
 	opt.option(opts...)
 
 	instance := &Connection{
-		eventTimeout: opt.EventTimeout,
-		cmdTimeout:   opt.CommandTimeout,
-		tlsConfig:    opt.TLSConfig,
-		reqChn:       make(chan commandRequest),
-		errorFn:      opt.Error,
+		cmdTimeout: opt.CommandTimeout,
+		tlsConfig:  opt.TLSConfig,
+		cmdChn:     make(chan commandRequest),
+		eveChn:     make(chan eventRequest),
+		errorFn:    opt.Error,
 	}
 
 	if len(opt.SocketAddress) != 0 {
@@ -279,31 +203,42 @@ func NewConnection(opts ...ConnectionOption) (*Connection, error) {
 
 	instance.conn = conn
 
-	go instance.reader()
-	go instance.writer()
+	go instance.runner()
 
 	return instance, nil
 }
 
-type commandResponse struct {
-	ID     int32                  `json:"id"`     // id of the command request or 0 in case of event
+type ResponseError struct {
+	Message string `json:"message"`
+	Code    int    `json:"code"`
+}
+
+func (re ResponseError) Error() string {
+	return ""
+}
+
+type remoteResponse struct {
+	ID     int32                  `json:"id"`     // command request id, 0 in case of event
 	Method string                 `json:"method"` // command or event name
 	Result map[string]interface{} `json:"result"` // parameters returned for command
-	Error  *struct {
-		Message string `json:"message"`
-		Code    int    `json:"code"`
-	} `json:"error"` // error returned for command
 	Params map[string]interface{} `json:"params"` // parameters returned for event
+	Error  *ResponseError         `json:"error"`  // error returned for command
 }
 
 type commandRequest struct {
-	ID     int32       `json:"id"`     // id of the command request, should be greater than 0
+	ID     int32       `json:"id"`     // command request id, should be greater than 0
 	Method string      `json:"method"` // method takes the command to be sent
 	Params interface{} `json:"params"` // params contains parameters taken by command
 
-	resChn       chan commandResponse
-	errChn       chan error
-	timeoutTimer *time.Timer
+	resChn chan remoteResponse
+	errChn chan error
+}
+
+type eventRequest struct {
+	Method string // method takes the command to be sent
+
+	resChn chan remoteResponse
+	errChn chan error
 }
 
 // Send writes command and associated parameters to underlying connection.
@@ -311,118 +246,139 @@ type commandRequest struct {
 // Timeout error is returned if response is not received.
 func (c *Connection) Send(command string, request, response interface{}) error {
 	if c.isClosed() {
-		return errors.New("connection closed")
+		return ErrConnectionClosed
 	}
 
 	cmd := commandRequest{
-		ID:           c.id(),
-		Method:       command,
-		Params:       request,
-		resChn:       make(chan commandResponse, 1),
-		errChn:       make(chan error, 1),
-		timeoutTimer: time.NewTimer(c.cmdTimeout),
+		ID:     c.id(),
+		Method: command,
+		Params: request,
+		// buffered channels in case response comes after timeout
+		// and blocks the runner routine
+		resChn: make(chan remoteResponse, 1),
+		errChn: make(chan error, 1),
 	}
+	c.cmdChn <- cmd
 
-	c.commands.addCommand(cmd)
-	defer func() {
-		c.commands.deleteCommand(cmd.ID)
-	}()
-
-	if cmd.Params == nil {
-		cmd.Params = struct{}{}
-	}
-
-	c.reqChn <- cmd
+	timeoutTimer := time.NewTimer(c.cmdTimeout)
 
 	select {
 	case cmdRes := <-cmd.resChn:
-		cmd.timeoutTimer.Stop()
+		timeoutTimer.Stop()
 		if response == nil {
 			return nil
 		}
 		return mapstructure.Decode(cmdRes.Result, response)
 	case resErr := <-cmd.errChn:
-		cmd.timeoutTimer.Stop()
+		timeoutTimer.Stop()
 		return resErr
-	case <-cmd.timeoutTimer.C:
-		return errors.New("command response timeout")
+	case <-timeoutTimer.C:
+		return ErrCommandTimeout
 	}
 }
 
-type eventRequest struct {
-	Method       string
-	eventChn     chan commandResponse
-	errChn       chan error
-	timeoutTimer *time.Timer
-}
-
-// On listens for subscribed event. It takes event name and a non nil channel as arguments.
-// It returns a function, which blocks current routine till channel is closed.
-// When event is received, parameters are decoded in params argument or error is returned.
-func (c *Connection) On(event string, params interface{}) error {
-	if c.isClosed() {
-		return errors.New("connection closed")
-	}
-
+// On listens for subscribed event. It takes event name as argument.
+// It returns decoder function, which blocks current routine till close is called.
+// When event is received, parameters are decoded or error is returned.
+func (c *Connection) On(event string) (decoder Decoder, close Closer) {
 	eve := eventRequest{
-		Method:       event,
-		eventChn:     make(chan commandResponse, 1),
-		errChn:       make(chan error, 1),
-		timeoutTimer: time.NewTimer(c.eventTimeout),
+		Method: event,
+		// buffered channels, to prevent blocking the current routine
+		resChn: make(chan remoteResponse, 1),
+		errChn: make(chan error, 1),
 	}
 
-	c.events.addEvent(eve)
-	defer func() {
-		c.events.deleteEvent(eve)
-	}()
+	c.eveChn <- eve
 
-	select {
-	case pRes := <-eve.eventChn:
-		eve.timeoutTimer.Stop()
-		if params == nil {
-			return nil
+	decoder = func(params interface{}) error {
+		select {
+		case pRes := <-eve.resChn:
+			if params == nil {
+				return nil
+			}
+			return mapstructure.Decode(pRes.Result, params)
+		case eveErr := <-eve.errChn:
+			return eveErr
 		}
-		return mapstructure.Decode(pRes.Result, params)
-	case eveErr := <-eve.errChn:
-		eve.timeoutTimer.Stop()
-		return eveErr
-	case <-eve.timeoutTimer.C:
-		return errors.New("event response timeout")
 	}
+	close = func() {
+		c.eveChn <- eve
+	}
+	return
 }
 
 // Close stops websocket connection.
 func (c *Connection) Close() error {
-	c.clean()
 	if closeErr := c.conn.Close(); closeErr != nil {
 		return closeErr
 	}
 
+	c.clean()
 	return nil
 }
 
-func (c *Connection) id() int32 {
-	if atomic.CompareAndSwapInt32(&c.counter, maxIntValue, 1) {
-		return 1
-	} else {
-		return atomic.AddInt32(&c.counter, 1)
-	}
-}
+func (c *Connection) runner() {
+	commands := make(map[int32]commandRequest)
+	events := make(map[string]map[eventRequest]bool)
 
-func (c *Connection) writer() {
-	for !c.isClosed() {
-		if req, ok := <-c.reqChn; ok {
-			// NOTE writer doesn't throw error on connection close.
-			if writeErr := c.conn.WriteJSON(req); writeErr != nil {
-				req.errChn <- writeErr
+	writeChn := make(chan commandRequest, 1)
+	go c.writer(writeChn)
+
+	readChn := c.reader(readChn) //make(chan remoteResponse, 10)
+
+	for {
+		select {
+		case cmdReq := <-c.cmdChn:
+			commands[cmdReq.ID] = cmdReq
+			writeChn <- cmdReq
+		case eveReq := <-c.eveChn:
+			if eveReqs, ok := events[eve.Method]; ok {
+				if _, ok := eveReqs[eve]; ok {
+					delete(eveReqs, eve)
+				} else {
+					eveReqs[eve] = true
+				}
+				events[eve.Method] = eveReqs
+			} else {
+				events[eve.Method] = map[eventRequest]bool{eve: true}
+			}
+		case res, ok := <-readChn:
+			if !ok {
+				continue
+			}
+
+			if res.ID > 0 {
+				if cmd, ok := commands[res.ID]; ok {
+					if res.Error != nil {
+						cmd.errChn <- res.Error
+					} else {
+						cmd.resChn <- res
+					}
+					delete(commands, res.ID)
+				}
+			} else if len(res.Method) > 0 {
+				if eveReqs, ok := events[res.Method]; ok {
+					for eve := range eveReqs {
+						eve.resChn <- res
+					}
+				}
 			}
 		}
 	}
 }
 
-func (c *Connection) reader() {
+func (c *Connection) writer(chn chan commandRequest) {
+	for req := range chn {
+		// NOTE writer doesn't throw error on connection close.
+		if writeErr := c.conn.WriteJSON(req); writeErr != nil {
+			req.errChn <- writeErr
+		}
+	}
+}
+
+func (c *Connection) reader(chn chan remoteResponse) {
 	for !c.isClosed() {
-		var data commandResponse
+		var data remoteResponse
 		if decodeErr := c.conn.ReadJSON(&data); decodeErr != nil {
 			if err, ok := decodeErr.(*websocket.CloseError); ok {
 				c.errorFn(err)
@@ -431,39 +387,27 @@ func (c *Connection) reader() {
 			}
 			c.errorFn(decodeErr)
 		}
-
-		if data.ID > 0 {
-			if cmd, ok := c.commands.getCommand(data.ID); ok {
-				if data.Error != nil {
-					cmd.errChn <- errors.New(data.Error.Message)
-				} else {
-					cmd.resChn <- data
-				}
-			}
-		} else if len(data.Method) > 0 {
-			c.events.forEvents(data.Method, func(val eventRequest) {
-				val.eventChn <- data
-			})
-		}
 	}
 }
 
 func (c *Connection) clean() {
 	c.markClosed()
-	c.commands.Lock()
-	for id, cmd := range c.commands.commands {
-		cmd.errChn <- errors.New("connection closed")
-		delete(c.commands.commands, id)
-	}
-	c.commands.Unlock()
-	c.events.Lock()
-	for id, list := range c.events.events {
-		for eve := range list {
-			eve.errChn <- errors.New("connection closed")
-			delete(c.events.events[id], eve)
+	/*
+		c.commands.Lock()
+		for id, cmd := range c.commands.commands {
+			cmd.errChn <- errors.New("connection closed")
+			delete(c.commands.commands, id)
 		}
-	}
-	c.events.Unlock()
+		c.commands.Unlock()
+		c.events.Lock()
+		for id, list := range c.events.events {
+			for eve := range list {
+				eve.errChn <- errors.New("connection closed")
+				delete(c.events.events[id], eve)
+			}
+		}
+		c.events.Unlock()
+	*/
 }
 
 // VersionResponse contains fields received in response to version query.

@@ -54,6 +54,8 @@ func ExampleConnection_On() {
 	conn, _ := cri.NewConnection()
 
 	// listen for page load
+	listen, closer := conn.On(page.LoadEventFired)
 	var params page.LoadEventFiredParams
-	conn.On(page.LoadEventFired, &params)
+	listen(&params)
+	closer()
 }

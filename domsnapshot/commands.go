@@ -29,6 +29,10 @@ func New(conn cri.Connector) *DOMSnapshot {
 type GetSnapshotRequest struct {
 	// Whitelist of computed styles to return.
 	ComputedStyleWhitelist []string `json:"computedStyleWhitelist"`
+	// Whether or not to retrieve details of DOM listeners (default false).
+	IncludeEventListeners *bool `json:"includeEventListeners,omitempty"`
+	// Whether to determine and include the paint order index of LayoutTreeNodes (default false).
+	IncludePaintOrder *bool `json:"includePaintOrder,omitempty"`
 }
 
 type GetSnapshotResponse struct {

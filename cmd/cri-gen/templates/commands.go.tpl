@@ -57,8 +57,16 @@ func (obj *{{.Domain}}) {{.Name}}({{.RequestName}}) ({{.ResponseName}}) {
 type {{.ID}} {{.Type}}
 {{end}}
 {{.Doc}}
-func (obj *{{.Domain}}) {{.Name}}() ({{.ResponseName}}) {
-	err = obj.conn.On({{.Name}}, {{.ResponseValue}})
-    return
+func (obj *{{.Domain}}) {{.Name}}(fn func(event string, {{.ResponseName}}) bool) {
+	listen, closer := obj.conn.On({{.Name}})
+    go func() {
+        defer closer()
+        for {
+            {{- .CallParams}}
+            if !fn({{.Name}}, {{.ResponseValue}}) {
+                return
+            }
+        }
+    }()
 }
 {{end -}}

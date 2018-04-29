@@ -244,9 +244,17 @@ type InspectNodeRequestedParams struct {
 }
 
 // Fired when the node should be inspected. This happens after call to `setInspectMode` or when user manually inspects an element.
-func (obj *Overlay) InspectNodeRequested() (params InspectNodeRequestedParams, err error) {
-	err = obj.conn.On(InspectNodeRequested, &params)
-	return
+func (obj *Overlay) InspectNodeRequested(fn func(event string, params InspectNodeRequestedParams, err error) bool) {
+	listen, closer := obj.conn.On(InspectNodeRequested)
+	go func() {
+		defer closer()
+		for {
+			var params InspectNodeRequestedParams
+			if !fn(InspectNodeRequested, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type NodeHighlightRequestedParams struct {
@@ -254,9 +262,17 @@ type NodeHighlightRequestedParams struct {
 }
 
 // Fired when the node should be highlighted. This happens after call to `setInspectMode`.
-func (obj *Overlay) NodeHighlightRequested() (params NodeHighlightRequestedParams, err error) {
-	err = obj.conn.On(NodeHighlightRequested, &params)
-	return
+func (obj *Overlay) NodeHighlightRequested(fn func(event string, params NodeHighlightRequestedParams, err error) bool) {
+	listen, closer := obj.conn.On(NodeHighlightRequested)
+	go func() {
+		defer closer()
+		for {
+			var params NodeHighlightRequestedParams
+			if !fn(NodeHighlightRequested, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type ScreenshotRequestedParams struct {
@@ -265,7 +281,15 @@ type ScreenshotRequestedParams struct {
 }
 
 // Fired when user asks to capture screenshot of some area on the page.
-func (obj *Overlay) ScreenshotRequested() (params ScreenshotRequestedParams, err error) {
-	err = obj.conn.On(ScreenshotRequested, &params)
-	return
+func (obj *Overlay) ScreenshotRequested(fn func(event string, params ScreenshotRequestedParams, err error) bool) {
+	listen, closer := obj.conn.On(ScreenshotRequested)
+	go func() {
+		defer closer()
+		for {
+			var params ScreenshotRequestedParams
+			if !fn(ScreenshotRequested, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }

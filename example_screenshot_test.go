@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io/ioutil"
-	"os"
+	// "os"
 	"time"
 
 	"github.com/SKatiyar/cri"
@@ -14,7 +14,7 @@ import (
 
 // Example shows steps to take screenshot of a page.
 func Example() {
-	conn, connErr := cri.NewConnection(cri.SetEventTimeout(20 * time.Second))
+	conn, connErr := cri.NewConnection(cri.SetCommandTimeout(20 * time.Second))
 	if connErr != nil {
 		panic(connErr)
 	}
@@ -40,18 +40,15 @@ func Example() {
 	}
 
 	for i := 0; i < len(urls); i++ {
-		eventChn := make(chan page.LoadEventFiredParams)
-		go func() {
-			for {
-				eve, loadErr := pi.LoadEventFired()
-				if loadErr != nil {
-					panic(loadErr.Error() + urls[i])
-				}
-
-				eventChn <- eve
-				break
+		eventRecv := make(chan page.LoadEventFiredParams)
+		pi.LoadEventFired(func(event string, params page.LoadEventFiredParams, err error) bool {
+			if err != nil {
+				panic(err)
 			}
-		}()
+
+			eventRecv <- params
+			return false
+		})
 
 		_, navErr := pi.Navigate(&page.NavigateRequest{
 			Url: "https://" + urls[i],
@@ -60,7 +57,7 @@ func Example() {
 			panic(navErr)
 		}
 
-		<-eventChn
+		<-eventRecv
 
 		pic, picErr := pi.CaptureScreenshot(nil)
 		if picErr != nil {
@@ -79,9 +76,11 @@ func Example() {
 
 		fmt.Println(fileName)
 
-		if removeErr := os.Remove(fileName); removeErr != nil {
-			panic(removeErr)
-		}
+		/*
+			if removeErr := os.Remove(fileName); removeErr != nil {
+				panic(removeErr)
+			}
+		*/
 	}
 
 	// Unordered output:

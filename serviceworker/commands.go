@@ -148,25 +148,49 @@ type WorkerErrorReportedParams struct {
 	ErrorMessage types.ServiceWorker_ServiceWorkerErrorMessage `json:"errorMessage"`
 }
 
-func (obj *ServiceWorker) WorkerErrorReported() (params WorkerErrorReportedParams, err error) {
-	err = obj.conn.On(WorkerErrorReported, &params)
-	return
+func (obj *ServiceWorker) WorkerErrorReported(fn func(event string, params WorkerErrorReportedParams, err error) bool) {
+	listen, closer := obj.conn.On(WorkerErrorReported)
+	go func() {
+		defer closer()
+		for {
+			var params WorkerErrorReportedParams
+			if !fn(WorkerErrorReported, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type WorkerRegistrationUpdatedParams struct {
 	Registrations []types.ServiceWorker_ServiceWorkerRegistration `json:"registrations"`
 }
 
-func (obj *ServiceWorker) WorkerRegistrationUpdated() (params WorkerRegistrationUpdatedParams, err error) {
-	err = obj.conn.On(WorkerRegistrationUpdated, &params)
-	return
+func (obj *ServiceWorker) WorkerRegistrationUpdated(fn func(event string, params WorkerRegistrationUpdatedParams, err error) bool) {
+	listen, closer := obj.conn.On(WorkerRegistrationUpdated)
+	go func() {
+		defer closer()
+		for {
+			var params WorkerRegistrationUpdatedParams
+			if !fn(WorkerRegistrationUpdated, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type WorkerVersionUpdatedParams struct {
 	Versions []types.ServiceWorker_ServiceWorkerVersion `json:"versions"`
 }
 
-func (obj *ServiceWorker) WorkerVersionUpdated() (params WorkerVersionUpdatedParams, err error) {
-	err = obj.conn.On(WorkerVersionUpdated, &params)
-	return
+func (obj *ServiceWorker) WorkerVersionUpdated(fn func(event string, params WorkerVersionUpdatedParams, err error) bool) {
+	listen, closer := obj.conn.On(WorkerVersionUpdated)
+	go func() {
+		defer closer()
+		for {
+			var params WorkerVersionUpdatedParams
+			if !fn(WorkerVersionUpdated, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }

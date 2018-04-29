@@ -123,9 +123,17 @@ type CacheStorageContentUpdatedParams struct {
 }
 
 // A cache's contents have been modified.
-func (obj *Storage) CacheStorageContentUpdated() (params CacheStorageContentUpdatedParams, err error) {
-	err = obj.conn.On(CacheStorageContentUpdated, &params)
-	return
+func (obj *Storage) CacheStorageContentUpdated(fn func(event string, params CacheStorageContentUpdatedParams, err error) bool) {
+	listen, closer := obj.conn.On(CacheStorageContentUpdated)
+	go func() {
+		defer closer()
+		for {
+			var params CacheStorageContentUpdatedParams
+			if !fn(CacheStorageContentUpdated, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type CacheStorageListUpdatedParams struct {
@@ -134,9 +142,17 @@ type CacheStorageListUpdatedParams struct {
 }
 
 // A cache has been added/deleted.
-func (obj *Storage) CacheStorageListUpdated() (params CacheStorageListUpdatedParams, err error) {
-	err = obj.conn.On(CacheStorageListUpdated, &params)
-	return
+func (obj *Storage) CacheStorageListUpdated(fn func(event string, params CacheStorageListUpdatedParams, err error) bool) {
+	listen, closer := obj.conn.On(CacheStorageListUpdated)
+	go func() {
+		defer closer()
+		for {
+			var params CacheStorageListUpdatedParams
+			if !fn(CacheStorageListUpdated, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type IndexedDBContentUpdatedParams struct {
@@ -149,9 +165,17 @@ type IndexedDBContentUpdatedParams struct {
 }
 
 // The origin's IndexedDB object store has been modified.
-func (obj *Storage) IndexedDBContentUpdated() (params IndexedDBContentUpdatedParams, err error) {
-	err = obj.conn.On(IndexedDBContentUpdated, &params)
-	return
+func (obj *Storage) IndexedDBContentUpdated(fn func(event string, params IndexedDBContentUpdatedParams, err error) bool) {
+	listen, closer := obj.conn.On(IndexedDBContentUpdated)
+	go func() {
+		defer closer()
+		for {
+			var params IndexedDBContentUpdatedParams
+			if !fn(IndexedDBContentUpdated, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type IndexedDBListUpdatedParams struct {
@@ -160,7 +184,15 @@ type IndexedDBListUpdatedParams struct {
 }
 
 // The origin's IndexedDB database list has been modified.
-func (obj *Storage) IndexedDBListUpdated() (params IndexedDBListUpdatedParams, err error) {
-	err = obj.conn.On(IndexedDBListUpdated, &params)
-	return
+func (obj *Storage) IndexedDBListUpdated(fn func(event string, params IndexedDBListUpdatedParams, err error) bool) {
+	listen, closer := obj.conn.On(IndexedDBListUpdated)
+	go func() {
+		defer closer()
+		for {
+			var params IndexedDBListUpdatedParams
+			if !fn(IndexedDBListUpdated, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
