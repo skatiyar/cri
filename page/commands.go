@@ -42,6 +42,7 @@ const (
 	ScreencastFrameAck                  = "Page.screencastFrameAck"
 	SearchInResource                    = "Page.searchInResource"
 	SetAdBlockingEnabled                = "Page.setAdBlockingEnabled"
+	SetBypassCSP                        = "Page.setBypassCSP"
 	SetDeviceMetricsOverride            = "Page.setDeviceMetricsOverride"
 	SetDeviceOrientationOverride        = "Page.setDeviceOrientationOverride"
 	SetDocumentContent                  = "Page.setDocumentContent"
@@ -72,6 +73,7 @@ const (
 	JavascriptDialogOpening         = "Page.javascriptDialogOpening"
 	LifecycleEvent                  = "Page.lifecycleEvent"
 	LoadEventFired                  = "Page.loadEventFired"
+	NavigatedWithinDocument         = "Page.navigatedWithinDocument"
 	ScreencastFrame                 = "Page.screencastFrame"
 	ScreencastVisibilityChanged     = "Page.screencastVisibilityChanged"
 	WindowOpen                      = "Page.windowOpen"
@@ -378,7 +380,7 @@ type PrintToPDFRequest struct {
 	PageRanges *string `json:"pageRanges,omitempty"`
 	// Whether to silently ignore invalid but successfully parsed page ranges, such as '3-2'. Defaults to false.
 	IgnoreInvalidPageRanges *bool `json:"ignoreInvalidPageRanges,omitempty"`
-	// HTML template for the print header. Should be valid HTML markup with following classes used to inject printing values into them: - date - formatted print date - title - document title - url - document location - pageNumber - current page number - totalPages - total pages in the document  For example, <span class=title></span> would generate span containing the title.
+	// HTML template for the print header. Should be valid HTML markup with following classes used to inject printing values into them: - `date`: formatted print date - `title`: document title - `url`: document location - `pageNumber`: current page number - `totalPages`: total pages in the document  For example, `<span class=title></span>` would generate span containing the title.
 	HeaderTemplate *string `json:"headerTemplate,omitempty"`
 	// HTML template for the print footer. Should use the same format as the `headerTemplate`.
 	FooterTemplate *string `json:"footerTemplate,omitempty"`
@@ -478,6 +480,17 @@ type SetAdBlockingEnabledRequest struct {
 // Enable Chrome's experimental ad filter on all sites.
 func (obj *Page) SetAdBlockingEnabled(request *SetAdBlockingEnabledRequest) (err error) {
 	err = obj.conn.Send(SetAdBlockingEnabled, request, nil)
+	return
+}
+
+type SetBypassCSPRequest struct {
+	// Whether to bypass page CSP.
+	Enabled bool `json:"enabled"`
+}
+
+// Enable page Content Security Policy by-passing.
+func (obj *Page) SetBypassCSP(request *SetBypassCSPRequest) (err error) {
+	err = obj.conn.Send(SetBypassCSP, request, nil)
 	return
 }
 
@@ -862,6 +875,8 @@ type JavascriptDialogOpeningParams struct {
 	Message string `json:"message"`
 	// Dialog type.
 	Type types.Page_DialogType `json:"type"`
+	// True iff browser is capable showing or acting on the given dialog. When browser has no dialog handler for given target, calling alert while Page domain is engaged will stall the page execution. Execution can be resumed via calling Page.handleJavaScriptDialog.
+	HasBrowserHandler bool `json:"hasBrowserHandler"`
 	// Default dialog prompt.
 	DefaultPrompt *string `json:"defaultPrompt,omitempty"`
 }
@@ -914,6 +929,28 @@ func (obj *Page) LoadEventFired(fn func(event string, params LoadEventFiredParam
 		for {
 			var params LoadEventFiredParams
 			if !fn(LoadEventFired, params, listen(&params)) {
+				return
+			}
+		}
+	}()
+}
+
+type NavigatedWithinDocumentParams struct {
+	// Id of the frame.
+	FrameId types.Page_FrameId `json:"frameId"`
+	// Frame's new url.
+	Url string `json:"url"`
+}
+
+// Fired when same-document navigation happens, e.g. due to history API usage or anchor navigation.
+// NOTE Experimental
+func (obj *Page) NavigatedWithinDocument(fn func(event string, params NavigatedWithinDocumentParams, err error) bool) {
+	listen, closer := obj.conn.On(NavigatedWithinDocument)
+	go func() {
+		defer closer()
+		for {
+			var params NavigatedWithinDocumentParams
+			if !fn(NavigatedWithinDocument, params, listen(&params)) {
 				return
 			}
 		}

@@ -26,8 +26,12 @@ func New(conn cri.Connector) *Accessibility {
 }
 
 type GetPartialAXTreeRequest struct {
-	// ID of node to get the partial accessibility tree for.
-	NodeId types.DOM_NodeId `json:"nodeId"`
+	// Identifier of the node to get the partial accessibility tree for.
+	NodeId *types.DOM_NodeId `json:"nodeId,omitempty"`
+	// Identifier of the backend node to get the partial accessibility tree for.
+	BackendNodeId *types.DOM_BackendNodeId `json:"backendNodeId,omitempty"`
+	// JavaScript object id of the node wrapper to get the partial accessibility tree for.
+	ObjectId *types.Runtime_RemoteObjectId `json:"objectId,omitempty"`
 	// Whether to fetch this nodes ancestors, siblings and children. Defaults to true.
 	FetchRelatives *bool `json:"fetchRelatives,omitempty"`
 }

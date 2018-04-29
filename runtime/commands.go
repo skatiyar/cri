@@ -178,6 +178,9 @@ type EvaluateRequest struct {
 	// Whether to throw an exception if side effect cannot be ruled out during evaluation.
 	// NOTE Experimental
 	ThrowOnSideEffect *bool `json:"throwOnSideEffect,omitempty"`
+	// Terminate execution after timing out (number of milliseconds).
+	// NOTE Experimental
+	Timeout *types.Runtime_TimeDelta `json:"timeout,omitempty"`
 }
 
 type EvaluateResponse struct {

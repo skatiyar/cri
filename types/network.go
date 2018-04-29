@@ -144,7 +144,12 @@ type Network_SecurityDetails struct {
 	ValidTo Network_TimeSinceEpoch `json:"validTo"`
 	// List of signed certificate timestamps (SCTs).
 	SignedCertificateTimestampList []Network_SignedCertificateTimestamp `json:"signedCertificateTimestampList"`
+	// Whether the request complied with Certificate Transparency policy
+	CertificateTransparencyCompliance Network_CertificateTransparencyCompliance `json:"certificateTransparencyCompliance"`
 }
+
+// Whether the request complied with Certificate Transparency policy.
+type Network_CertificateTransparencyCompliance string
 
 // The reason why request was blocked.
 type Network_BlockedReason string

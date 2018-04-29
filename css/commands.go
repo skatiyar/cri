@@ -244,7 +244,7 @@ type GetStyleSheetTextResponse struct {
 	Text string `json:"text"`
 }
 
-// Returns the current textual content and the URL for a stylesheet.
+// Returns the current textual content for a stylesheet.
 func (obj *CSS) GetStyleSheetText(request *GetStyleSheetTextRequest) (response GetStyleSheetTextResponse, err error) {
 	err = obj.conn.Send(GetStyleSheetText, request, &response)
 	return

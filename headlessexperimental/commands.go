@@ -35,10 +35,14 @@ func New(conn cri.Connector) *HeadlessExperimental {
 }
 
 type BeginFrameRequest struct {
-	// Timestamp of this BeginFrame (milliseconds since epoch). If not set, the current time will be used.
+	// Timestamp of this BeginFrame (milliseconds since epoch). If not set, the current time will be used unless frameTicks is specified.
 	FrameTime *types.Runtime_Timestamp `json:"frameTime,omitempty"`
-	// Deadline of this BeginFrame (milliseconds since epoch). If not set, the deadline will be calculated from the frameTime and interval.
+	// Timestamp of this BeginFrame in Renderer TimeTicks (milliseconds of uptime). If not set, the current time will be used unless frameTime is specified.
+	FrameTimeTicks *float32 `json:"frameTimeTicks,omitempty"`
+	// Deadline of this BeginFrame (milliseconds since epoch). If not set, the deadline will be calculated from the frameTime and interval unless deadlineTicks is specified.
 	Deadline *types.Runtime_Timestamp `json:"deadline,omitempty"`
+	// Deadline of this BeginFrame in Renderer TimeTicks  (milliseconds of uptime). If not set, the deadline will be calculated from the frameTime and interval unless deadline is specified.
+	DeadlineTicks *float32 `json:"deadlineTicks,omitempty"`
 	// The interval between BeginFrames that is reported to the compositor, in milliseconds. Defaults to a 60 frames/second interval, i.e. about 16.666 milliseconds.
 	Interval *float32 `json:"interval,omitempty"`
 	// Whether updates should not be committed and drawn onto the display. False by default. If true, only side effects of the BeginFrame will be run, such as layout and animations, but any visual updates may not be visible on the display or in screenshots.

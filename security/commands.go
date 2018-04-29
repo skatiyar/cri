@@ -77,7 +77,7 @@ type SetOverrideCertificateErrorsRequest struct {
 	Override bool `json:"override"`
 }
 
-// Enable/disable overriding certificate errors. If enabled, all certificate error events need to be handled by the DevTools client and should be answered with handleCertificateError commands.
+// Enable/disable overriding certificate errors. If enabled, all certificate error events need to be handled by the DevTools client and should be answered with `handleCertificateError` commands.
 func (obj *Security) SetOverrideCertificateErrors(request *SetOverrideCertificateErrorsRequest) (err error) {
 	err = obj.conn.Send(SetOverrideCertificateErrors, request, nil)
 	return
@@ -92,7 +92,7 @@ type CertificateErrorParams struct {
 	RequestURL string `json:"requestURL"`
 }
 
-// There is a certificate error. If overriding certificate errors is enabled, then it should be handled with the handleCertificateError command. Note: this event does not fire if the certificate error has been allowed internally. Only one client per target should override certificate errors at the same time.
+// There is a certificate error. If overriding certificate errors is enabled, then it should be handled with the `handleCertificateError` command. Note: this event does not fire if the certificate error has been allowed internally. Only one client per target should override certificate errors at the same time.
 func (obj *Security) CertificateError(fn func(event string, params CertificateErrorParams, err error) bool) {
 	listen, closer := obj.conn.On(CertificateError)
 	go func() {

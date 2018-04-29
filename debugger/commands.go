@@ -13,34 +13,35 @@ import (
 
 // List of commands in Debugger domain
 const (
-	ContinueToLocation     = "Debugger.continueToLocation"
-	Disable                = "Debugger.disable"
-	Enable                 = "Debugger.enable"
-	EvaluateOnCallFrame    = "Debugger.evaluateOnCallFrame"
-	GetPossibleBreakpoints = "Debugger.getPossibleBreakpoints"
-	GetScriptSource        = "Debugger.getScriptSource"
-	GetStackTrace          = "Debugger.getStackTrace"
-	Pause                  = "Debugger.pause"
-	PauseOnAsyncCall       = "Debugger.pauseOnAsyncCall"
-	RemoveBreakpoint       = "Debugger.removeBreakpoint"
-	RestartFrame           = "Debugger.restartFrame"
-	Resume                 = "Debugger.resume"
-	ScheduleStepIntoAsync  = "Debugger.scheduleStepIntoAsync"
-	SearchInContent        = "Debugger.searchInContent"
-	SetAsyncCallStackDepth = "Debugger.setAsyncCallStackDepth"
-	SetBlackboxPatterns    = "Debugger.setBlackboxPatterns"
-	SetBlackboxedRanges    = "Debugger.setBlackboxedRanges"
-	SetBreakpoint          = "Debugger.setBreakpoint"
-	SetBreakpointByUrl     = "Debugger.setBreakpointByUrl"
-	SetBreakpointsActive   = "Debugger.setBreakpointsActive"
-	SetPauseOnExceptions   = "Debugger.setPauseOnExceptions"
-	SetReturnValue         = "Debugger.setReturnValue"
-	SetScriptSource        = "Debugger.setScriptSource"
-	SetSkipAllPauses       = "Debugger.setSkipAllPauses"
-	SetVariableValue       = "Debugger.setVariableValue"
-	StepInto               = "Debugger.stepInto"
-	StepOut                = "Debugger.stepOut"
-	StepOver               = "Debugger.stepOver"
+	ContinueToLocation          = "Debugger.continueToLocation"
+	Disable                     = "Debugger.disable"
+	Enable                      = "Debugger.enable"
+	EvaluateOnCallFrame         = "Debugger.evaluateOnCallFrame"
+	GetPossibleBreakpoints      = "Debugger.getPossibleBreakpoints"
+	GetScriptSource             = "Debugger.getScriptSource"
+	GetStackTrace               = "Debugger.getStackTrace"
+	Pause                       = "Debugger.pause"
+	PauseOnAsyncCall            = "Debugger.pauseOnAsyncCall"
+	RemoveBreakpoint            = "Debugger.removeBreakpoint"
+	RestartFrame                = "Debugger.restartFrame"
+	Resume                      = "Debugger.resume"
+	ScheduleStepIntoAsync       = "Debugger.scheduleStepIntoAsync"
+	SearchInContent             = "Debugger.searchInContent"
+	SetAsyncCallStackDepth      = "Debugger.setAsyncCallStackDepth"
+	SetBlackboxPatterns         = "Debugger.setBlackboxPatterns"
+	SetBlackboxedRanges         = "Debugger.setBlackboxedRanges"
+	SetBreakpoint               = "Debugger.setBreakpoint"
+	SetBreakpointByUrl          = "Debugger.setBreakpointByUrl"
+	SetBreakpointOnFunctionCall = "Debugger.setBreakpointOnFunctionCall"
+	SetBreakpointsActive        = "Debugger.setBreakpointsActive"
+	SetPauseOnExceptions        = "Debugger.setPauseOnExceptions"
+	SetReturnValue              = "Debugger.setReturnValue"
+	SetScriptSource             = "Debugger.setScriptSource"
+	SetSkipAllPauses            = "Debugger.setSkipAllPauses"
+	SetVariableValue            = "Debugger.setVariableValue"
+	StepInto                    = "Debugger.stepInto"
+	StepOut                     = "Debugger.stepOut"
+	StepOver                    = "Debugger.stepOver"
 )
 
 // List of events in Debugger domain
@@ -335,6 +336,24 @@ type SetBreakpointByUrlResponse struct {
 // Sets JavaScript breakpoint at given location specified either by URL or URL regex. Once this command is issued, all existing parsed scripts will have breakpoints resolved and returned in `locations` property. Further matching script parsing will result in subsequent `breakpointResolved` events issued. This logical breakpoint will survive page reloads.
 func (obj *Debugger) SetBreakpointByUrl(request *SetBreakpointByUrlRequest) (response SetBreakpointByUrlResponse, err error) {
 	err = obj.conn.Send(SetBreakpointByUrl, request, &response)
+	return
+}
+
+type SetBreakpointOnFunctionCallRequest struct {
+	// Function object id.
+	ObjectId types.Runtime_RemoteObjectId `json:"objectId"`
+	// Expression to use as a breakpoint condition. When specified, debugger will stop on the breakpoint if this expression evaluates to true.
+	Condition *string `json:"condition,omitempty"`
+}
+
+type SetBreakpointOnFunctionCallResponse struct {
+	// Id of the created breakpoint for further reference.
+	BreakpointId types.Debugger_BreakpointId `json:"breakpointId"`
+}
+
+// Sets JavaScript breakpoint before each call to the given function. If another function was created from the same source as a given one, calling it will also trigger the breakpoint.
+func (obj *Debugger) SetBreakpointOnFunctionCall(request *SetBreakpointOnFunctionCallRequest) (response SetBreakpointOnFunctionCallResponse, err error) {
+	err = obj.conn.Send(SetBreakpointOnFunctionCall, request, &response)
 	return
 }
 

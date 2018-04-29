@@ -163,6 +163,9 @@ type Runtime_ExceptionDetails struct {
 // Number of milliseconds since epoch.
 type Runtime_Timestamp float32
 
+// Number of milliseconds.
+type Runtime_TimeDelta float32
+
 // Stack entry for runtime errors and assertions.
 type Runtime_CallFrame struct {
 	// JavaScript function name.

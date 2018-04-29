@@ -33,6 +33,8 @@ type GetSnapshotRequest struct {
 	IncludeEventListeners *bool `json:"includeEventListeners,omitempty"`
 	// Whether to determine and include the paint order index of LayoutTreeNodes (default false).
 	IncludePaintOrder *bool `json:"includePaintOrder,omitempty"`
+	// Whether to include UA shadow tree in the snapshot (default false).
+	IncludeUserAgentShadowTree *bool `json:"includeUserAgentShadowTree,omitempty"`
 }
 
 type GetSnapshotResponse struct {

@@ -236,6 +236,8 @@ type SetVirtualTimePolicyRequest struct {
 type SetVirtualTimePolicyResponse struct {
 	// Absolute timestamp at which virtual time was first enabled (milliseconds since epoch).
 	VirtualTimeBase types.Runtime_Timestamp `json:"virtualTimeBase"`
+	// Absolute timestamp at which virtual time was first enabled (up time in milliseconds).
+	VirtualTimeTicksBase float32 `json:"virtualTimeTicksBase"`
 }
 
 // Turns on virtual time for all frames (replacing real-time with a synthetic time source) and sets the current virtual time policy.  Note this supersedes any previous time budget.
