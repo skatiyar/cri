@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -22,4 +22,26 @@ type Browser_Bounds struct {
 	Height *int `json:"height,omitempty"`
 	// The window state. Default to normal.
 	WindowState *Browser_WindowState `json:"windowState,omitempty"`
+}
+
+// Chrome histogram bucket.
+type Browser_Bucket struct {
+	// Minimum value (inclusive).
+	Low int `json:"low"`
+	// Maximum value (exclusive).
+	High int `json:"high"`
+	// Number of samples.
+	Count int `json:"count"`
+}
+
+// Chrome histogram.
+type Browser_Histogram struct {
+	// Name.
+	Name string `json:"name"`
+	// Sum of sample values.
+	Sum int `json:"sum"`
+	// Total number of samples.
+	Count int `json:"count"`
+	// Buckets.
+	Buckets []Browser_Bucket `json:"buckets"`
 }

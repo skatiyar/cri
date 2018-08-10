@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -7,16 +7,16 @@
 package applicationcache
 
 import (
-	"github.com/SKatiyar/cri"
-	types "github.com/SKatiyar/cri/types"
+	"github.com/skatiyar/cri"
+	types "github.com/skatiyar/cri/types"
 )
 
 // List of commands in ApplicationCache domain
 const (
-	GetFramesWithManifests      = "ApplicationCache.getFramesWithManifests"
 	Enable                      = "ApplicationCache.enable"
-	GetManifestForFrame         = "ApplicationCache.getManifestForFrame"
 	GetApplicationCacheForFrame = "ApplicationCache.getApplicationCacheForFrame"
+	GetFramesWithManifests      = "ApplicationCache.getFramesWithManifests"
+	GetManifestForFrame         = "ApplicationCache.getManifestForFrame"
 )
 
 // List of events in ApplicationCache domain
@@ -34,36 +34,9 @@ func New(conn cri.Connector) *ApplicationCache {
 	return &ApplicationCache{conn}
 }
 
-type GetFramesWithManifestsResponse struct {
-	// Array of frame identifiers with manifest urls for each frame containing a document associated with some application cache.
-	FrameIds []types.ApplicationCache_FrameWithManifest `json:"frameIds"`
-}
-
-// Returns array of frame identifiers with manifest urls for each frame containing a document associated with some application cache.
-func (obj *ApplicationCache) GetFramesWithManifests() (response GetFramesWithManifestsResponse, err error) {
-	err = obj.conn.Send(GetFramesWithManifests, nil, &response)
-	return
-}
-
 // Enables application cache domain notifications.
 func (obj *ApplicationCache) Enable() (err error) {
 	err = obj.conn.Send(Enable, nil, nil)
-	return
-}
-
-type GetManifestForFrameRequest struct {
-	// Identifier of the frame containing document whose manifest is retrieved.
-	FrameId types.Page_FrameId `json:"frameId"`
-}
-
-type GetManifestForFrameResponse struct {
-	// Manifest URL for document in the given frame.
-	ManifestURL string `json:"manifestURL"`
-}
-
-// Returns manifest URL for document in the given frame.
-func (obj *ApplicationCache) GetManifestForFrame(request *GetManifestForFrameRequest) (response GetManifestForFrameResponse, err error) {
-	err = obj.conn.Send(GetManifestForFrame, request, &response)
 	return
 }
 
@@ -83,6 +56,33 @@ func (obj *ApplicationCache) GetApplicationCacheForFrame(request *GetApplication
 	return
 }
 
+type GetFramesWithManifestsResponse struct {
+	// Array of frame identifiers with manifest urls for each frame containing a document associated with some application cache.
+	FrameIds []types.ApplicationCache_FrameWithManifest `json:"frameIds"`
+}
+
+// Returns array of frame identifiers with manifest urls for each frame containing a document associated with some application cache.
+func (obj *ApplicationCache) GetFramesWithManifests() (response GetFramesWithManifestsResponse, err error) {
+	err = obj.conn.Send(GetFramesWithManifests, nil, &response)
+	return
+}
+
+type GetManifestForFrameRequest struct {
+	// Identifier of the frame containing document whose manifest is retrieved.
+	FrameId types.Page_FrameId `json:"frameId"`
+}
+
+type GetManifestForFrameResponse struct {
+	// Manifest URL for document in the given frame.
+	ManifestURL string `json:"manifestURL"`
+}
+
+// Returns manifest URL for document in the given frame.
+func (obj *ApplicationCache) GetManifestForFrame(request *GetManifestForFrameRequest) (response GetManifestForFrameResponse, err error) {
+	err = obj.conn.Send(GetManifestForFrame, request, &response)
+	return
+}
+
 type ApplicationCacheStatusUpdatedParams struct {
 	// Identifier of the frame containing document whose application cache updated status.
 	FrameId types.Page_FrameId `json:"frameId"`
@@ -92,16 +92,14 @@ type ApplicationCacheStatusUpdatedParams struct {
 	Status int `json:"status"`
 }
 
-func (obj *ApplicationCache) ApplicationCacheStatusUpdated(fn func(params *ApplicationCacheStatusUpdatedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(ApplicationCacheStatusUpdated, closeChn)
+func (obj *ApplicationCache) ApplicationCacheStatusUpdated(fn func(event string, params ApplicationCacheStatusUpdatedParams, err error) bool) {
+	listen, closer := obj.conn.On(ApplicationCacheStatusUpdated)
 	go func() {
+		defer closer()
 		for {
-			params := ApplicationCacheStatusUpdatedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
+			var params ApplicationCacheStatusUpdatedParams
+			if !fn(ApplicationCacheStatusUpdated, params, listen(&params)) {
+				return
 			}
 		}
 	}()
@@ -111,16 +109,14 @@ type NetworkStateUpdatedParams struct {
 	IsNowOnline bool `json:"isNowOnline"`
 }
 
-func (obj *ApplicationCache) NetworkStateUpdated(fn func(params *NetworkStateUpdatedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(NetworkStateUpdated, closeChn)
+func (obj *ApplicationCache) NetworkStateUpdated(fn func(event string, params NetworkStateUpdatedParams, err error) bool) {
+	listen, closer := obj.conn.On(NetworkStateUpdated)
 	go func() {
+		defer closer()
 		for {
-			params := NetworkStateUpdatedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
+			var params NetworkStateUpdatedParams
+			if !fn(NetworkStateUpdated, params, listen(&params)) {
+				return
 			}
 		}
 	}()

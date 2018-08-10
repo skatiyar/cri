@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -163,4 +163,30 @@ type Page_Viewport struct {
 	Height float32 `json:"height"`
 	// Page scale factor.
 	Scale float32 `json:"scale"`
+}
+
+// Generic font families collection.
+type Page_FontFamilies struct {
+	// The standard font-family.
+	Standard *string `json:"standard,omitempty"`
+	// The fixed font-family.
+	Fixed *string `json:"fixed,omitempty"`
+	// The serif font-family.
+	Serif *string `json:"serif,omitempty"`
+	// The sansSerif font-family.
+	SansSerif *string `json:"sansSerif,omitempty"`
+	// The cursive font-family.
+	Cursive *string `json:"cursive,omitempty"`
+	// The fantasy font-family.
+	Fantasy *string `json:"fantasy,omitempty"`
+	// The pictograph font-family.
+	Pictograph *string `json:"pictograph,omitempty"`
+}
+
+// Default font sizes.
+type Page_FontSizes struct {
+	// Default standard font size.
+	Standard *int `json:"standard,omitempty"`
+	// Default fixed font size.
+	Fixed *int `json:"fixed,omitempty"`
 }

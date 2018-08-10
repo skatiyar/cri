@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -7,13 +7,13 @@
 package deviceorientation
 
 import (
-	"github.com/SKatiyar/cri"
+	"github.com/skatiyar/cri"
 )
 
 // List of commands in DeviceOrientation domain
 const (
-	SetDeviceOrientationOverride   = "DeviceOrientation.setDeviceOrientationOverride"
 	ClearDeviceOrientationOverride = "DeviceOrientation.clearDeviceOrientationOverride"
+	SetDeviceOrientationOverride   = "DeviceOrientation.setDeviceOrientationOverride"
 )
 
 type DeviceOrientation struct {
@@ -23,6 +23,12 @@ type DeviceOrientation struct {
 // New creates a DeviceOrientation instance
 func New(conn cri.Connector) *DeviceOrientation {
 	return &DeviceOrientation{conn}
+}
+
+// Clears the overridden Device Orientation.
+func (obj *DeviceOrientation) ClearDeviceOrientationOverride() (err error) {
+	err = obj.conn.Send(ClearDeviceOrientationOverride, nil, nil)
+	return
 }
 
 type SetDeviceOrientationOverrideRequest struct {
@@ -37,11 +43,5 @@ type SetDeviceOrientationOverrideRequest struct {
 // Overrides the Device Orientation.
 func (obj *DeviceOrientation) SetDeviceOrientationOverride(request *SetDeviceOrientationOverrideRequest) (err error) {
 	err = obj.conn.Send(SetDeviceOrientationOverride, request, nil)
-	return
-}
-
-// Clears the overridden Device Orientation.
-func (obj *DeviceOrientation) ClearDeviceOrientationOverride() (err error) {
-	err = obj.conn.Send(ClearDeviceOrientationOverride, nil, nil)
 	return
 }

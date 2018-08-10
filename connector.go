@@ -1,5 +1,8 @@
 package cri
 
+type Decoder func(params interface{}) error
+type Closer func()
+
 // Connector interface defines methods required by command packages.
 type Connector interface {
 	// Send sends a command with suplied request params to underlying
@@ -7,8 +10,8 @@ type Connector interface {
 	// Implementation should wait for response or timeout.
 	Send(command string, request, response interface{}) error
 
-	// On listens for an event. It takes event name and channel to signal close
-	// as arguments. It returns a decoder function, which blocks till event is received.
-	// Params received are decoded in params argument, returning an error if it fails.
-	On(event string, closeChn chan struct{}) func(params interface{}) error
+	// On listens for an event. It takes event name as an argument.
+	// It waits for event and decodes received event in params argument.
+	// Returns an error if it fails.
+	On(event string) (Decoder, Closer)
 }

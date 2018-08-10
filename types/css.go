@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -123,7 +123,7 @@ type CSS_ShorthandEntry struct {
 	Name string `json:"name"`
 	// Shorthand value.
 	Value string `json:"value"`
-	// Whether the property has "!important" annotation (implies <code>false</code> if absent).
+	// Whether the property has "!important" annotation (implies `false` if absent).
 	Important *bool `json:"important,omitempty"`
 }
 
@@ -154,13 +154,13 @@ type CSS_CSSProperty struct {
 	Name string `json:"name"`
 	// The property value.
 	Value string `json:"value"`
-	// Whether the property has "!important" annotation (implies <code>false</code> if absent).
+	// Whether the property has "!important" annotation (implies `false` if absent).
 	Important *bool `json:"important,omitempty"`
-	// Whether the property is implicit (implies <code>false</code> if absent).
+	// Whether the property is implicit (implies `false` if absent).
 	Implicit *bool `json:"implicit,omitempty"`
 	// The full property text as specified in the style.
 	Text *string `json:"text,omitempty"`
-	// Whether the property is understood by the browser (implies <code>true</code> if absent).
+	// Whether the property is understood by the browser (implies `true` if absent).
 	ParsedOk *bool `json:"parsedOk,omitempty"`
 	// Whether the property is disabled by the user (present for source-based properties only).
 	Disabled *bool `json:"disabled,omitempty"`
@@ -214,6 +214,26 @@ type CSS_PlatformFontUsage struct {
 	IsCustomFont bool `json:"isCustomFont"`
 	// Amount of glyphs that were rendered with this font.
 	GlyphCount float32 `json:"glyphCount"`
+}
+
+// Properties of a web font: https://www.w3.org/TR/2008/REC-CSS2-20080411/fonts.html#font-descriptions
+type CSS_FontFace struct {
+	// The font-family.
+	FontFamily string `json:"fontFamily"`
+	// The font-style.
+	FontStyle string `json:"fontStyle"`
+	// The font-variant.
+	FontVariant string `json:"fontVariant"`
+	// The font-weight.
+	FontWeight string `json:"fontWeight"`
+	// The font-stretch.
+	FontStretch string `json:"fontStretch"`
+	// The unicode-range.
+	UnicodeRange string `json:"unicodeRange"`
+	// The src.
+	Src string `json:"src"`
+	// The resolved platform font family
+	PlatformFontFamily string `json:"platformFontFamily"`
 }
 
 // CSS keyframes rule representation.

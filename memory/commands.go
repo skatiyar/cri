@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -7,8 +7,8 @@
 package memory
 
 import (
-	"github.com/SKatiyar/cri"
-	types "github.com/SKatiyar/cri/types"
+	"github.com/skatiyar/cri"
+	types "github.com/skatiyar/cri/types"
 )
 
 // List of commands in Memory domain
@@ -17,6 +17,11 @@ const (
 	PrepareForLeakDetection            = "Memory.prepareForLeakDetection"
 	SetPressureNotificationsSuppressed = "Memory.setPressureNotificationsSuppressed"
 	SimulatePressureNotification       = "Memory.simulatePressureNotification"
+	StartSampling                      = "Memory.startSampling"
+	StopSampling                       = "Memory.stopSampling"
+	GetAllTimeSamplingProfile          = "Memory.getAllTimeSamplingProfile"
+	GetBrowserSamplingProfile          = "Memory.getBrowserSamplingProfile"
+	GetSamplingProfile                 = "Memory.getSamplingProfile"
 )
 
 type Memory struct {
@@ -63,5 +68,54 @@ type SimulatePressureNotificationRequest struct {
 // Simulate a memory pressure notification in all processes.
 func (obj *Memory) SimulatePressureNotification(request *SimulatePressureNotificationRequest) (err error) {
 	err = obj.conn.Send(SimulatePressureNotification, request, nil)
+	return
+}
+
+type StartSamplingRequest struct {
+	// Average number of bytes between samples.
+	SamplingInterval *int `json:"samplingInterval,omitempty"`
+	// Do not randomize intervals between samples.
+	SuppressRandomness *bool `json:"suppressRandomness,omitempty"`
+}
+
+// Start collecting native memory profile.
+func (obj *Memory) StartSampling(request *StartSamplingRequest) (err error) {
+	err = obj.conn.Send(StartSampling, request, nil)
+	return
+}
+
+// Stop collecting native memory profile.
+func (obj *Memory) StopSampling() (err error) {
+	err = obj.conn.Send(StopSampling, nil, nil)
+	return
+}
+
+type GetAllTimeSamplingProfileResponse struct {
+	Profile types.Memory_SamplingProfile `json:"profile"`
+}
+
+// Retrieve native memory allocations profile collected since renderer process startup.
+func (obj *Memory) GetAllTimeSamplingProfile() (response GetAllTimeSamplingProfileResponse, err error) {
+	err = obj.conn.Send(GetAllTimeSamplingProfile, nil, &response)
+	return
+}
+
+type GetBrowserSamplingProfileResponse struct {
+	Profile types.Memory_SamplingProfile `json:"profile"`
+}
+
+// Retrieve native memory allocations profile collected since browser process startup.
+func (obj *Memory) GetBrowserSamplingProfile() (response GetBrowserSamplingProfileResponse, err error) {
+	err = obj.conn.Send(GetBrowserSamplingProfile, nil, &response)
+	return
+}
+
+type GetSamplingProfileResponse struct {
+	Profile types.Memory_SamplingProfile `json:"profile"`
+}
+
+// Retrieve native memory allocations profile collected since last `startSampling` call.
+func (obj *Memory) GetSamplingProfile() (response GetSamplingProfileResponse, err error) {
+	err = obj.conn.Send(GetSamplingProfile, nil, &response)
 	return
 }

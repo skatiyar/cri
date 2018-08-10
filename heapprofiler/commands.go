@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -7,33 +7,33 @@
 package heapprofiler
 
 import (
-	"github.com/SKatiyar/cri"
-	types "github.com/SKatiyar/cri/types"
+	"github.com/skatiyar/cri"
+	types "github.com/skatiyar/cri/types"
 )
 
 // List of commands in HeapProfiler domain
 const (
-	Enable                   = "HeapProfiler.enable"
+	AddInspectedHeapObject   = "HeapProfiler.addInspectedHeapObject"
+	CollectGarbage           = "HeapProfiler.collectGarbage"
 	Disable                  = "HeapProfiler.disable"
+	Enable                   = "HeapProfiler.enable"
+	GetHeapObjectId          = "HeapProfiler.getHeapObjectId"
+	GetObjectByHeapObjectId  = "HeapProfiler.getObjectByHeapObjectId"
+	GetSamplingProfile       = "HeapProfiler.getSamplingProfile"
+	StartSampling            = "HeapProfiler.startSampling"
 	StartTrackingHeapObjects = "HeapProfiler.startTrackingHeapObjects"
+	StopSampling             = "HeapProfiler.stopSampling"
 	StopTrackingHeapObjects  = "HeapProfiler.stopTrackingHeapObjects"
 	TakeHeapSnapshot         = "HeapProfiler.takeHeapSnapshot"
-	CollectGarbage           = "HeapProfiler.collectGarbage"
-	GetObjectByHeapObjectId  = "HeapProfiler.getObjectByHeapObjectId"
-	AddInspectedHeapObject   = "HeapProfiler.addInspectedHeapObject"
-	GetHeapObjectId          = "HeapProfiler.getHeapObjectId"
-	StartSampling            = "HeapProfiler.startSampling"
-	StopSampling             = "HeapProfiler.stopSampling"
-	GetSamplingProfile       = "HeapProfiler.getSamplingProfile"
 )
 
 // List of events in HeapProfiler domain
 const (
 	AddHeapSnapshotChunk       = "HeapProfiler.addHeapSnapshotChunk"
-	ResetProfiles              = "HeapProfiler.resetProfiles"
-	ReportHeapSnapshotProgress = "HeapProfiler.reportHeapSnapshotProgress"
-	LastSeenObjectId           = "HeapProfiler.lastSeenObjectId"
 	HeapStatsUpdate            = "HeapProfiler.heapStatsUpdate"
+	LastSeenObjectId           = "HeapProfiler.lastSeenObjectId"
+	ReportHeapSnapshotProgress = "HeapProfiler.reportHeapSnapshotProgress"
+	ResetProfiles              = "HeapProfiler.resetProfiles"
 )
 
 type HeapProfiler struct {
@@ -45,13 +45,80 @@ func New(conn cri.Connector) *HeapProfiler {
 	return &HeapProfiler{conn}
 }
 
-func (obj *HeapProfiler) Enable() (err error) {
-	err = obj.conn.Send(Enable, nil, nil)
+type AddInspectedHeapObjectRequest struct {
+	// Heap snapshot object id to be accessible by means of $x command line API.
+	HeapObjectId types.HeapProfiler_HeapSnapshotObjectId `json:"heapObjectId"`
+}
+
+// Enables console to refer to the node with given id via $x (see Command Line API for more details $x functions).
+func (obj *HeapProfiler) AddInspectedHeapObject(request *AddInspectedHeapObjectRequest) (err error) {
+	err = obj.conn.Send(AddInspectedHeapObject, request, nil)
+	return
+}
+
+func (obj *HeapProfiler) CollectGarbage() (err error) {
+	err = obj.conn.Send(CollectGarbage, nil, nil)
 	return
 }
 
 func (obj *HeapProfiler) Disable() (err error) {
 	err = obj.conn.Send(Disable, nil, nil)
+	return
+}
+
+func (obj *HeapProfiler) Enable() (err error) {
+	err = obj.conn.Send(Enable, nil, nil)
+	return
+}
+
+type GetHeapObjectIdRequest struct {
+	// Identifier of the object to get heap object id for.
+	ObjectId types.Runtime_RemoteObjectId `json:"objectId"`
+}
+
+type GetHeapObjectIdResponse struct {
+	// Id of the heap snapshot object corresponding to the passed remote object id.
+	HeapSnapshotObjectId types.HeapProfiler_HeapSnapshotObjectId `json:"heapSnapshotObjectId"`
+}
+
+func (obj *HeapProfiler) GetHeapObjectId(request *GetHeapObjectIdRequest) (response GetHeapObjectIdResponse, err error) {
+	err = obj.conn.Send(GetHeapObjectId, request, &response)
+	return
+}
+
+type GetObjectByHeapObjectIdRequest struct {
+	ObjectId types.HeapProfiler_HeapSnapshotObjectId `json:"objectId"`
+	// Symbolic group name that can be used to release multiple objects.
+	ObjectGroup *string `json:"objectGroup,omitempty"`
+}
+
+type GetObjectByHeapObjectIdResponse struct {
+	// Evaluation result.
+	Result types.Runtime_RemoteObject `json:"result"`
+}
+
+func (obj *HeapProfiler) GetObjectByHeapObjectId(request *GetObjectByHeapObjectIdRequest) (response GetObjectByHeapObjectIdResponse, err error) {
+	err = obj.conn.Send(GetObjectByHeapObjectId, request, &response)
+	return
+}
+
+type GetSamplingProfileResponse struct {
+	// Return the sampling profile being collected.
+	Profile types.HeapProfiler_SamplingHeapProfile `json:"profile"`
+}
+
+func (obj *HeapProfiler) GetSamplingProfile() (response GetSamplingProfileResponse, err error) {
+	err = obj.conn.Send(GetSamplingProfile, nil, &response)
+	return
+}
+
+type StartSamplingRequest struct {
+	// Average sample interval in bytes. Poisson distribution is used for the intervals. The default value is 32768 bytes.
+	SamplingInterval *float32 `json:"samplingInterval,omitempty"`
+}
+
+func (obj *HeapProfiler) StartSampling(request *StartSamplingRequest) (err error) {
+	err = obj.conn.Send(StartSampling, request, nil)
 	return
 }
 
@@ -61,6 +128,16 @@ type StartTrackingHeapObjectsRequest struct {
 
 func (obj *HeapProfiler) StartTrackingHeapObjects(request *StartTrackingHeapObjectsRequest) (err error) {
 	err = obj.conn.Send(StartTrackingHeapObjects, request, nil)
+	return
+}
+
+type StopSamplingResponse struct {
+	// Recorded sampling heap profile.
+	Profile types.HeapProfiler_SamplingHeapProfile `json:"profile"`
+}
+
+func (obj *HeapProfiler) StopSampling() (response StopSamplingResponse, err error) {
+	err = obj.conn.Send(StopSampling, nil, &response)
 	return
 }
 
@@ -84,154 +161,18 @@ func (obj *HeapProfiler) TakeHeapSnapshot(request *TakeHeapSnapshotRequest) (err
 	return
 }
 
-func (obj *HeapProfiler) CollectGarbage() (err error) {
-	err = obj.conn.Send(CollectGarbage, nil, nil)
-	return
-}
-
-type GetObjectByHeapObjectIdRequest struct {
-	ObjectId types.HeapProfiler_HeapSnapshotObjectId `json:"objectId"`
-	// Symbolic group name that can be used to release multiple objects.
-	ObjectGroup *string `json:"objectGroup,omitempty"`
-}
-
-type GetObjectByHeapObjectIdResponse struct {
-	// Evaluation result.
-	Result types.Runtime_RemoteObject `json:"result"`
-}
-
-func (obj *HeapProfiler) GetObjectByHeapObjectId(request *GetObjectByHeapObjectIdRequest) (response GetObjectByHeapObjectIdResponse, err error) {
-	err = obj.conn.Send(GetObjectByHeapObjectId, request, &response)
-	return
-}
-
-type AddInspectedHeapObjectRequest struct {
-	// Heap snapshot object id to be accessible by means of $x command line API.
-	HeapObjectId types.HeapProfiler_HeapSnapshotObjectId `json:"heapObjectId"`
-}
-
-// Enables console to refer to the node with given id via $x (see Command Line API for more details $x functions).
-func (obj *HeapProfiler) AddInspectedHeapObject(request *AddInspectedHeapObjectRequest) (err error) {
-	err = obj.conn.Send(AddInspectedHeapObject, request, nil)
-	return
-}
-
-type GetHeapObjectIdRequest struct {
-	// Identifier of the object to get heap object id for.
-	ObjectId types.Runtime_RemoteObjectId `json:"objectId"`
-}
-
-type GetHeapObjectIdResponse struct {
-	// Id of the heap snapshot object corresponding to the passed remote object id.
-	HeapSnapshotObjectId types.HeapProfiler_HeapSnapshotObjectId `json:"heapSnapshotObjectId"`
-}
-
-func (obj *HeapProfiler) GetHeapObjectId(request *GetHeapObjectIdRequest) (response GetHeapObjectIdResponse, err error) {
-	err = obj.conn.Send(GetHeapObjectId, request, &response)
-	return
-}
-
-type StartSamplingRequest struct {
-	// Average sample interval in bytes. Poisson distribution is used for the intervals. The default value is 32768 bytes.
-	SamplingInterval *float32 `json:"samplingInterval,omitempty"`
-}
-
-func (obj *HeapProfiler) StartSampling(request *StartSamplingRequest) (err error) {
-	err = obj.conn.Send(StartSampling, request, nil)
-	return
-}
-
-type StopSamplingResponse struct {
-	// Recorded sampling heap profile.
-	Profile types.HeapProfiler_SamplingHeapProfile `json:"profile"`
-}
-
-func (obj *HeapProfiler) StopSampling() (response StopSamplingResponse, err error) {
-	err = obj.conn.Send(StopSampling, nil, &response)
-	return
-}
-
-type GetSamplingProfileResponse struct {
-	// Return the sampling profile being collected.
-	Profile types.HeapProfiler_SamplingHeapProfile `json:"profile"`
-}
-
-func (obj *HeapProfiler) GetSamplingProfile() (response GetSamplingProfileResponse, err error) {
-	err = obj.conn.Send(GetSamplingProfile, nil, &response)
-	return
-}
-
 type AddHeapSnapshotChunkParams struct {
 	Chunk string `json:"chunk"`
 }
 
-func (obj *HeapProfiler) AddHeapSnapshotChunk(fn func(params *AddHeapSnapshotChunkParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(AddHeapSnapshotChunk, closeChn)
+func (obj *HeapProfiler) AddHeapSnapshotChunk(fn func(event string, params AddHeapSnapshotChunkParams, err error) bool) {
+	listen, closer := obj.conn.On(AddHeapSnapshotChunk)
 	go func() {
+		defer closer()
 		for {
-			params := AddHeapSnapshotChunkParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
-}
-
-func (obj *HeapProfiler) ResetProfiles(fn func(err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(ResetProfiles, closeChn)
-	go func() {
-		for {
-
-			readErr := decoder(nil)
-			if !fn(readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
-}
-
-type ReportHeapSnapshotProgressParams struct {
-	Done     int   `json:"done"`
-	Total    int   `json:"total"`
-	Finished *bool `json:"finished,omitempty"`
-}
-
-func (obj *HeapProfiler) ReportHeapSnapshotProgress(fn func(params *ReportHeapSnapshotProgressParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(ReportHeapSnapshotProgress, closeChn)
-	go func() {
-		for {
-			params := ReportHeapSnapshotProgressParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
-}
-
-type LastSeenObjectIdParams struct {
-	LastSeenObjectId int     `json:"lastSeenObjectId"`
-	Timestamp        float32 `json:"timestamp"`
-}
-
-// If heap objects tracking has been started then backend regularly sends a current value for last seen object id and corresponding timestamp. If the were changes in the heap since last event then one or more heapStatsUpdate events will be sent before a new lastSeenObjectId event.
-func (obj *HeapProfiler) LastSeenObjectId(fn func(params *LastSeenObjectIdParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(LastSeenObjectId, closeChn)
-	go func() {
-		for {
-			params := LastSeenObjectIdParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
+			var params AddHeapSnapshotChunkParams
+			if !fn(AddHeapSnapshotChunk, params, listen(&params)) {
+				return
 			}
 		}
 	}()
@@ -243,16 +184,64 @@ type HeapStatsUpdateParams struct {
 }
 
 // If heap objects tracking has been started then backend may send update for one or more fragments
-func (obj *HeapProfiler) HeapStatsUpdate(fn func(params *HeapStatsUpdateParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(HeapStatsUpdate, closeChn)
+func (obj *HeapProfiler) HeapStatsUpdate(fn func(event string, params HeapStatsUpdateParams, err error) bool) {
+	listen, closer := obj.conn.On(HeapStatsUpdate)
 	go func() {
+		defer closer()
 		for {
-			params := HeapStatsUpdateParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
+			var params HeapStatsUpdateParams
+			if !fn(HeapStatsUpdate, params, listen(&params)) {
+				return
+			}
+		}
+	}()
+}
+
+type LastSeenObjectIdParams struct {
+	LastSeenObjectId int     `json:"lastSeenObjectId"`
+	Timestamp        float32 `json:"timestamp"`
+}
+
+// If heap objects tracking has been started then backend regularly sends a current value for last seen object id and corresponding timestamp. If the were changes in the heap since last event then one or more heapStatsUpdate events will be sent before a new lastSeenObjectId event.
+func (obj *HeapProfiler) LastSeenObjectId(fn func(event string, params LastSeenObjectIdParams, err error) bool) {
+	listen, closer := obj.conn.On(LastSeenObjectId)
+	go func() {
+		defer closer()
+		for {
+			var params LastSeenObjectIdParams
+			if !fn(LastSeenObjectId, params, listen(&params)) {
+				return
+			}
+		}
+	}()
+}
+
+type ReportHeapSnapshotProgressParams struct {
+	Done     int   `json:"done"`
+	Total    int   `json:"total"`
+	Finished *bool `json:"finished,omitempty"`
+}
+
+func (obj *HeapProfiler) ReportHeapSnapshotProgress(fn func(event string, params ReportHeapSnapshotProgressParams, err error) bool) {
+	listen, closer := obj.conn.On(ReportHeapSnapshotProgress)
+	go func() {
+		defer closer()
+		for {
+			var params ReportHeapSnapshotProgressParams
+			if !fn(ReportHeapSnapshotProgress, params, listen(&params)) {
+				return
+			}
+		}
+	}()
+}
+
+func (obj *HeapProfiler) ResetProfiles(fn func(event string, err error) bool) {
+	listen, closer := obj.conn.On(ResetProfiles)
+	go func() {
+		defer closer()
+		for {
+			if !fn(ResetProfiles, listen(nil)) {
+				return
 			}
 		}
 	}()

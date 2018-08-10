@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -7,7 +7,7 @@
 package tethering
 
 import (
-	"github.com/SKatiyar/cri"
+	"github.com/skatiyar/cri"
 )
 
 // List of commands in Tethering domain
@@ -61,16 +61,14 @@ type AcceptedParams struct {
 }
 
 // Informs that port was successfully bound and got a specified connection id.
-func (obj *Tethering) Accepted(fn func(params *AcceptedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(Accepted, closeChn)
+func (obj *Tethering) Accepted(fn func(event string, params AcceptedParams, err error) bool) {
+	listen, closer := obj.conn.On(Accepted)
 	go func() {
+		defer closer()
 		for {
-			params := AcceptedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
+			var params AcceptedParams
+			if !fn(Accepted, params, listen(&params)) {
+				return
 			}
 		}
 	}()

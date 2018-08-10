@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -7,14 +7,14 @@
 package io
 
 import (
-	"github.com/SKatiyar/cri"
-	types "github.com/SKatiyar/cri/types"
+	"github.com/skatiyar/cri"
+	types "github.com/skatiyar/cri/types"
 )
 
 // List of commands in IO domain
 const (
-	Read        = "IO.read"
 	Close       = "IO.close"
+	Read        = "IO.read"
 	ResolveBlob = "IO.resolveBlob"
 )
 
@@ -28,10 +28,21 @@ func New(conn cri.Connector) *IO {
 	return &IO{conn}
 }
 
+type CloseRequest struct {
+	// Handle of the stream to close.
+	Handle types.IO_StreamHandle `json:"handle"`
+}
+
+// Close the stream, discard any temporary backing storage.
+func (obj *IO) Close(request *CloseRequest) (err error) {
+	err = obj.conn.Send(Close, request, nil)
+	return
+}
+
 type ReadRequest struct {
 	// Handle of the stream to read.
 	Handle types.IO_StreamHandle `json:"handle"`
-	// Seek to the specified offset before reading (if not specificed, proceed with offset following the last read).
+	// Seek to the specified offset before reading (if not specificed, proceed with offset following the last read). Some types of streams may only support sequential reads.
 	Offset *int `json:"offset,omitempty"`
 	// Maximum number of bytes to read (left upon the agent discretion if not specified).
 	Size *int `json:"size,omitempty"`
@@ -49,17 +60,6 @@ type ReadResponse struct {
 // Read a chunk of the stream
 func (obj *IO) Read(request *ReadRequest) (response ReadResponse, err error) {
 	err = obj.conn.Send(Read, request, &response)
-	return
-}
-
-type CloseRequest struct {
-	// Handle of the stream to close.
-	Handle types.IO_StreamHandle `json:"handle"`
-}
-
-// Close the stream, discard any temporary backing storage.
-func (obj *IO) Close(request *CloseRequest) (err error) {
-	err = obj.conn.Send(Close, request, nil)
 	return
 }
 

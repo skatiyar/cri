@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -7,17 +7,20 @@
 package browser
 
 import (
-	"github.com/SKatiyar/cri"
-	types "github.com/SKatiyar/cri/types"
+	"github.com/skatiyar/cri"
+	types "github.com/skatiyar/cri/types"
 )
 
 // List of commands in Browser domain
 const (
-	Close              = "Browser.close"
-	GetWindowForTarget = "Browser.getWindowForTarget"
-	GetVersion         = "Browser.getVersion"
-	SetWindowBounds    = "Browser.setWindowBounds"
-	GetWindowBounds    = "Browser.getWindowBounds"
+	Close                 = "Browser.close"
+	GetVersion            = "Browser.getVersion"
+	GetBrowserCommandLine = "Browser.getBrowserCommandLine"
+	GetHistograms         = "Browser.getHistograms"
+	GetHistogram          = "Browser.getHistogram"
+	GetWindowBounds       = "Browser.getWindowBounds"
+	GetWindowForTarget    = "Browser.getWindowForTarget"
+	SetWindowBounds       = "Browser.setWindowBounds"
 )
 
 // The Browser domain defines methods and events for browser managing.
@@ -33,24 +36,6 @@ func New(conn cri.Connector) *Browser {
 // Close browser gracefully.
 func (obj *Browser) Close() (err error) {
 	err = obj.conn.Send(Close, nil, nil)
-	return
-}
-
-type GetWindowForTargetRequest struct {
-	// Devtools agent host id.
-	TargetId types.Target_TargetID `json:"targetId"`
-}
-
-type GetWindowForTargetResponse struct {
-	// Browser window id.
-	WindowId types.Browser_WindowID `json:"windowId"`
-	// Bounds information of the window. When window state is 'minimized', the restored window position and size are returned.
-	Bounds types.Browser_Bounds `json:"bounds"`
-}
-
-// Get the browser window that contains the devtools target.
-func (obj *Browser) GetWindowForTarget(request *GetWindowForTargetRequest) (response GetWindowForTargetResponse, err error) {
-	err = obj.conn.Send(GetWindowForTarget, request, &response)
 	return
 }
 
@@ -73,16 +58,50 @@ func (obj *Browser) GetVersion() (response GetVersionResponse, err error) {
 	return
 }
 
-type SetWindowBoundsRequest struct {
-	// Browser window id.
-	WindowId types.Browser_WindowID `json:"windowId"`
-	// New window bounds. The 'minimized', 'maximized' and 'fullscreen' states cannot be combined with 'left', 'top', 'width' or 'height'. Leaves unspecified fields unchanged.
-	Bounds types.Browser_Bounds `json:"bounds"`
+type GetBrowserCommandLineResponse struct {
+	// Commandline parameters
+	Arguments []string `json:"arguments"`
 }
 
-// Set position and/or size of the browser window.
-func (obj *Browser) SetWindowBounds(request *SetWindowBoundsRequest) (err error) {
-	err = obj.conn.Send(SetWindowBounds, request, nil)
+// Returns the command line switches for the browser process if, and only if --enable-automation is on the commandline.
+func (obj *Browser) GetBrowserCommandLine() (response GetBrowserCommandLineResponse, err error) {
+	err = obj.conn.Send(GetBrowserCommandLine, nil, &response)
+	return
+}
+
+type GetHistogramsRequest struct {
+	// Requested substring in name. Only histograms which have query as a substring in their name are extracted. An empty or absent query returns all histograms.
+	Query *string `json:"query,omitempty"`
+	// If true, retrieve delta since last call.
+	Delta *bool `json:"delta,omitempty"`
+}
+
+type GetHistogramsResponse struct {
+	// Histograms.
+	Histograms []types.Browser_Histogram `json:"histograms"`
+}
+
+// Get Chrome histograms.
+func (obj *Browser) GetHistograms(request *GetHistogramsRequest) (response GetHistogramsResponse, err error) {
+	err = obj.conn.Send(GetHistograms, request, &response)
+	return
+}
+
+type GetHistogramRequest struct {
+	// Requested histogram name.
+	Name string `json:"name"`
+	// If true, retrieve delta since last call.
+	Delta *bool `json:"delta,omitempty"`
+}
+
+type GetHistogramResponse struct {
+	// Histogram.
+	Histogram types.Browser_Histogram `json:"histogram"`
+}
+
+// Get a Chrome histogram by name.
+func (obj *Browser) GetHistogram(request *GetHistogramRequest) (response GetHistogramResponse, err error) {
+	err = obj.conn.Send(GetHistogram, request, &response)
 	return
 }
 
@@ -99,5 +118,36 @@ type GetWindowBoundsResponse struct {
 // Get position and size of the browser window.
 func (obj *Browser) GetWindowBounds(request *GetWindowBoundsRequest) (response GetWindowBoundsResponse, err error) {
 	err = obj.conn.Send(GetWindowBounds, request, &response)
+	return
+}
+
+type GetWindowForTargetRequest struct {
+	// Devtools agent host id.
+	TargetId types.Target_TargetID `json:"targetId"`
+}
+
+type GetWindowForTargetResponse struct {
+	// Browser window id.
+	WindowId types.Browser_WindowID `json:"windowId"`
+	// Bounds information of the window. When window state is 'minimized', the restored window position and size are returned.
+	Bounds types.Browser_Bounds `json:"bounds"`
+}
+
+// Get the browser window that contains the devtools target.
+func (obj *Browser) GetWindowForTarget(request *GetWindowForTargetRequest) (response GetWindowForTargetResponse, err error) {
+	err = obj.conn.Send(GetWindowForTarget, request, &response)
+	return
+}
+
+type SetWindowBoundsRequest struct {
+	// Browser window id.
+	WindowId types.Browser_WindowID `json:"windowId"`
+	// New window bounds. The 'minimized', 'maximized' and 'fullscreen' states cannot be combined with 'left', 'top', 'width' or 'height'. Leaves unspecified fields unchanged.
+	Bounds types.Browser_Bounds `json:"bounds"`
+}
+
+// Set position and/or size of the browser window.
+func (obj *Browser) SetWindowBounds(request *SetWindowBoundsRequest) (err error) {
+	err = obj.conn.Send(SetWindowBounds, request, nil)
 	return
 }

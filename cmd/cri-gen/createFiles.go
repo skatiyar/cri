@@ -6,7 +6,7 @@ import (
 	"text/template"
 )
 
-const ImportPath = "github.com/SKatiyar/cri"
+const ImportPath = "github.com/skatiyar/cri"
 
 func transformBasicTypes(typ string) string {
 	if typ == "integer" {
@@ -31,7 +31,7 @@ func transformParameter(p Parameter, domain, structName string, notTypes bool) (
 	deps := make([]string, 0)
 
 	if len(p.Description) > 0 {
-		nField = append(nField, "// "+strings.Trim(p.Description, "\n"))
+		nField = append(nField, "// "+strings.Trim(strings.Replace(p.Description, "\n", " ", -1), "\n"))
 	}
 	if p.Experimental {
 		nField = append(nField, "// NOTE Experimental")
@@ -127,7 +127,7 @@ func transformTypes(d Domain) TypesData {
 			ID: d.Domain + "_" + typs[i].ID,
 		}
 		if len(typs[i].Description) > 0 {
-			typeSpec.Doc = "// " + typs[i].Description
+			typeSpec.Doc = "// " + strings.Replace(typs[i].Description, "\n", " ", -1)
 		}
 
 		if len(typs[i].Enum) != 0 {
@@ -193,15 +193,14 @@ type CommandData struct {
 }
 
 type EventData struct {
-	Doc         string
-	Domain      string
-	Command     string
-	Name        string
-	EventParams string
-	ParamsDecl  string
-	ParamsValue string
-	CallParams  string
-	Types       []TypeData
+	Doc           string
+	Domain        string
+	Command       string
+	Name          string
+	ResponseName  string
+	ResponseValue string
+	CallParams    string
+	Types         []TypeData
 }
 
 type CommandsData struct {
@@ -223,7 +222,7 @@ func transformCommands(d Domain) CommandsData {
 	}
 
 	if len(d.Description) > 0 {
-		data.Doc = "// " + d.Description
+		data.Doc = "// " + strings.Replace(d.Description, "\n", " ", -1)
 	}
 
 	imports := make(map[string]bool)
@@ -235,7 +234,7 @@ func transformCommands(d Domain) CommandsData {
 			Types:   make([]TypeData, 0),
 		}
 		if len(d.Commands[i].Description) > 0 {
-			cmd.Doc = "// " + d.Commands[i].Description
+			cmd.Doc = "// " + strings.Replace(d.Commands[i].Description, "\n", " ", -1)
 		}
 		if len(d.Commands[i].Parameters) > 0 {
 			reqName := strings.Title(d.Commands[i].Name) + "Request"
@@ -287,16 +286,16 @@ func transformCommands(d Domain) CommandsData {
 			Command: d.Domain + "." + d.Events[i].Name,
 		}
 		if len(d.Events[i].Description) > 0 {
-			eve.Doc = "// " + d.Events[i].Description
+			eve.Doc = "// " + strings.Replace(d.Events[i].Description, "\n", " ", -1)
 		}
 		if d.Events[i].Experimental {
 			eve.Doc += "\n// NOTE Experimental"
 		}
 		if len(d.Events[i].Parameters) > 0 {
 			paramsName := strings.Title(d.Events[i].Name) + "Params"
-			eve.EventParams = "params *" + paramsName + ", err error"
-			eve.ParamsDecl = "params := " + paramsName + "{}"
-			eve.CallParams = "&params, readErr"
+			eve.ResponseName = "params " + paramsName + ", err error"
+			eve.ResponseValue = "params, listen(&params)"
+			eve.CallParams = "var params " + paramsName
 			properties := make([]string, 0)
 			for j := 0; j < len(d.Events[i].Parameters); j++ {
 				param, paramDeps := transformParameter(d.Events[i].Parameters[j], d.Domain, paramsName, true)
@@ -309,11 +308,10 @@ func transformCommands(d Domain) CommandsData {
 				ID:   paramsName,
 				Type: "struct {\n" + strings.Join(properties, "\n") + "\n}",
 			})
-			eve.ParamsValue = "&params"
 		} else {
-			eve.ParamsValue = "nil"
-			eve.EventParams = "err error"
-			eve.CallParams = "readErr"
+			eve.ResponseName = "err error"
+			eve.ResponseValue = "listen(nil)"
+			eve.CallParams = ""
 		}
 
 		data.Events = append(data.Events, eve)

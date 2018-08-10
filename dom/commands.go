@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -7,72 +7,74 @@
 package dom
 
 import (
-	"github.com/SKatiyar/cri"
-	types "github.com/SKatiyar/cri/types"
+	"github.com/skatiyar/cri"
+	types "github.com/skatiyar/cri/types"
 )
 
 // List of commands in DOM domain
 const (
-	Enable                          = "DOM.enable"
+	CollectClassNamesFromSubtree    = "DOM.collectClassNamesFromSubtree"
+	CopyTo                          = "DOM.copyTo"
+	DescribeNode                    = "DOM.describeNode"
 	Disable                         = "DOM.disable"
+	DiscardSearchResults            = "DOM.discardSearchResults"
+	Enable                          = "DOM.enable"
+	Focus                           = "DOM.focus"
+	GetAttributes                   = "DOM.getAttributes"
+	GetBoxModel                     = "DOM.getBoxModel"
+	GetContentQuads                 = "DOM.getContentQuads"
 	GetDocument                     = "DOM.getDocument"
 	GetFlattenedDocument            = "DOM.getFlattenedDocument"
-	CollectClassNamesFromSubtree    = "DOM.collectClassNamesFromSubtree"
-	RequestChildNodes               = "DOM.requestChildNodes"
-	QuerySelector                   = "DOM.querySelector"
-	QuerySelectorAll                = "DOM.querySelectorAll"
-	SetNodeName                     = "DOM.setNodeName"
-	SetNodeValue                    = "DOM.setNodeValue"
-	RemoveNode                      = "DOM.removeNode"
-	SetAttributeValue               = "DOM.setAttributeValue"
-	SetAttributesAsText             = "DOM.setAttributesAsText"
-	RemoveAttribute                 = "DOM.removeAttribute"
+	GetNodeForLocation              = "DOM.getNodeForLocation"
 	GetOuterHTML                    = "DOM.getOuterHTML"
-	SetOuterHTML                    = "DOM.setOuterHTML"
-	PerformSearch                   = "DOM.performSearch"
+	GetRelayoutBoundary             = "DOM.getRelayoutBoundary"
 	GetSearchResults                = "DOM.getSearchResults"
-	DiscardSearchResults            = "DOM.discardSearchResults"
-	RequestNode                     = "DOM.requestNode"
-	HighlightRect                   = "DOM.highlightRect"
-	HighlightNode                   = "DOM.highlightNode"
 	HideHighlight                   = "DOM.hideHighlight"
+	HighlightNode                   = "DOM.highlightNode"
+	HighlightRect                   = "DOM.highlightRect"
+	MarkUndoableState               = "DOM.markUndoableState"
+	MoveTo                          = "DOM.moveTo"
+	PerformSearch                   = "DOM.performSearch"
 	PushNodeByPathToFrontend        = "DOM.pushNodeByPathToFrontend"
 	PushNodesByBackendIdsToFrontend = "DOM.pushNodesByBackendIdsToFrontend"
-	SetInspectedNode                = "DOM.setInspectedNode"
-	ResolveNode                     = "DOM.resolveNode"
-	GetAttributes                   = "DOM.getAttributes"
-	CopyTo                          = "DOM.copyTo"
-	MoveTo                          = "DOM.moveTo"
-	Undo                            = "DOM.undo"
+	QuerySelector                   = "DOM.querySelector"
+	QuerySelectorAll                = "DOM.querySelectorAll"
 	Redo                            = "DOM.redo"
-	MarkUndoableState               = "DOM.markUndoableState"
-	Focus                           = "DOM.focus"
+	RemoveAttribute                 = "DOM.removeAttribute"
+	RemoveNode                      = "DOM.removeNode"
+	RequestChildNodes               = "DOM.requestChildNodes"
+	RequestNode                     = "DOM.requestNode"
+	ResolveNode                     = "DOM.resolveNode"
+	SetAttributeValue               = "DOM.setAttributeValue"
+	SetAttributesAsText             = "DOM.setAttributesAsText"
 	SetFileInputFiles               = "DOM.setFileInputFiles"
-	GetBoxModel                     = "DOM.getBoxModel"
-	GetNodeForLocation              = "DOM.getNodeForLocation"
-	GetRelayoutBoundary             = "DOM.getRelayoutBoundary"
-	DescribeNode                    = "DOM.describeNode"
+	SetInspectedNode                = "DOM.setInspectedNode"
+	SetNodeName                     = "DOM.setNodeName"
+	SetNodeValue                    = "DOM.setNodeValue"
+	SetOuterHTML                    = "DOM.setOuterHTML"
+	Undo                            = "DOM.undo"
+	GetFrameOwner                   = "DOM.getFrameOwner"
 )
 
 // List of events in DOM domain
 const (
-	DocumentUpdated         = "DOM.documentUpdated"
-	SetChildNodes           = "DOM.setChildNodes"
 	AttributeModified       = "DOM.attributeModified"
 	AttributeRemoved        = "DOM.attributeRemoved"
-	InlineStyleInvalidated  = "DOM.inlineStyleInvalidated"
 	CharacterDataModified   = "DOM.characterDataModified"
 	ChildNodeCountUpdated   = "DOM.childNodeCountUpdated"
 	ChildNodeInserted       = "DOM.childNodeInserted"
 	ChildNodeRemoved        = "DOM.childNodeRemoved"
-	ShadowRootPushed        = "DOM.shadowRootPushed"
-	ShadowRootPopped        = "DOM.shadowRootPopped"
+	DistributedNodesUpdated = "DOM.distributedNodesUpdated"
+	DocumentUpdated         = "DOM.documentUpdated"
+	InlineStyleInvalidated  = "DOM.inlineStyleInvalidated"
 	PseudoElementAdded      = "DOM.pseudoElementAdded"
 	PseudoElementRemoved    = "DOM.pseudoElementRemoved"
-	DistributedNodesUpdated = "DOM.distributedNodesUpdated"
+	SetChildNodes           = "DOM.setChildNodes"
+	ShadowRootPopped        = "DOM.shadowRootPopped"
+	ShadowRootPushed        = "DOM.shadowRootPushed"
 )
 
-// This domain exposes DOM read/write operations. Each DOM Node is represented with its mirror object that has an <code>id</code>. This <code>id</code> can be used to get additional information on the Node, resolve it into the JavaScript object wrapper, etc. It is important that client receives DOM events only for the nodes that are known to the client. Backend keeps track of the nodes that were sent to the client and never sends the same node twice. It is client's responsibility to collect information about the nodes that were sent to the client.<p>Note that <code>iframe</code> owner elements will return corresponding document elements as their child nodes.</p>
+// This domain exposes DOM read/write operations. Each DOM Node is represented with its mirror object that has an `id`. This `id` can be used to get additional information on the Node, resolve it into the JavaScript object wrapper, etc. It is important that client receives DOM events only for the nodes that are known to the client. Backend keeps track of the nodes that were sent to the client and never sends the same node twice. It is client's responsibility to collect information about the nodes that were sent to the client.<p>Note that `iframe` owner elements will return corresponding document elements as their child nodes.</p>
 type DOM struct {
 	conn cri.Connector
 }
@@ -82,15 +84,157 @@ func New(conn cri.Connector) *DOM {
 	return &DOM{conn}
 }
 
-// Enables DOM agent for the given page.
-func (obj *DOM) Enable() (err error) {
-	err = obj.conn.Send(Enable, nil, nil)
+type CollectClassNamesFromSubtreeRequest struct {
+	// Id of the node to collect class names.
+	NodeId types.DOM_NodeId `json:"nodeId"`
+}
+
+type CollectClassNamesFromSubtreeResponse struct {
+	// Class name list.
+	ClassNames []string `json:"classNames"`
+}
+
+// Collects class names for the node with given id and all of it's child nodes.
+func (obj *DOM) CollectClassNamesFromSubtree(request *CollectClassNamesFromSubtreeRequest) (response CollectClassNamesFromSubtreeResponse, err error) {
+	err = obj.conn.Send(CollectClassNamesFromSubtree, request, &response)
+	return
+}
+
+type CopyToRequest struct {
+	// Id of the node to copy.
+	NodeId types.DOM_NodeId `json:"nodeId"`
+	// Id of the element to drop the copy into.
+	TargetNodeId types.DOM_NodeId `json:"targetNodeId"`
+	// Drop the copy before this node (if absent, the copy becomes the last child of `targetNodeId`).
+	InsertBeforeNodeId *types.DOM_NodeId `json:"insertBeforeNodeId,omitempty"`
+}
+
+type CopyToResponse struct {
+	// Id of the node clone.
+	NodeId types.DOM_NodeId `json:"nodeId"`
+}
+
+// Creates a deep copy of the specified node and places it into the target container before the given anchor.
+func (obj *DOM) CopyTo(request *CopyToRequest) (response CopyToResponse, err error) {
+	err = obj.conn.Send(CopyTo, request, &response)
+	return
+}
+
+type DescribeNodeRequest struct {
+	// Identifier of the node.
+	NodeId *types.DOM_NodeId `json:"nodeId,omitempty"`
+	// Identifier of the backend node.
+	BackendNodeId *types.DOM_BackendNodeId `json:"backendNodeId,omitempty"`
+	// JavaScript object id of the node wrapper.
+	ObjectId *types.Runtime_RemoteObjectId `json:"objectId,omitempty"`
+	// The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
+	Depth *int `json:"depth,omitempty"`
+	// Whether or not iframes and shadow roots should be traversed when returning the subtree (default is false).
+	Pierce *bool `json:"pierce,omitempty"`
+}
+
+type DescribeNodeResponse struct {
+	// Node description.
+	Node types.DOM_Node `json:"node"`
+}
+
+// Describes node given its id, does not require domain to be enabled. Does not start tracking any objects, can be used for automation.
+func (obj *DOM) DescribeNode(request *DescribeNodeRequest) (response DescribeNodeResponse, err error) {
+	err = obj.conn.Send(DescribeNode, request, &response)
 	return
 }
 
 // Disables DOM agent for the given page.
 func (obj *DOM) Disable() (err error) {
 	err = obj.conn.Send(Disable, nil, nil)
+	return
+}
+
+type DiscardSearchResultsRequest struct {
+	// Unique search session identifier.
+	SearchId string `json:"searchId"`
+}
+
+// Discards search results from the session with the given id. `getSearchResults` should no longer be called for that search.
+func (obj *DOM) DiscardSearchResults(request *DiscardSearchResultsRequest) (err error) {
+	err = obj.conn.Send(DiscardSearchResults, request, nil)
+	return
+}
+
+// Enables DOM agent for the given page.
+func (obj *DOM) Enable() (err error) {
+	err = obj.conn.Send(Enable, nil, nil)
+	return
+}
+
+type FocusRequest struct {
+	// Identifier of the node.
+	NodeId *types.DOM_NodeId `json:"nodeId,omitempty"`
+	// Identifier of the backend node.
+	BackendNodeId *types.DOM_BackendNodeId `json:"backendNodeId,omitempty"`
+	// JavaScript object id of the node wrapper.
+	ObjectId *types.Runtime_RemoteObjectId `json:"objectId,omitempty"`
+}
+
+// Focuses the given element.
+func (obj *DOM) Focus(request *FocusRequest) (err error) {
+	err = obj.conn.Send(Focus, request, nil)
+	return
+}
+
+type GetAttributesRequest struct {
+	// Id of the node to retrieve attibutes for.
+	NodeId types.DOM_NodeId `json:"nodeId"`
+}
+
+type GetAttributesResponse struct {
+	// An interleaved array of node attribute names and values.
+	Attributes []string `json:"attributes"`
+}
+
+// Returns attributes for the specified node.
+func (obj *DOM) GetAttributes(request *GetAttributesRequest) (response GetAttributesResponse, err error) {
+	err = obj.conn.Send(GetAttributes, request, &response)
+	return
+}
+
+type GetBoxModelRequest struct {
+	// Identifier of the node.
+	NodeId *types.DOM_NodeId `json:"nodeId,omitempty"`
+	// Identifier of the backend node.
+	BackendNodeId *types.DOM_BackendNodeId `json:"backendNodeId,omitempty"`
+	// JavaScript object id of the node wrapper.
+	ObjectId *types.Runtime_RemoteObjectId `json:"objectId,omitempty"`
+}
+
+type GetBoxModelResponse struct {
+	// Box model for the node.
+	Model types.DOM_BoxModel `json:"model"`
+}
+
+// Returns boxes for the given node.
+func (obj *DOM) GetBoxModel(request *GetBoxModelRequest) (response GetBoxModelResponse, err error) {
+	err = obj.conn.Send(GetBoxModel, request, &response)
+	return
+}
+
+type GetContentQuadsRequest struct {
+	// Identifier of the node.
+	NodeId *types.DOM_NodeId `json:"nodeId,omitempty"`
+	// Identifier of the backend node.
+	BackendNodeId *types.DOM_BackendNodeId `json:"backendNodeId,omitempty"`
+	// JavaScript object id of the node wrapper.
+	ObjectId *types.Runtime_RemoteObjectId `json:"objectId,omitempty"`
+}
+
+type GetContentQuadsResponse struct {
+	// Quads that describe node layout relative to viewport.
+	Quads []types.DOM_Quad `json:"quads"`
+}
+
+// Returns quads that describe node position on the page. This method might return multiple quads for inline nodes.
+func (obj *DOM) GetContentQuads(request *GetContentQuadsRequest) (response GetContentQuadsResponse, err error) {
+	err = obj.conn.Send(GetContentQuads, request, &response)
 	return
 }
 
@@ -130,155 +274,23 @@ func (obj *DOM) GetFlattenedDocument(request *GetFlattenedDocumentRequest) (resp
 	return
 }
 
-type CollectClassNamesFromSubtreeRequest struct {
-	// Id of the node to collect class names.
+type GetNodeForLocationRequest struct {
+	// X coordinate.
+	X int `json:"x"`
+	// Y coordinate.
+	Y int `json:"y"`
+	// False to skip to the nearest non-UA shadow root ancestor (default: false).
+	IncludeUserAgentShadowDOM *bool `json:"includeUserAgentShadowDOM,omitempty"`
+}
+
+type GetNodeForLocationResponse struct {
+	// Id of the node at given coordinates.
 	NodeId types.DOM_NodeId `json:"nodeId"`
 }
 
-type CollectClassNamesFromSubtreeResponse struct {
-	// Class name list.
-	ClassNames []string `json:"classNames"`
-}
-
-// Collects class names for the node with given id and all of it's child nodes.
-func (obj *DOM) CollectClassNamesFromSubtree(request *CollectClassNamesFromSubtreeRequest) (response CollectClassNamesFromSubtreeResponse, err error) {
-	err = obj.conn.Send(CollectClassNamesFromSubtree, request, &response)
-	return
-}
-
-type RequestChildNodesRequest struct {
-	// Id of the node to get children for.
-	NodeId types.DOM_NodeId `json:"nodeId"`
-	// The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
-	Depth *int `json:"depth,omitempty"`
-	// Whether or not iframes and shadow roots should be traversed when returning the sub-tree (default is false).
-	Pierce *bool `json:"pierce,omitempty"`
-}
-
-// Requests that children of the node with given id are returned to the caller in form of <code>setChildNodes</code> events where not only immediate children are retrieved, but all children down to the specified depth.
-func (obj *DOM) RequestChildNodes(request *RequestChildNodesRequest) (err error) {
-	err = obj.conn.Send(RequestChildNodes, request, nil)
-	return
-}
-
-type QuerySelectorRequest struct {
-	// Id of the node to query upon.
-	NodeId types.DOM_NodeId `json:"nodeId"`
-	// Selector string.
-	Selector string `json:"selector"`
-}
-
-type QuerySelectorResponse struct {
-	// Query selector result.
-	NodeId types.DOM_NodeId `json:"nodeId"`
-}
-
-// Executes <code>querySelector</code> on a given node.
-func (obj *DOM) QuerySelector(request *QuerySelectorRequest) (response QuerySelectorResponse, err error) {
-	err = obj.conn.Send(QuerySelector, request, &response)
-	return
-}
-
-type QuerySelectorAllRequest struct {
-	// Id of the node to query upon.
-	NodeId types.DOM_NodeId `json:"nodeId"`
-	// Selector string.
-	Selector string `json:"selector"`
-}
-
-type QuerySelectorAllResponse struct {
-	// Query selector result.
-	NodeIds []types.DOM_NodeId `json:"nodeIds"`
-}
-
-// Executes <code>querySelectorAll</code> on a given node.
-func (obj *DOM) QuerySelectorAll(request *QuerySelectorAllRequest) (response QuerySelectorAllResponse, err error) {
-	err = obj.conn.Send(QuerySelectorAll, request, &response)
-	return
-}
-
-type SetNodeNameRequest struct {
-	// Id of the node to set name for.
-	NodeId types.DOM_NodeId `json:"nodeId"`
-	// New node's name.
-	Name string `json:"name"`
-}
-
-type SetNodeNameResponse struct {
-	// New node's id.
-	NodeId types.DOM_NodeId `json:"nodeId"`
-}
-
-// Sets node name for a node with given id.
-func (obj *DOM) SetNodeName(request *SetNodeNameRequest) (response SetNodeNameResponse, err error) {
-	err = obj.conn.Send(SetNodeName, request, &response)
-	return
-}
-
-type SetNodeValueRequest struct {
-	// Id of the node to set value for.
-	NodeId types.DOM_NodeId `json:"nodeId"`
-	// New node's value.
-	Value string `json:"value"`
-}
-
-// Sets node value for a node with given id.
-func (obj *DOM) SetNodeValue(request *SetNodeValueRequest) (err error) {
-	err = obj.conn.Send(SetNodeValue, request, nil)
-	return
-}
-
-type RemoveNodeRequest struct {
-	// Id of the node to remove.
-	NodeId types.DOM_NodeId `json:"nodeId"`
-}
-
-// Removes node with given id.
-func (obj *DOM) RemoveNode(request *RemoveNodeRequest) (err error) {
-	err = obj.conn.Send(RemoveNode, request, nil)
-	return
-}
-
-type SetAttributeValueRequest struct {
-	// Id of the element to set attribute for.
-	NodeId types.DOM_NodeId `json:"nodeId"`
-	// Attribute name.
-	Name string `json:"name"`
-	// Attribute value.
-	Value string `json:"value"`
-}
-
-// Sets attribute for an element with given id.
-func (obj *DOM) SetAttributeValue(request *SetAttributeValueRequest) (err error) {
-	err = obj.conn.Send(SetAttributeValue, request, nil)
-	return
-}
-
-type SetAttributesAsTextRequest struct {
-	// Id of the element to set attributes for.
-	NodeId types.DOM_NodeId `json:"nodeId"`
-	// Text with a number of attributes. Will parse this text using HTML parser.
-	Text string `json:"text"`
-	// Attribute name to replace with new attributes derived from text in case text parsed successfully.
-	Name *string `json:"name,omitempty"`
-}
-
-// Sets attributes on element with given id. This method is useful when user edits some existing attribute value and types in several attribute name/value pairs.
-func (obj *DOM) SetAttributesAsText(request *SetAttributesAsTextRequest) (err error) {
-	err = obj.conn.Send(SetAttributesAsText, request, nil)
-	return
-}
-
-type RemoveAttributeRequest struct {
-	// Id of the element to remove attribute from.
-	NodeId types.DOM_NodeId `json:"nodeId"`
-	// Name of the attribute to remove.
-	Name string `json:"name"`
-}
-
-// Removes attribute with given name from an element with given id.
-func (obj *DOM) RemoveAttribute(request *RemoveAttributeRequest) (err error) {
-	err = obj.conn.Send(RemoveAttribute, request, nil)
+// Returns node id at given location.
+func (obj *DOM) GetNodeForLocation(request *GetNodeForLocationRequest) (response GetNodeForLocationResponse, err error) {
+	err = obj.conn.Send(GetNodeForLocation, request, &response)
 	return
 }
 
@@ -302,36 +314,19 @@ func (obj *DOM) GetOuterHTML(request *GetOuterHTMLRequest) (response GetOuterHTM
 	return
 }
 
-type SetOuterHTMLRequest struct {
-	// Id of the node to set markup for.
+type GetRelayoutBoundaryRequest struct {
+	// Id of the node.
 	NodeId types.DOM_NodeId `json:"nodeId"`
-	// Outer HTML markup to set.
-	OuterHTML string `json:"outerHTML"`
 }
 
-// Sets node HTML markup, returns new node id.
-func (obj *DOM) SetOuterHTML(request *SetOuterHTMLRequest) (err error) {
-	err = obj.conn.Send(SetOuterHTML, request, nil)
-	return
+type GetRelayoutBoundaryResponse struct {
+	// Relayout boundary node id for the given node.
+	NodeId types.DOM_NodeId `json:"nodeId"`
 }
 
-type PerformSearchRequest struct {
-	// Plain text or query selector or XPath search query.
-	Query string `json:"query"`
-	// True to search in user agent shadow DOM.
-	IncludeUserAgentShadowDOM *bool `json:"includeUserAgentShadowDOM,omitempty"`
-}
-
-type PerformSearchResponse struct {
-	// Unique search session identifier.
-	SearchId string `json:"searchId"`
-	// Number of search results.
-	ResultCount int `json:"resultCount"`
-}
-
-// Searches for a given string in the DOM tree. Use <code>getSearchResults</code> to access search results or <code>cancelSearch</code> to end this search session.
-func (obj *DOM) PerformSearch(request *PerformSearchRequest) (response PerformSearchResponse, err error) {
-	err = obj.conn.Send(PerformSearch, request, &response)
+// Returns the id of the nearest ancestor that is a relayout boundary.
+func (obj *DOM) GetRelayoutBoundary(request *GetRelayoutBoundaryRequest) (response GetRelayoutBoundaryResponse, err error) {
+	err = obj.conn.Send(GetRelayoutBoundary, request, &response)
 	return
 }
 
@@ -349,42 +344,15 @@ type GetSearchResultsResponse struct {
 	NodeIds []types.DOM_NodeId `json:"nodeIds"`
 }
 
-// Returns search results from given <code>fromIndex</code> to given <code>toIndex</code> from the search with the given identifier.
+// Returns search results from given `fromIndex` to given `toIndex` from the search with the given identifier.
 func (obj *DOM) GetSearchResults(request *GetSearchResultsRequest) (response GetSearchResultsResponse, err error) {
 	err = obj.conn.Send(GetSearchResults, request, &response)
 	return
 }
 
-type DiscardSearchResultsRequest struct {
-	// Unique search session identifier.
-	SearchId string `json:"searchId"`
-}
-
-// Discards search results from the session with the given id. <code>getSearchResults</code> should no longer be called for that search.
-func (obj *DOM) DiscardSearchResults(request *DiscardSearchResultsRequest) (err error) {
-	err = obj.conn.Send(DiscardSearchResults, request, nil)
-	return
-}
-
-type RequestNodeRequest struct {
-	// JavaScript object id to convert into node.
-	ObjectId types.Runtime_RemoteObjectId `json:"objectId"`
-}
-
-type RequestNodeResponse struct {
-	// Node id for given object.
-	NodeId types.DOM_NodeId `json:"nodeId"`
-}
-
-// Requests that the node is sent to the caller given the JavaScript node object reference. All nodes that form the path from the node to the root are also sent to the client as a series of <code>setChildNodes</code> notifications.
-func (obj *DOM) RequestNode(request *RequestNodeRequest) (response RequestNodeResponse, err error) {
-	err = obj.conn.Send(RequestNode, request, &response)
-	return
-}
-
-// Highlights given rectangle.
-func (obj *DOM) HighlightRect() (err error) {
-	err = obj.conn.Send(HighlightRect, nil, nil)
+// Hides any highlight.
+func (obj *DOM) HideHighlight() (err error) {
+	err = obj.conn.Send(HideHighlight, nil, nil)
 	return
 }
 
@@ -394,9 +362,55 @@ func (obj *DOM) HighlightNode() (err error) {
 	return
 }
 
-// Hides any highlight.
-func (obj *DOM) HideHighlight() (err error) {
-	err = obj.conn.Send(HideHighlight, nil, nil)
+// Highlights given rectangle.
+func (obj *DOM) HighlightRect() (err error) {
+	err = obj.conn.Send(HighlightRect, nil, nil)
+	return
+}
+
+// Marks last undoable state.
+func (obj *DOM) MarkUndoableState() (err error) {
+	err = obj.conn.Send(MarkUndoableState, nil, nil)
+	return
+}
+
+type MoveToRequest struct {
+	// Id of the node to move.
+	NodeId types.DOM_NodeId `json:"nodeId"`
+	// Id of the element to drop the moved node into.
+	TargetNodeId types.DOM_NodeId `json:"targetNodeId"`
+	// Drop node before this one (if absent, the moved node becomes the last child of `targetNodeId`).
+	InsertBeforeNodeId *types.DOM_NodeId `json:"insertBeforeNodeId,omitempty"`
+}
+
+type MoveToResponse struct {
+	// New id of the moved node.
+	NodeId types.DOM_NodeId `json:"nodeId"`
+}
+
+// Moves node into the new container, places it before the given anchor.
+func (obj *DOM) MoveTo(request *MoveToRequest) (response MoveToResponse, err error) {
+	err = obj.conn.Send(MoveTo, request, &response)
+	return
+}
+
+type PerformSearchRequest struct {
+	// Plain text or query selector or XPath search query.
+	Query string `json:"query"`
+	// True to search in user agent shadow DOM.
+	IncludeUserAgentShadowDOM *bool `json:"includeUserAgentShadowDOM,omitempty"`
+}
+
+type PerformSearchResponse struct {
+	// Unique search session identifier.
+	SearchId string `json:"searchId"`
+	// Number of search results.
+	ResultCount int `json:"resultCount"`
+}
+
+// Searches for a given string in the DOM tree. Use `getSearchResults` to access search results or `cancelSearch` to end this search session.
+func (obj *DOM) PerformSearch(request *PerformSearchRequest) (response PerformSearchResponse, err error) {
+	err = obj.conn.Send(PerformSearch, request, &response)
 	return
 }
 
@@ -432,14 +446,100 @@ func (obj *DOM) PushNodesByBackendIdsToFrontend(request *PushNodesByBackendIdsTo
 	return
 }
 
-type SetInspectedNodeRequest struct {
-	// DOM node id to be accessible by means of $x command line API.
+type QuerySelectorRequest struct {
+	// Id of the node to query upon.
+	NodeId types.DOM_NodeId `json:"nodeId"`
+	// Selector string.
+	Selector string `json:"selector"`
+}
+
+type QuerySelectorResponse struct {
+	// Query selector result.
 	NodeId types.DOM_NodeId `json:"nodeId"`
 }
 
-// Enables console to refer to the node with given id via $x (see Command Line API for more details $x functions).
-func (obj *DOM) SetInspectedNode(request *SetInspectedNodeRequest) (err error) {
-	err = obj.conn.Send(SetInspectedNode, request, nil)
+// Executes `querySelector` on a given node.
+func (obj *DOM) QuerySelector(request *QuerySelectorRequest) (response QuerySelectorResponse, err error) {
+	err = obj.conn.Send(QuerySelector, request, &response)
+	return
+}
+
+type QuerySelectorAllRequest struct {
+	// Id of the node to query upon.
+	NodeId types.DOM_NodeId `json:"nodeId"`
+	// Selector string.
+	Selector string `json:"selector"`
+}
+
+type QuerySelectorAllResponse struct {
+	// Query selector result.
+	NodeIds []types.DOM_NodeId `json:"nodeIds"`
+}
+
+// Executes `querySelectorAll` on a given node.
+func (obj *DOM) QuerySelectorAll(request *QuerySelectorAllRequest) (response QuerySelectorAllResponse, err error) {
+	err = obj.conn.Send(QuerySelectorAll, request, &response)
+	return
+}
+
+// Re-does the last undone action.
+func (obj *DOM) Redo() (err error) {
+	err = obj.conn.Send(Redo, nil, nil)
+	return
+}
+
+type RemoveAttributeRequest struct {
+	// Id of the element to remove attribute from.
+	NodeId types.DOM_NodeId `json:"nodeId"`
+	// Name of the attribute to remove.
+	Name string `json:"name"`
+}
+
+// Removes attribute with given name from an element with given id.
+func (obj *DOM) RemoveAttribute(request *RemoveAttributeRequest) (err error) {
+	err = obj.conn.Send(RemoveAttribute, request, nil)
+	return
+}
+
+type RemoveNodeRequest struct {
+	// Id of the node to remove.
+	NodeId types.DOM_NodeId `json:"nodeId"`
+}
+
+// Removes node with given id.
+func (obj *DOM) RemoveNode(request *RemoveNodeRequest) (err error) {
+	err = obj.conn.Send(RemoveNode, request, nil)
+	return
+}
+
+type RequestChildNodesRequest struct {
+	// Id of the node to get children for.
+	NodeId types.DOM_NodeId `json:"nodeId"`
+	// The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
+	Depth *int `json:"depth,omitempty"`
+	// Whether or not iframes and shadow roots should be traversed when returning the sub-tree (default is false).
+	Pierce *bool `json:"pierce,omitempty"`
+}
+
+// Requests that children of the node with given id are returned to the caller in form of `setChildNodes` events where not only immediate children are retrieved, but all children down to the specified depth.
+func (obj *DOM) RequestChildNodes(request *RequestChildNodesRequest) (err error) {
+	err = obj.conn.Send(RequestChildNodes, request, nil)
+	return
+}
+
+type RequestNodeRequest struct {
+	// JavaScript object id to convert into node.
+	ObjectId types.Runtime_RemoteObjectId `json:"objectId"`
+}
+
+type RequestNodeResponse struct {
+	// Node id for given object.
+	NodeId types.DOM_NodeId `json:"nodeId"`
+}
+
+// Requests that the node is sent to the caller given the JavaScript node object reference. All nodes that form the path from the node to the root are also sent to the client as a series of `setChildNodes` notifications.
+func (obj *DOM) RequestNode(request *RequestNodeRequest) (response RequestNodeResponse, err error) {
+	err = obj.conn.Send(RequestNode, request, &response)
 	return
 }
 
@@ -463,92 +563,33 @@ func (obj *DOM) ResolveNode(request *ResolveNodeRequest) (response ResolveNodeRe
 	return
 }
 
-type GetAttributesRequest struct {
-	// Id of the node to retrieve attibutes for.
+type SetAttributeValueRequest struct {
+	// Id of the element to set attribute for.
 	NodeId types.DOM_NodeId `json:"nodeId"`
+	// Attribute name.
+	Name string `json:"name"`
+	// Attribute value.
+	Value string `json:"value"`
 }
 
-type GetAttributesResponse struct {
-	// An interleaved array of node attribute names and values.
-	Attributes []string `json:"attributes"`
-}
-
-// Returns attributes for the specified node.
-func (obj *DOM) GetAttributes(request *GetAttributesRequest) (response GetAttributesResponse, err error) {
-	err = obj.conn.Send(GetAttributes, request, &response)
+// Sets attribute for an element with given id.
+func (obj *DOM) SetAttributeValue(request *SetAttributeValueRequest) (err error) {
+	err = obj.conn.Send(SetAttributeValue, request, nil)
 	return
 }
 
-type CopyToRequest struct {
-	// Id of the node to copy.
+type SetAttributesAsTextRequest struct {
+	// Id of the element to set attributes for.
 	NodeId types.DOM_NodeId `json:"nodeId"`
-	// Id of the element to drop the copy into.
-	TargetNodeId types.DOM_NodeId `json:"targetNodeId"`
-	// Drop the copy before this node (if absent, the copy becomes the last child of <code>targetNodeId</code>).
-	InsertBeforeNodeId *types.DOM_NodeId `json:"insertBeforeNodeId,omitempty"`
+	// Text with a number of attributes. Will parse this text using HTML parser.
+	Text string `json:"text"`
+	// Attribute name to replace with new attributes derived from text in case text parsed successfully.
+	Name *string `json:"name,omitempty"`
 }
 
-type CopyToResponse struct {
-	// Id of the node clone.
-	NodeId types.DOM_NodeId `json:"nodeId"`
-}
-
-// Creates a deep copy of the specified node and places it into the target container before the given anchor.
-func (obj *DOM) CopyTo(request *CopyToRequest) (response CopyToResponse, err error) {
-	err = obj.conn.Send(CopyTo, request, &response)
-	return
-}
-
-type MoveToRequest struct {
-	// Id of the node to move.
-	NodeId types.DOM_NodeId `json:"nodeId"`
-	// Id of the element to drop the moved node into.
-	TargetNodeId types.DOM_NodeId `json:"targetNodeId"`
-	// Drop node before this one (if absent, the moved node becomes the last child of <code>targetNodeId</code>).
-	InsertBeforeNodeId *types.DOM_NodeId `json:"insertBeforeNodeId,omitempty"`
-}
-
-type MoveToResponse struct {
-	// New id of the moved node.
-	NodeId types.DOM_NodeId `json:"nodeId"`
-}
-
-// Moves node into the new container, places it before the given anchor.
-func (obj *DOM) MoveTo(request *MoveToRequest) (response MoveToResponse, err error) {
-	err = obj.conn.Send(MoveTo, request, &response)
-	return
-}
-
-// Undoes the last performed action.
-func (obj *DOM) Undo() (err error) {
-	err = obj.conn.Send(Undo, nil, nil)
-	return
-}
-
-// Re-does the last undone action.
-func (obj *DOM) Redo() (err error) {
-	err = obj.conn.Send(Redo, nil, nil)
-	return
-}
-
-// Marks last undoable state.
-func (obj *DOM) MarkUndoableState() (err error) {
-	err = obj.conn.Send(MarkUndoableState, nil, nil)
-	return
-}
-
-type FocusRequest struct {
-	// Identifier of the node.
-	NodeId *types.DOM_NodeId `json:"nodeId,omitempty"`
-	// Identifier of the backend node.
-	BackendNodeId *types.DOM_BackendNodeId `json:"backendNodeId,omitempty"`
-	// JavaScript object id of the node wrapper.
-	ObjectId *types.Runtime_RemoteObjectId `json:"objectId,omitempty"`
-}
-
-// Focuses the given element.
-func (obj *DOM) Focus(request *FocusRequest) (err error) {
-	err = obj.conn.Send(Focus, request, nil)
+// Sets attributes on element with given id. This method is useful when user edits some existing attribute value and types in several attribute name/value pairs.
+func (obj *DOM) SetAttributesAsText(request *SetAttributesAsTextRequest) (err error) {
+	err = obj.conn.Send(SetAttributesAsText, request, nil)
 	return
 }
 
@@ -569,123 +610,79 @@ func (obj *DOM) SetFileInputFiles(request *SetFileInputFilesRequest) (err error)
 	return
 }
 
-type GetBoxModelRequest struct {
-	// Identifier of the node.
-	NodeId *types.DOM_NodeId `json:"nodeId,omitempty"`
-	// Identifier of the backend node.
-	BackendNodeId *types.DOM_BackendNodeId `json:"backendNodeId,omitempty"`
-	// JavaScript object id of the node wrapper.
-	ObjectId *types.Runtime_RemoteObjectId `json:"objectId,omitempty"`
-}
-
-type GetBoxModelResponse struct {
-	// Box model for the node.
-	Model types.DOM_BoxModel `json:"model"`
-}
-
-// Returns boxes for the given node.
-func (obj *DOM) GetBoxModel(request *GetBoxModelRequest) (response GetBoxModelResponse, err error) {
-	err = obj.conn.Send(GetBoxModel, request, &response)
-	return
-}
-
-type GetNodeForLocationRequest struct {
-	// X coordinate.
-	X int `json:"x"`
-	// Y coordinate.
-	Y int `json:"y"`
-	// False to skip to the nearest non-UA shadow root ancestor (default: false).
-	IncludeUserAgentShadowDOM *bool `json:"includeUserAgentShadowDOM,omitempty"`
-}
-
-type GetNodeForLocationResponse struct {
-	// Id of the node at given coordinates.
+type SetInspectedNodeRequest struct {
+	// DOM node id to be accessible by means of $x command line API.
 	NodeId types.DOM_NodeId `json:"nodeId"`
 }
 
-// Returns node id at given location.
-func (obj *DOM) GetNodeForLocation(request *GetNodeForLocationRequest) (response GetNodeForLocationResponse, err error) {
-	err = obj.conn.Send(GetNodeForLocation, request, &response)
+// Enables console to refer to the node with given id via $x (see Command Line API for more details $x functions).
+func (obj *DOM) SetInspectedNode(request *SetInspectedNodeRequest) (err error) {
+	err = obj.conn.Send(SetInspectedNode, request, nil)
 	return
 }
 
-type GetRelayoutBoundaryRequest struct {
-	// Id of the node.
+type SetNodeNameRequest struct {
+	// Id of the node to set name for.
+	NodeId types.DOM_NodeId `json:"nodeId"`
+	// New node's name.
+	Name string `json:"name"`
+}
+
+type SetNodeNameResponse struct {
+	// New node's id.
 	NodeId types.DOM_NodeId `json:"nodeId"`
 }
 
-type GetRelayoutBoundaryResponse struct {
-	// Relayout boundary node id for the given node.
+// Sets node name for a node with given id.
+func (obj *DOM) SetNodeName(request *SetNodeNameRequest) (response SetNodeNameResponse, err error) {
+	err = obj.conn.Send(SetNodeName, request, &response)
+	return
+}
+
+type SetNodeValueRequest struct {
+	// Id of the node to set value for.
+	NodeId types.DOM_NodeId `json:"nodeId"`
+	// New node's value.
+	Value string `json:"value"`
+}
+
+// Sets node value for a node with given id.
+func (obj *DOM) SetNodeValue(request *SetNodeValueRequest) (err error) {
+	err = obj.conn.Send(SetNodeValue, request, nil)
+	return
+}
+
+type SetOuterHTMLRequest struct {
+	// Id of the node to set markup for.
+	NodeId types.DOM_NodeId `json:"nodeId"`
+	// Outer HTML markup to set.
+	OuterHTML string `json:"outerHTML"`
+}
+
+// Sets node HTML markup, returns new node id.
+func (obj *DOM) SetOuterHTML(request *SetOuterHTMLRequest) (err error) {
+	err = obj.conn.Send(SetOuterHTML, request, nil)
+	return
+}
+
+// Undoes the last performed action.
+func (obj *DOM) Undo() (err error) {
+	err = obj.conn.Send(Undo, nil, nil)
+	return
+}
+
+type GetFrameOwnerRequest struct {
+	FrameId types.Page_FrameId `json:"frameId"`
+}
+
+type GetFrameOwnerResponse struct {
 	NodeId types.DOM_NodeId `json:"nodeId"`
 }
 
-// Returns the id of the nearest ancestor that is a relayout boundary.
-func (obj *DOM) GetRelayoutBoundary(request *GetRelayoutBoundaryRequest) (response GetRelayoutBoundaryResponse, err error) {
-	err = obj.conn.Send(GetRelayoutBoundary, request, &response)
+// Returns iframe node that owns iframe with the given domain.
+func (obj *DOM) GetFrameOwner(request *GetFrameOwnerRequest) (response GetFrameOwnerResponse, err error) {
+	err = obj.conn.Send(GetFrameOwner, request, &response)
 	return
-}
-
-type DescribeNodeRequest struct {
-	// Identifier of the node.
-	NodeId *types.DOM_NodeId `json:"nodeId,omitempty"`
-	// Identifier of the backend node.
-	BackendNodeId *types.DOM_BackendNodeId `json:"backendNodeId,omitempty"`
-	// JavaScript object id of the node wrapper.
-	ObjectId *types.Runtime_RemoteObjectId `json:"objectId,omitempty"`
-	// The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0.
-	Depth *int `json:"depth,omitempty"`
-	// Whether or not iframes and shadow roots should be traversed when returning the subtree (default is false).
-	Pierce *bool `json:"pierce,omitempty"`
-}
-
-type DescribeNodeResponse struct {
-	// Node description.
-	Node types.DOM_Node `json:"node"`
-}
-
-// Describes node given its id, does not require domain to be enabled. Does not start tracking any objects, can be used for automation.
-func (obj *DOM) DescribeNode(request *DescribeNodeRequest) (response DescribeNodeResponse, err error) {
-	err = obj.conn.Send(DescribeNode, request, &response)
-	return
-}
-
-// Fired when <code>Document</code> has been totally updated. Node ids are no longer valid.
-func (obj *DOM) DocumentUpdated(fn func(err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(DocumentUpdated, closeChn)
-	go func() {
-		for {
-
-			readErr := decoder(nil)
-			if !fn(readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
-}
-
-type SetChildNodesParams struct {
-	// Parent node id to populate with children.
-	ParentId types.DOM_NodeId `json:"parentId"`
-	// Child nodes array.
-	Nodes []types.DOM_Node `json:"nodes"`
-}
-
-// Fired when backend wants to provide client with the missing DOM structure. This happens upon most of the calls requesting node ids.
-func (obj *DOM) SetChildNodes(fn func(params *SetChildNodesParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(SetChildNodes, closeChn)
-	go func() {
-		for {
-			params := SetChildNodesParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
 }
 
 type AttributeModifiedParams struct {
@@ -697,17 +694,15 @@ type AttributeModifiedParams struct {
 	Value string `json:"value"`
 }
 
-// Fired when <code>Element</code>'s attribute is modified.
-func (obj *DOM) AttributeModified(fn func(params *AttributeModifiedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(AttributeModified, closeChn)
+// Fired when `Element`'s attribute is modified.
+func (obj *DOM) AttributeModified(fn func(event string, params AttributeModifiedParams, err error) bool) {
+	listen, closer := obj.conn.On(AttributeModified)
 	go func() {
+		defer closer()
 		for {
-			params := AttributeModifiedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
+			var params AttributeModifiedParams
+			if !fn(AttributeModified, params, listen(&params)) {
+				return
 			}
 		}
 	}()
@@ -720,39 +715,15 @@ type AttributeRemovedParams struct {
 	Name string `json:"name"`
 }
 
-// Fired when <code>Element</code>'s attribute is removed.
-func (obj *DOM) AttributeRemoved(fn func(params *AttributeRemovedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(AttributeRemoved, closeChn)
+// Fired when `Element`'s attribute is removed.
+func (obj *DOM) AttributeRemoved(fn func(event string, params AttributeRemovedParams, err error) bool) {
+	listen, closer := obj.conn.On(AttributeRemoved)
 	go func() {
+		defer closer()
 		for {
-			params := AttributeRemovedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
-}
-
-type InlineStyleInvalidatedParams struct {
-	// Ids of the nodes for which the inline styles have been invalidated.
-	NodeIds []types.DOM_NodeId `json:"nodeIds"`
-}
-
-// Fired when <code>Element</code>'s inline style is modified via a CSS property modification.
-// NOTE Experimental
-func (obj *DOM) InlineStyleInvalidated(fn func(params *InlineStyleInvalidatedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(InlineStyleInvalidated, closeChn)
-	go func() {
-		for {
-			params := InlineStyleInvalidatedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
+			var params AttributeRemovedParams
+			if !fn(AttributeRemoved, params, listen(&params)) {
+				return
 			}
 		}
 	}()
@@ -765,17 +736,15 @@ type CharacterDataModifiedParams struct {
 	CharacterData string `json:"characterData"`
 }
 
-// Mirrors <code>DOMCharacterDataModified</code> event.
-func (obj *DOM) CharacterDataModified(fn func(params *CharacterDataModifiedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(CharacterDataModified, closeChn)
+// Mirrors `DOMCharacterDataModified` event.
+func (obj *DOM) CharacterDataModified(fn func(event string, params CharacterDataModifiedParams, err error) bool) {
+	listen, closer := obj.conn.On(CharacterDataModified)
 	go func() {
+		defer closer()
 		for {
-			params := CharacterDataModifiedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
+			var params CharacterDataModifiedParams
+			if !fn(CharacterDataModified, params, listen(&params)) {
+				return
 			}
 		}
 	}()
@@ -788,17 +757,15 @@ type ChildNodeCountUpdatedParams struct {
 	ChildNodeCount int `json:"childNodeCount"`
 }
 
-// Fired when <code>Container</code>'s child node count has changed.
-func (obj *DOM) ChildNodeCountUpdated(fn func(params *ChildNodeCountUpdatedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(ChildNodeCountUpdated, closeChn)
+// Fired when `Container`'s child node count has changed.
+func (obj *DOM) ChildNodeCountUpdated(fn func(event string, params ChildNodeCountUpdatedParams, err error) bool) {
+	listen, closer := obj.conn.On(ChildNodeCountUpdated)
 	go func() {
+		defer closer()
 		for {
-			params := ChildNodeCountUpdatedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
+			var params ChildNodeCountUpdatedParams
+			if !fn(ChildNodeCountUpdated, params, listen(&params)) {
+				return
 			}
 		}
 	}()
@@ -813,17 +780,15 @@ type ChildNodeInsertedParams struct {
 	Node types.DOM_Node `json:"node"`
 }
 
-// Mirrors <code>DOMNodeInserted</code> event.
-func (obj *DOM) ChildNodeInserted(fn func(params *ChildNodeInsertedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(ChildNodeInserted, closeChn)
+// Mirrors `DOMNodeInserted` event.
+func (obj *DOM) ChildNodeInserted(fn func(event string, params ChildNodeInsertedParams, err error) bool) {
+	listen, closer := obj.conn.On(ChildNodeInserted)
 	go func() {
+		defer closer()
 		for {
-			params := ChildNodeInsertedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
+			var params ChildNodeInsertedParams
+			if !fn(ChildNodeInserted, params, listen(&params)) {
+				return
 			}
 		}
 	}()
@@ -836,113 +801,15 @@ type ChildNodeRemovedParams struct {
 	NodeId types.DOM_NodeId `json:"nodeId"`
 }
 
-// Mirrors <code>DOMNodeRemoved</code> event.
-func (obj *DOM) ChildNodeRemoved(fn func(params *ChildNodeRemovedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(ChildNodeRemoved, closeChn)
+// Mirrors `DOMNodeRemoved` event.
+func (obj *DOM) ChildNodeRemoved(fn func(event string, params ChildNodeRemovedParams, err error) bool) {
+	listen, closer := obj.conn.On(ChildNodeRemoved)
 	go func() {
+		defer closer()
 		for {
-			params := ChildNodeRemovedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
-}
-
-type ShadowRootPushedParams struct {
-	// Host element id.
-	HostId types.DOM_NodeId `json:"hostId"`
-	// Shadow root.
-	Root types.DOM_Node `json:"root"`
-}
-
-// Called when shadow root is pushed into the element.
-// NOTE Experimental
-func (obj *DOM) ShadowRootPushed(fn func(params *ShadowRootPushedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(ShadowRootPushed, closeChn)
-	go func() {
-		for {
-			params := ShadowRootPushedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
-}
-
-type ShadowRootPoppedParams struct {
-	// Host element id.
-	HostId types.DOM_NodeId `json:"hostId"`
-	// Shadow root id.
-	RootId types.DOM_NodeId `json:"rootId"`
-}
-
-// Called when shadow root is popped from the element.
-// NOTE Experimental
-func (obj *DOM) ShadowRootPopped(fn func(params *ShadowRootPoppedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(ShadowRootPopped, closeChn)
-	go func() {
-		for {
-			params := ShadowRootPoppedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
-}
-
-type PseudoElementAddedParams struct {
-	// Pseudo element's parent element id.
-	ParentId types.DOM_NodeId `json:"parentId"`
-	// The added pseudo element.
-	PseudoElement types.DOM_Node `json:"pseudoElement"`
-}
-
-// Called when a pseudo element is added to an element.
-// NOTE Experimental
-func (obj *DOM) PseudoElementAdded(fn func(params *PseudoElementAddedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(PseudoElementAdded, closeChn)
-	go func() {
-		for {
-			params := PseudoElementAddedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
-}
-
-type PseudoElementRemovedParams struct {
-	// Pseudo element's parent element id.
-	ParentId types.DOM_NodeId `json:"parentId"`
-	// The removed pseudo element id.
-	PseudoElementId types.DOM_NodeId `json:"pseudoElementId"`
-}
-
-// Called when a pseudo element is removed from an element.
-// NOTE Experimental
-func (obj *DOM) PseudoElementRemoved(fn func(params *PseudoElementRemovedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(PseudoElementRemoved, closeChn)
-	go func() {
-		for {
-			params := PseudoElementRemovedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
+			var params ChildNodeRemovedParams
+			if !fn(ChildNodeRemoved, params, listen(&params)) {
+				return
 			}
 		}
 	}()
@@ -957,16 +824,156 @@ type DistributedNodesUpdatedParams struct {
 
 // Called when distrubution is changed.
 // NOTE Experimental
-func (obj *DOM) DistributedNodesUpdated(fn func(params *DistributedNodesUpdatedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(DistributedNodesUpdated, closeChn)
+func (obj *DOM) DistributedNodesUpdated(fn func(event string, params DistributedNodesUpdatedParams, err error) bool) {
+	listen, closer := obj.conn.On(DistributedNodesUpdated)
 	go func() {
+		defer closer()
 		for {
-			params := DistributedNodesUpdatedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
+			var params DistributedNodesUpdatedParams
+			if !fn(DistributedNodesUpdated, params, listen(&params)) {
+				return
+			}
+		}
+	}()
+}
+
+// Fired when `Document` has been totally updated. Node ids are no longer valid.
+func (obj *DOM) DocumentUpdated(fn func(event string, err error) bool) {
+	listen, closer := obj.conn.On(DocumentUpdated)
+	go func() {
+		defer closer()
+		for {
+			if !fn(DocumentUpdated, listen(nil)) {
+				return
+			}
+		}
+	}()
+}
+
+type InlineStyleInvalidatedParams struct {
+	// Ids of the nodes for which the inline styles have been invalidated.
+	NodeIds []types.DOM_NodeId `json:"nodeIds"`
+}
+
+// Fired when `Element`'s inline style is modified via a CSS property modification.
+// NOTE Experimental
+func (obj *DOM) InlineStyleInvalidated(fn func(event string, params InlineStyleInvalidatedParams, err error) bool) {
+	listen, closer := obj.conn.On(InlineStyleInvalidated)
+	go func() {
+		defer closer()
+		for {
+			var params InlineStyleInvalidatedParams
+			if !fn(InlineStyleInvalidated, params, listen(&params)) {
+				return
+			}
+		}
+	}()
+}
+
+type PseudoElementAddedParams struct {
+	// Pseudo element's parent element id.
+	ParentId types.DOM_NodeId `json:"parentId"`
+	// The added pseudo element.
+	PseudoElement types.DOM_Node `json:"pseudoElement"`
+}
+
+// Called when a pseudo element is added to an element.
+// NOTE Experimental
+func (obj *DOM) PseudoElementAdded(fn func(event string, params PseudoElementAddedParams, err error) bool) {
+	listen, closer := obj.conn.On(PseudoElementAdded)
+	go func() {
+		defer closer()
+		for {
+			var params PseudoElementAddedParams
+			if !fn(PseudoElementAdded, params, listen(&params)) {
+				return
+			}
+		}
+	}()
+}
+
+type PseudoElementRemovedParams struct {
+	// Pseudo element's parent element id.
+	ParentId types.DOM_NodeId `json:"parentId"`
+	// The removed pseudo element id.
+	PseudoElementId types.DOM_NodeId `json:"pseudoElementId"`
+}
+
+// Called when a pseudo element is removed from an element.
+// NOTE Experimental
+func (obj *DOM) PseudoElementRemoved(fn func(event string, params PseudoElementRemovedParams, err error) bool) {
+	listen, closer := obj.conn.On(PseudoElementRemoved)
+	go func() {
+		defer closer()
+		for {
+			var params PseudoElementRemovedParams
+			if !fn(PseudoElementRemoved, params, listen(&params)) {
+				return
+			}
+		}
+	}()
+}
+
+type SetChildNodesParams struct {
+	// Parent node id to populate with children.
+	ParentId types.DOM_NodeId `json:"parentId"`
+	// Child nodes array.
+	Nodes []types.DOM_Node `json:"nodes"`
+}
+
+// Fired when backend wants to provide client with the missing DOM structure. This happens upon most of the calls requesting node ids.
+func (obj *DOM) SetChildNodes(fn func(event string, params SetChildNodesParams, err error) bool) {
+	listen, closer := obj.conn.On(SetChildNodes)
+	go func() {
+		defer closer()
+		for {
+			var params SetChildNodesParams
+			if !fn(SetChildNodes, params, listen(&params)) {
+				return
+			}
+		}
+	}()
+}
+
+type ShadowRootPoppedParams struct {
+	// Host element id.
+	HostId types.DOM_NodeId `json:"hostId"`
+	// Shadow root id.
+	RootId types.DOM_NodeId `json:"rootId"`
+}
+
+// Called when shadow root is popped from the element.
+// NOTE Experimental
+func (obj *DOM) ShadowRootPopped(fn func(event string, params ShadowRootPoppedParams, err error) bool) {
+	listen, closer := obj.conn.On(ShadowRootPopped)
+	go func() {
+		defer closer()
+		for {
+			var params ShadowRootPoppedParams
+			if !fn(ShadowRootPopped, params, listen(&params)) {
+				return
+			}
+		}
+	}()
+}
+
+type ShadowRootPushedParams struct {
+	// Host element id.
+	HostId types.DOM_NodeId `json:"hostId"`
+	// Shadow root.
+	Root types.DOM_Node `json:"root"`
+}
+
+// Called when shadow root is pushed into the element.
+// NOTE Experimental
+func (obj *DOM) ShadowRootPushed(fn func(event string, params ShadowRootPushedParams, err error) bool) {
+	listen, closer := obj.conn.On(ShadowRootPushed)
+	go func() {
+		defer closer()
+		for {
+			var params ShadowRootPushedParams
+			if !fn(ShadowRootPushed, params, listen(&params)) {
+				return
 			}
 		}
 	}()

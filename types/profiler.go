@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -12,14 +12,12 @@ type Profiler_ProfileNode struct {
 	// Function location.
 	CallFrame Runtime_CallFrame `json:"callFrame"`
 	// Number of samples where this node was on top of the call stack.
-	// NOTE Experimental
 	HitCount *int `json:"hitCount,omitempty"`
 	// Child node ids.
 	Children []int `json:"children,omitempty"`
 	// The reason of being not optimized. The function may be deoptimized or marked as don't optimize.
 	DeoptReason *string `json:"deoptReason,omitempty"`
 	// An array of source position ticks.
-	// NOTE Experimental
 	PositionTicks []Profiler_PositionTickInfo `json:"positionTicks,omitempty"`
 }
 

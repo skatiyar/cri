@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -7,8 +7,8 @@
 package accessibility
 
 import (
-	"github.com/SKatiyar/cri"
-	types "github.com/SKatiyar/cri/types"
+	"github.com/skatiyar/cri"
+	types "github.com/skatiyar/cri/types"
 )
 
 // List of commands in Accessibility domain
@@ -26,14 +26,18 @@ func New(conn cri.Connector) *Accessibility {
 }
 
 type GetPartialAXTreeRequest struct {
-	// ID of node to get the partial accessibility tree for.
-	NodeId types.DOM_NodeId `json:"nodeId"`
+	// Identifier of the node to get the partial accessibility tree for.
+	NodeId *types.DOM_NodeId `json:"nodeId,omitempty"`
+	// Identifier of the backend node to get the partial accessibility tree for.
+	BackendNodeId *types.DOM_BackendNodeId `json:"backendNodeId,omitempty"`
+	// JavaScript object id of the node wrapper to get the partial accessibility tree for.
+	ObjectId *types.Runtime_RemoteObjectId `json:"objectId,omitempty"`
 	// Whether to fetch this nodes ancestors, siblings and children. Defaults to true.
 	FetchRelatives *bool `json:"fetchRelatives,omitempty"`
 }
 
 type GetPartialAXTreeResponse struct {
-	// The <code>Accessibility.AXNode</code> for this DOM node, if it exists, plus its ancestors, siblings and children, if requested.
+	// The `Accessibility.AXNode` for this DOM node, if it exists, plus its ancestors, siblings and children, if requested.
 	Nodes []types.Accessibility_AXNode `json:"nodes"`
 }
 

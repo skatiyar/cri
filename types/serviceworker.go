@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -25,7 +25,7 @@ type ServiceWorker_ServiceWorkerVersion struct {
 	Status         ServiceWorker_ServiceWorkerVersionStatus        `json:"status"`
 	// The Last-Modified header value of the main script.
 	ScriptLastModified *float32 `json:"scriptLastModified,omitempty"`
-	// The time at which the response headers of the main script were received from the server.  For cached script it is the last time the cache entry was validated.
+	// The time at which the response headers of the main script were received from the server. For cached script it is the last time the cache entry was validated.
 	ScriptResponseTime *float32          `json:"scriptResponseTime,omitempty"`
 	ControlledClients  []Target_TargetID `json:"controlledClients,omitempty"`
 	TargetId           *Target_TargetID  `json:"targetId,omitempty"`

@@ -7,14 +7,14 @@ go:
     - 1.7.x
     - 1.6.x
     - 1.5.x
-    - 1.4.x
+    # - 1.4.x disabled due to url decode bug in chrome 63
 
 addons:
     chrome: stable
 
 before_script:
     - google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 &
-    - while ! lsof -i :9222; do sleep 1; done
 
 script:
+    - sleep 20
     - go test -v

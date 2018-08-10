@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -78,14 +78,18 @@ type Network_ResourcePriority string
 
 // HTTP request data.
 type Network_Request struct {
-	// Request URL.
+	// Request URL (without fragment).
 	Url string `json:"url"`
+	// Fragment of the requested URL starting with hash, if present.
+	UrlFragment *string `json:"urlFragment,omitempty"`
 	// HTTP request method.
 	Method string `json:"method"`
 	// HTTP request headers.
 	Headers Network_Headers `json:"headers"`
 	// HTTP POST request data.
 	PostData *string `json:"postData,omitempty"`
+	// True when the request has POST data. Note that postData might still be omitted when this flag is true when the data is too long.
+	HasPostData *bool `json:"hasPostData,omitempty"`
 	// The mixed content type of the request.
 	MixedContentType *Security_MixedContentType `json:"mixedContentType,omitempty"`
 	// Priority of the resource request at the time request is sent.
@@ -142,7 +146,12 @@ type Network_SecurityDetails struct {
 	ValidTo Network_TimeSinceEpoch `json:"validTo"`
 	// List of signed certificate timestamps (SCTs).
 	SignedCertificateTimestampList []Network_SignedCertificateTimestamp `json:"signedCertificateTimestampList"`
+	// Whether the request complied with Certificate Transparency policy
+	CertificateTransparencyCompliance Network_CertificateTransparencyCompliance `json:"certificateTransparencyCompliance"`
 }
+
+// Whether the request complied with Certificate Transparency policy.
+type Network_CertificateTransparencyCompliance string
 
 // The reason why request was blocked.
 type Network_BlockedReason string
@@ -239,7 +248,7 @@ type Network_Initiator struct {
 	Type string `json:"type"`
 	// Initiator JavaScript stack trace, set for Script only.
 	Stack *Runtime_StackTrace `json:"stack,omitempty"`
-	// Initiator URL, set for Parser type or for Script type (when script is importing module).
+	// Initiator URL, set for Parser type or for Script type (when script is importing module) or for SignedExchange type.
 	Url *string `json:"url,omitempty"`
 	// Initiator line number, set for Parser type or for Script type (when script is importing module) (0-based).
 	LineNumber *float32 `json:"lineNumber,omitempty"`
@@ -324,4 +333,65 @@ type Network_RequestPattern struct {
 	ResourceType *Page_ResourceType `json:"resourceType,omitempty"`
 	// Stage at wich to begin intercepting requests. Default is Request.
 	InterceptionStage *Network_InterceptionStage `json:"interceptionStage,omitempty"`
+}
+
+// Information about a signed exchange signature. https://wicg.github.io/webpackage/draft-yasskin-httpbis-origin-signed-exchanges-impl.html#rfc.section.3.1
+type Network_SignedExchangeSignature struct {
+	// Signed exchange signature label.
+	Label string `json:"label"`
+	// The hex string of signed exchange signature.
+	Signature string `json:"signature"`
+	// Signed exchange signature integrity.
+	Integrity string `json:"integrity"`
+	// Signed exchange signature cert Url.
+	CertUrl *string `json:"certUrl,omitempty"`
+	// The hex string of signed exchange signature cert sha256.
+	CertSha256 *string `json:"certSha256,omitempty"`
+	// Signed exchange signature validity Url.
+	ValidityUrl string `json:"validityUrl"`
+	// Signed exchange signature date.
+	Date int `json:"date"`
+	// Signed exchange signature expires.
+	Expires int `json:"expires"`
+	// The encoded certificates.
+	Certificates []string `json:"certificates,omitempty"`
+}
+
+// Information about a signed exchange header. https://wicg.github.io/webpackage/draft-yasskin-httpbis-origin-signed-exchanges-impl.html#cbor-representation
+type Network_SignedExchangeHeader struct {
+	// Signed exchange request URL.
+	RequestUrl string `json:"requestUrl"`
+	// Signed exchange request method.
+	RequestMethod string `json:"requestMethod"`
+	// Signed exchange response code.
+	ResponseCode int `json:"responseCode"`
+	// Signed exchange response headers.
+	ResponseHeaders Network_Headers `json:"responseHeaders"`
+	// Signed exchange response signature.
+	Signatures []Network_SignedExchangeSignature `json:"signatures"`
+}
+
+// Field type for a signed exchange related error.
+type Network_SignedExchangeErrorField string
+
+// Information about a signed exchange response.
+type Network_SignedExchangeError struct {
+	// Error message.
+	Message string `json:"message"`
+	// The index of the signature which caused the error.
+	SignatureIndex *int `json:"signatureIndex,omitempty"`
+	// The field which caused the error.
+	ErrorField *Network_SignedExchangeErrorField `json:"errorField,omitempty"`
+}
+
+// Information about a signed exchange response.
+type Network_SignedExchangeInfo struct {
+	// The outer response of signed HTTP exchange which was received from network.
+	OuterResponse Network_Response `json:"outerResponse"`
+	// Information about the signed exchange header.
+	Header *Network_SignedExchangeHeader `json:"header,omitempty"`
+	// Security details for the signed exchange header.
+	SecurityDetails *Network_SecurityDetails `json:"securityDetails,omitempty"`
+	// Errors occurred while handling the signed exchagne.
+	Errors []Network_SignedExchangeError `json:"errors,omitempty"`
 }

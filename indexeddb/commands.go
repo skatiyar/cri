@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -7,19 +7,20 @@
 package indexeddb
 
 import (
-	"github.com/SKatiyar/cri"
-	types "github.com/SKatiyar/cri/types"
+	"github.com/skatiyar/cri"
+	types "github.com/skatiyar/cri/types"
 )
 
 // List of commands in IndexedDB domain
 const (
-	Enable               = "IndexedDB.enable"
-	Disable              = "IndexedDB.disable"
-	RequestDatabaseNames = "IndexedDB.requestDatabaseNames"
-	RequestDatabase      = "IndexedDB.requestDatabase"
-	RequestData          = "IndexedDB.requestData"
-	ClearObjectStore     = "IndexedDB.clearObjectStore"
-	DeleteDatabase       = "IndexedDB.deleteDatabase"
+	ClearObjectStore         = "IndexedDB.clearObjectStore"
+	DeleteDatabase           = "IndexedDB.deleteDatabase"
+	DeleteObjectStoreEntries = "IndexedDB.deleteObjectStoreEntries"
+	Disable                  = "IndexedDB.disable"
+	Enable                   = "IndexedDB.enable"
+	RequestData              = "IndexedDB.requestData"
+	RequestDatabase          = "IndexedDB.requestDatabase"
+	RequestDatabaseNames     = "IndexedDB.requestDatabaseNames"
 )
 
 type IndexedDB struct {
@@ -31,9 +32,45 @@ func New(conn cri.Connector) *IndexedDB {
 	return &IndexedDB{conn}
 }
 
-// Enables events from backend.
-func (obj *IndexedDB) Enable() (err error) {
-	err = obj.conn.Send(Enable, nil, nil)
+type ClearObjectStoreRequest struct {
+	// Security origin.
+	SecurityOrigin string `json:"securityOrigin"`
+	// Database name.
+	DatabaseName string `json:"databaseName"`
+	// Object store name.
+	ObjectStoreName string `json:"objectStoreName"`
+}
+
+// Clears all entries from an object store.
+func (obj *IndexedDB) ClearObjectStore(request *ClearObjectStoreRequest) (err error) {
+	err = obj.conn.Send(ClearObjectStore, request, nil)
+	return
+}
+
+type DeleteDatabaseRequest struct {
+	// Security origin.
+	SecurityOrigin string `json:"securityOrigin"`
+	// Database name.
+	DatabaseName string `json:"databaseName"`
+}
+
+// Deletes a database.
+func (obj *IndexedDB) DeleteDatabase(request *DeleteDatabaseRequest) (err error) {
+	err = obj.conn.Send(DeleteDatabase, request, nil)
+	return
+}
+
+type DeleteObjectStoreEntriesRequest struct {
+	SecurityOrigin  string `json:"securityOrigin"`
+	DatabaseName    string `json:"databaseName"`
+	ObjectStoreName string `json:"objectStoreName"`
+	// Range of entry keys to delete
+	KeyRange types.IndexedDB_KeyRange `json:"keyRange"`
+}
+
+// Delete a range of entries from an object store
+func (obj *IndexedDB) DeleteObjectStoreEntries(request *DeleteObjectStoreEntriesRequest) (err error) {
+	err = obj.conn.Send(DeleteObjectStoreEntries, request, nil)
 	return
 }
 
@@ -43,37 +80,9 @@ func (obj *IndexedDB) Disable() (err error) {
 	return
 }
 
-type RequestDatabaseNamesRequest struct {
-	// Security origin.
-	SecurityOrigin string `json:"securityOrigin"`
-}
-
-type RequestDatabaseNamesResponse struct {
-	// Database names for origin.
-	DatabaseNames []string `json:"databaseNames"`
-}
-
-// Requests database names for given security origin.
-func (obj *IndexedDB) RequestDatabaseNames(request *RequestDatabaseNamesRequest) (response RequestDatabaseNamesResponse, err error) {
-	err = obj.conn.Send(RequestDatabaseNames, request, &response)
-	return
-}
-
-type RequestDatabaseRequest struct {
-	// Security origin.
-	SecurityOrigin string `json:"securityOrigin"`
-	// Database name.
-	DatabaseName string `json:"databaseName"`
-}
-
-type RequestDatabaseResponse struct {
-	// Database with an array of object stores.
-	DatabaseWithObjectStores types.IndexedDB_DatabaseWithObjectStores `json:"databaseWithObjectStores"`
-}
-
-// Requests database with given name in given frame.
-func (obj *IndexedDB) RequestDatabase(request *RequestDatabaseRequest) (response RequestDatabaseResponse, err error) {
-	err = obj.conn.Send(RequestDatabase, request, &response)
+// Enables events from backend.
+func (obj *IndexedDB) Enable() (err error) {
+	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 
@@ -107,30 +116,36 @@ func (obj *IndexedDB) RequestData(request *RequestDataRequest) (response Request
 	return
 }
 
-type ClearObjectStoreRequest struct {
+type RequestDatabaseRequest struct {
 	// Security origin.
 	SecurityOrigin string `json:"securityOrigin"`
 	// Database name.
 	DatabaseName string `json:"databaseName"`
-	// Object store name.
-	ObjectStoreName string `json:"objectStoreName"`
 }
 
-// Clears all entries from an object store.
-func (obj *IndexedDB) ClearObjectStore(request *ClearObjectStoreRequest) (err error) {
-	err = obj.conn.Send(ClearObjectStore, request, nil)
+type RequestDatabaseResponse struct {
+	// Database with an array of object stores.
+	DatabaseWithObjectStores types.IndexedDB_DatabaseWithObjectStores `json:"databaseWithObjectStores"`
+}
+
+// Requests database with given name in given frame.
+func (obj *IndexedDB) RequestDatabase(request *RequestDatabaseRequest) (response RequestDatabaseResponse, err error) {
+	err = obj.conn.Send(RequestDatabase, request, &response)
 	return
 }
 
-type DeleteDatabaseRequest struct {
+type RequestDatabaseNamesRequest struct {
 	// Security origin.
 	SecurityOrigin string `json:"securityOrigin"`
-	// Database name.
-	DatabaseName string `json:"databaseName"`
 }
 
-// Deletes a database.
-func (obj *IndexedDB) DeleteDatabase(request *DeleteDatabaseRequest) (err error) {
-	err = obj.conn.Send(DeleteDatabase, request, nil)
+type RequestDatabaseNamesResponse struct {
+	// Database names for origin.
+	DatabaseNames []string `json:"databaseNames"`
+}
+
+// Requests database names for given security origin.
+func (obj *IndexedDB) RequestDatabaseNames(request *RequestDatabaseNamesRequest) (response RequestDatabaseNamesResponse, err error) {
+	err = obj.conn.Send(RequestDatabaseNames, request, &response)
 	return
 }

@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -7,22 +7,23 @@
 package security
 
 import (
-	"github.com/SKatiyar/cri"
-	types "github.com/SKatiyar/cri/types"
+	"github.com/skatiyar/cri"
+	types "github.com/skatiyar/cri/types"
 )
 
 // List of commands in Security domain
 const (
-	Enable                       = "Security.enable"
 	Disable                      = "Security.disable"
+	Enable                       = "Security.enable"
+	SetIgnoreCertificateErrors   = "Security.setIgnoreCertificateErrors"
 	HandleCertificateError       = "Security.handleCertificateError"
 	SetOverrideCertificateErrors = "Security.setOverrideCertificateErrors"
 )
 
 // List of events in Security domain
 const (
-	SecurityStateChanged = "Security.securityStateChanged"
 	CertificateError     = "Security.certificateError"
+	SecurityStateChanged = "Security.securityStateChanged"
 )
 
 // Security
@@ -35,15 +36,26 @@ func New(conn cri.Connector) *Security {
 	return &Security{conn}
 }
 
+// Disables tracking security state changes.
+func (obj *Security) Disable() (err error) {
+	err = obj.conn.Send(Disable, nil, nil)
+	return
+}
+
 // Enables tracking security state changes.
 func (obj *Security) Enable() (err error) {
 	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 
-// Disables tracking security state changes.
-func (obj *Security) Disable() (err error) {
-	err = obj.conn.Send(Disable, nil, nil)
+type SetIgnoreCertificateErrorsRequest struct {
+	// If true, all certificate errors will be ignored.
+	Ignore bool `json:"ignore"`
+}
+
+// Enable/disable whether all certificate errors should be ignored.
+func (obj *Security) SetIgnoreCertificateErrors(request *SetIgnoreCertificateErrorsRequest) (err error) {
+	err = obj.conn.Send(SetIgnoreCertificateErrors, request, nil)
 	return
 }
 
@@ -65,10 +77,33 @@ type SetOverrideCertificateErrorsRequest struct {
 	Override bool `json:"override"`
 }
 
-// Enable/disable overriding certificate errors. If enabled, all certificate error events need to be handled by the DevTools client and should be answered with handleCertificateError commands.
+// Enable/disable overriding certificate errors. If enabled, all certificate error events need to be handled by the DevTools client and should be answered with `handleCertificateError` commands.
 func (obj *Security) SetOverrideCertificateErrors(request *SetOverrideCertificateErrorsRequest) (err error) {
 	err = obj.conn.Send(SetOverrideCertificateErrors, request, nil)
 	return
+}
+
+type CertificateErrorParams struct {
+	// The ID of the event.
+	EventId int `json:"eventId"`
+	// The type of the error.
+	ErrorType string `json:"errorType"`
+	// The url that was requested.
+	RequestURL string `json:"requestURL"`
+}
+
+// There is a certificate error. If overriding certificate errors is enabled, then it should be handled with the `handleCertificateError` command. Note: this event does not fire if the certificate error has been allowed internally. Only one client per target should override certificate errors at the same time.
+func (obj *Security) CertificateError(fn func(event string, params CertificateErrorParams, err error) bool) {
+	listen, closer := obj.conn.On(CertificateError)
+	go func() {
+		defer closer()
+		for {
+			var params CertificateErrorParams
+			if !fn(CertificateError, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type SecurityStateChangedParams struct {
@@ -85,41 +120,14 @@ type SecurityStateChangedParams struct {
 }
 
 // The security state of the page changed.
-func (obj *Security) SecurityStateChanged(fn func(params *SecurityStateChangedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(SecurityStateChanged, closeChn)
+func (obj *Security) SecurityStateChanged(fn func(event string, params SecurityStateChangedParams, err error) bool) {
+	listen, closer := obj.conn.On(SecurityStateChanged)
 	go func() {
+		defer closer()
 		for {
-			params := SecurityStateChangedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
-}
-
-type CertificateErrorParams struct {
-	// The ID of the event.
-	EventId int `json:"eventId"`
-	// The type of the error.
-	ErrorType string `json:"errorType"`
-	// The url that was requested.
-	RequestURL string `json:"requestURL"`
-}
-
-// There is a certificate error. If overriding certificate errors is enabled, then it should be handled with the handleCertificateError command. Note: this event does not fire if the certificate error has been allowed internally.
-func (obj *Security) CertificateError(fn func(params *CertificateErrorParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(CertificateError, closeChn)
-	go func() {
-		for {
-			params := CertificateErrorParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
+			var params SecurityStateChangedParams
+			if !fn(SecurityStateChanged, params, listen(&params)) {
+				return
 			}
 		}
 	}()

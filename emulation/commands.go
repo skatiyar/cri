@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -7,34 +7,37 @@
 package emulation
 
 import (
-	"github.com/SKatiyar/cri"
-	types "github.com/SKatiyar/cri/types"
+	"github.com/skatiyar/cri"
+	types "github.com/skatiyar/cri/types"
 )
 
 // List of commands in Emulation domain
 const (
-	SetDeviceMetricsOverride          = "Emulation.setDeviceMetricsOverride"
+	CanEmulate                        = "Emulation.canEmulate"
 	ClearDeviceMetricsOverride        = "Emulation.clearDeviceMetricsOverride"
-	ResetPageScaleFactor              = "Emulation.resetPageScaleFactor"
-	SetPageScaleFactor                = "Emulation.setPageScaleFactor"
-	SetVisibleSize                    = "Emulation.setVisibleSize"
-	SetScriptExecutionDisabled        = "Emulation.setScriptExecutionDisabled"
-	SetGeolocationOverride            = "Emulation.setGeolocationOverride"
 	ClearGeolocationOverride          = "Emulation.clearGeolocationOverride"
-	SetTouchEmulationEnabled          = "Emulation.setTouchEmulationEnabled"
+	ResetPageScaleFactor              = "Emulation.resetPageScaleFactor"
+	SetCPUThrottlingRate              = "Emulation.setCPUThrottlingRate"
+	SetDefaultBackgroundColorOverride = "Emulation.setDefaultBackgroundColorOverride"
+	SetDeviceMetricsOverride          = "Emulation.setDeviceMetricsOverride"
+	SetScrollbarsHidden               = "Emulation.setScrollbarsHidden"
+	SetDocumentCookieDisabled         = "Emulation.setDocumentCookieDisabled"
 	SetEmitTouchEventsForMouse        = "Emulation.setEmitTouchEventsForMouse"
 	SetEmulatedMedia                  = "Emulation.setEmulatedMedia"
-	SetCPUThrottlingRate              = "Emulation.setCPUThrottlingRate"
-	CanEmulate                        = "Emulation.canEmulate"
-	SetVirtualTimePolicy              = "Emulation.setVirtualTimePolicy"
+	SetGeolocationOverride            = "Emulation.setGeolocationOverride"
 	SetNavigatorOverrides             = "Emulation.setNavigatorOverrides"
-	SetDefaultBackgroundColorOverride = "Emulation.setDefaultBackgroundColorOverride"
+	SetPageScaleFactor                = "Emulation.setPageScaleFactor"
+	SetScriptExecutionDisabled        = "Emulation.setScriptExecutionDisabled"
+	SetTouchEmulationEnabled          = "Emulation.setTouchEmulationEnabled"
+	SetVirtualTimePolicy              = "Emulation.setVirtualTimePolicy"
+	SetVisibleSize                    = "Emulation.setVisibleSize"
+	SetUserAgentOverride              = "Emulation.setUserAgentOverride"
 )
 
 // List of events in Emulation domain
 const (
-	VirtualTimeBudgetExpired = "Emulation.virtualTimeBudgetExpired"
 	VirtualTimeAdvanced      = "Emulation.virtualTimeAdvanced"
+	VirtualTimeBudgetExpired = "Emulation.virtualTimeBudgetExpired"
 	VirtualTimePaused        = "Emulation.virtualTimePaused"
 )
 
@@ -46,6 +49,57 @@ type Emulation struct {
 // New creates a Emulation instance
 func New(conn cri.Connector) *Emulation {
 	return &Emulation{conn}
+}
+
+type CanEmulateResponse struct {
+	// True if emulation is supported.
+	Result bool `json:"result"`
+}
+
+// Tells whether emulation is supported.
+func (obj *Emulation) CanEmulate() (response CanEmulateResponse, err error) {
+	err = obj.conn.Send(CanEmulate, nil, &response)
+	return
+}
+
+// Clears the overriden device metrics.
+func (obj *Emulation) ClearDeviceMetricsOverride() (err error) {
+	err = obj.conn.Send(ClearDeviceMetricsOverride, nil, nil)
+	return
+}
+
+// Clears the overriden Geolocation Position and Error.
+func (obj *Emulation) ClearGeolocationOverride() (err error) {
+	err = obj.conn.Send(ClearGeolocationOverride, nil, nil)
+	return
+}
+
+// Requests that page scale factor is reset to initial values.
+func (obj *Emulation) ResetPageScaleFactor() (err error) {
+	err = obj.conn.Send(ResetPageScaleFactor, nil, nil)
+	return
+}
+
+type SetCPUThrottlingRateRequest struct {
+	// Throttling rate as a slowdown factor (1 is no throttle, 2 is 2x slowdown, etc).
+	Rate float32 `json:"rate"`
+}
+
+// Enables CPU throttling to emulate slow CPUs.
+func (obj *Emulation) SetCPUThrottlingRate(request *SetCPUThrottlingRateRequest) (err error) {
+	err = obj.conn.Send(SetCPUThrottlingRate, request, nil)
+	return
+}
+
+type SetDefaultBackgroundColorOverrideRequest struct {
+	// RGBA of the default background color. If not specified, any existing override will be cleared.
+	Color *types.DOM_RGBA `json:"color,omitempty"`
+}
+
+// Sets or clears an override of the default background color of the frame. This override is used if the content does not specify one.
+func (obj *Emulation) SetDefaultBackgroundColorOverride(request *SetDefaultBackgroundColorOverrideRequest) (err error) {
+	err = obj.conn.Send(SetDefaultBackgroundColorOverride, request, nil)
+	return
 }
 
 type SetDeviceMetricsOverrideRequest struct {
@@ -88,84 +142,23 @@ func (obj *Emulation) SetDeviceMetricsOverride(request *SetDeviceMetricsOverride
 	return
 }
 
-// Clears the overriden device metrics.
-func (obj *Emulation) ClearDeviceMetricsOverride() (err error) {
-	err = obj.conn.Send(ClearDeviceMetricsOverride, nil, nil)
+type SetScrollbarsHiddenRequest struct {
+	// Whether scrollbars should be always hidden.
+	Hidden bool `json:"hidden"`
+}
+
+func (obj *Emulation) SetScrollbarsHidden(request *SetScrollbarsHiddenRequest) (err error) {
+	err = obj.conn.Send(SetScrollbarsHidden, request, nil)
 	return
 }
 
-// Requests that page scale factor is reset to initial values.
-func (obj *Emulation) ResetPageScaleFactor() (err error) {
-	err = obj.conn.Send(ResetPageScaleFactor, nil, nil)
-	return
+type SetDocumentCookieDisabledRequest struct {
+	// Whether document.coookie API should be disabled.
+	Disabled bool `json:"disabled"`
 }
 
-type SetPageScaleFactorRequest struct {
-	// Page scale factor.
-	PageScaleFactor float32 `json:"pageScaleFactor"`
-}
-
-// Sets a specified page scale factor.
-func (obj *Emulation) SetPageScaleFactor(request *SetPageScaleFactorRequest) (err error) {
-	err = obj.conn.Send(SetPageScaleFactor, request, nil)
-	return
-}
-
-type SetVisibleSizeRequest struct {
-	// Frame width (DIP).
-	Width int `json:"width"`
-	// Frame height (DIP).
-	Height int `json:"height"`
-}
-
-// Resizes the frame/viewport of the page. Note that this does not affect the frame's container (e.g. browser window). Can be used to produce screenshots of the specified size. Not supported on Android.
-func (obj *Emulation) SetVisibleSize(request *SetVisibleSizeRequest) (err error) {
-	err = obj.conn.Send(SetVisibleSize, request, nil)
-	return
-}
-
-type SetScriptExecutionDisabledRequest struct {
-	// Whether script execution should be disabled in the page.
-	Value bool `json:"value"`
-}
-
-// Switches script execution in the page.
-func (obj *Emulation) SetScriptExecutionDisabled(request *SetScriptExecutionDisabledRequest) (err error) {
-	err = obj.conn.Send(SetScriptExecutionDisabled, request, nil)
-	return
-}
-
-type SetGeolocationOverrideRequest struct {
-	// Mock latitude
-	Latitude *float32 `json:"latitude,omitempty"`
-	// Mock longitude
-	Longitude *float32 `json:"longitude,omitempty"`
-	// Mock accuracy
-	Accuracy *float32 `json:"accuracy,omitempty"`
-}
-
-// Overrides the Geolocation Position or Error. Omitting any of the parameters emulates position unavailable.
-func (obj *Emulation) SetGeolocationOverride(request *SetGeolocationOverrideRequest) (err error) {
-	err = obj.conn.Send(SetGeolocationOverride, request, nil)
-	return
-}
-
-// Clears the overriden Geolocation Position and Error.
-func (obj *Emulation) ClearGeolocationOverride() (err error) {
-	err = obj.conn.Send(ClearGeolocationOverride, nil, nil)
-	return
-}
-
-type SetTouchEmulationEnabledRequest struct {
-	// Whether the touch event emulation should be enabled.
-	Enabled bool `json:"enabled"`
-	// Maximum touch points supported. Defaults to one.
-	MaxTouchPoints *int `json:"maxTouchPoints,omitempty"`
-}
-
-// Enables touch on platforms which do not support them.
-func (obj *Emulation) SetTouchEmulationEnabled(request *SetTouchEmulationEnabledRequest) (err error) {
-	err = obj.conn.Send(SetTouchEmulationEnabled, request, nil)
+func (obj *Emulation) SetDocumentCookieDisabled(request *SetDocumentCookieDisabledRequest) (err error) {
+	err = obj.conn.Send(SetDocumentCookieDisabled, request, nil)
 	return
 }
 
@@ -192,44 +185,18 @@ func (obj *Emulation) SetEmulatedMedia(request *SetEmulatedMediaRequest) (err er
 	return
 }
 
-type SetCPUThrottlingRateRequest struct {
-	// Throttling rate as a slowdown factor (1 is no throttle, 2 is 2x slowdown, etc).
-	Rate float32 `json:"rate"`
+type SetGeolocationOverrideRequest struct {
+	// Mock latitude
+	Latitude *float32 `json:"latitude,omitempty"`
+	// Mock longitude
+	Longitude *float32 `json:"longitude,omitempty"`
+	// Mock accuracy
+	Accuracy *float32 `json:"accuracy,omitempty"`
 }
 
-// Enables CPU throttling to emulate slow CPUs.
-func (obj *Emulation) SetCPUThrottlingRate(request *SetCPUThrottlingRateRequest) (err error) {
-	err = obj.conn.Send(SetCPUThrottlingRate, request, nil)
-	return
-}
-
-type CanEmulateResponse struct {
-	// True if emulation is supported.
-	Result bool `json:"result"`
-}
-
-// Tells whether emulation is supported.
-func (obj *Emulation) CanEmulate() (response CanEmulateResponse, err error) {
-	err = obj.conn.Send(CanEmulate, nil, &response)
-	return
-}
-
-type SetVirtualTimePolicyRequest struct {
-	Policy types.Emulation_VirtualTimePolicy `json:"policy"`
-	// If set, after this many virtual milliseconds have elapsed virtual time will be paused and a virtualTimeBudgetExpired event is sent.
-	Budget *float32 `json:"budget,omitempty"`
-	// If set this specifies the maximum number of tasks that can be run before virtual is forced forwards to prevent deadlock.
-	MaxVirtualTimeTaskStarvationCount *int `json:"maxVirtualTimeTaskStarvationCount,omitempty"`
-}
-
-type SetVirtualTimePolicyResponse struct {
-	// Absolute timestamp at which virtual time was first enabled (milliseconds since epoch).
-	VirtualTimeBase types.Runtime_Timestamp `json:"virtualTimeBase"`
-}
-
-// Turns on virtual time for all frames (replacing real-time with a synthetic time source) and sets the current virtual time policy.  Note this supersedes any previous time budget.
-func (obj *Emulation) SetVirtualTimePolicy(request *SetVirtualTimePolicyRequest) (response SetVirtualTimePolicyResponse, err error) {
-	err = obj.conn.Send(SetVirtualTimePolicy, request, &response)
+// Overrides the Geolocation Position or Error. Omitting any of the parameters emulates position unavailable.
+func (obj *Emulation) SetGeolocationOverride(request *SetGeolocationOverrideRequest) (err error) {
+	err = obj.conn.Send(SetGeolocationOverride, request, nil)
 	return
 }
 
@@ -244,32 +211,90 @@ func (obj *Emulation) SetNavigatorOverrides(request *SetNavigatorOverridesReques
 	return
 }
 
-type SetDefaultBackgroundColorOverrideRequest struct {
-	// RGBA of the default background color. If not specified, any existing override will be cleared.
-	Color *types.DOM_RGBA `json:"color,omitempty"`
+type SetPageScaleFactorRequest struct {
+	// Page scale factor.
+	PageScaleFactor float32 `json:"pageScaleFactor"`
 }
 
-// Sets or clears an override of the default background color of the frame. This override is used if the content does not specify one.
-func (obj *Emulation) SetDefaultBackgroundColorOverride(request *SetDefaultBackgroundColorOverrideRequest) (err error) {
-	err = obj.conn.Send(SetDefaultBackgroundColorOverride, request, nil)
+// Sets a specified page scale factor.
+func (obj *Emulation) SetPageScaleFactor(request *SetPageScaleFactorRequest) (err error) {
+	err = obj.conn.Send(SetPageScaleFactor, request, nil)
 	return
 }
 
-// Notification sent after the virtual time budget for the current VirtualTimePolicy has run out.
-// NOTE Experimental
-func (obj *Emulation) VirtualTimeBudgetExpired(fn func(err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(VirtualTimeBudgetExpired, closeChn)
-	go func() {
-		for {
+type SetScriptExecutionDisabledRequest struct {
+	// Whether script execution should be disabled in the page.
+	Value bool `json:"value"`
+}
 
-			readErr := decoder(nil)
-			if !fn(readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+// Switches script execution in the page.
+func (obj *Emulation) SetScriptExecutionDisabled(request *SetScriptExecutionDisabledRequest) (err error) {
+	err = obj.conn.Send(SetScriptExecutionDisabled, request, nil)
+	return
+}
+
+type SetTouchEmulationEnabledRequest struct {
+	// Whether the touch event emulation should be enabled.
+	Enabled bool `json:"enabled"`
+	// Maximum touch points supported. Defaults to one.
+	MaxTouchPoints *int `json:"maxTouchPoints,omitempty"`
+}
+
+// Enables touch on platforms which do not support them.
+func (obj *Emulation) SetTouchEmulationEnabled(request *SetTouchEmulationEnabledRequest) (err error) {
+	err = obj.conn.Send(SetTouchEmulationEnabled, request, nil)
+	return
+}
+
+type SetVirtualTimePolicyRequest struct {
+	Policy types.Emulation_VirtualTimePolicy `json:"policy"`
+	// If set, after this many virtual milliseconds have elapsed virtual time will be paused and a virtualTimeBudgetExpired event is sent.
+	Budget *float32 `json:"budget,omitempty"`
+	// If set this specifies the maximum number of tasks that can be run before virtual is forced forwards to prevent deadlock.
+	MaxVirtualTimeTaskStarvationCount *int `json:"maxVirtualTimeTaskStarvationCount,omitempty"`
+	// If set the virtual time policy change should be deferred until any frame starts navigating. Note any previous deferred policy change is superseded.
+	WaitForNavigation *bool `json:"waitForNavigation,omitempty"`
+	// If set, base::Time::Now will be overriden to initially return this value.
+	InitialVirtualTime *types.Network_TimeSinceEpoch `json:"initialVirtualTime,omitempty"`
+}
+
+type SetVirtualTimePolicyResponse struct {
+	// Absolute timestamp at which virtual time was first enabled (up time in milliseconds).
+	VirtualTimeTicksBase float32 `json:"virtualTimeTicksBase"`
+}
+
+// Turns on virtual time for all frames (replacing real-time with a synthetic time source) and sets the current virtual time policy.  Note this supersedes any previous time budget.
+func (obj *Emulation) SetVirtualTimePolicy(request *SetVirtualTimePolicyRequest) (response SetVirtualTimePolicyResponse, err error) {
+	err = obj.conn.Send(SetVirtualTimePolicy, request, &response)
+	return
+}
+
+type SetVisibleSizeRequest struct {
+	// Frame width (DIP).
+	Width int `json:"width"`
+	// Frame height (DIP).
+	Height int `json:"height"`
+}
+
+// Resizes the frame/viewport of the page. Note that this does not affect the frame's container (e.g. browser window). Can be used to produce screenshots of the specified size. Not supported on Android.
+func (obj *Emulation) SetVisibleSize(request *SetVisibleSizeRequest) (err error) {
+	err = obj.conn.Send(SetVisibleSize, request, nil)
+	return
+}
+
+type SetUserAgentOverrideRequest struct {
+	// User agent to use.
+	UserAgent string `json:"userAgent"`
+	// Browser langugage to emulate.
+	AcceptLanguage *string `json:"acceptLanguage,omitempty"`
+	// The platform navigator.platform should return.
+	Platform *string `json:"platform,omitempty"`
+}
+
+// Allows overriding user agent with the given string.
+func (obj *Emulation) SetUserAgentOverride(request *SetUserAgentOverrideRequest) (err error) {
+	err = obj.conn.Send(SetUserAgentOverride, request, nil)
+	return
 }
 
 type VirtualTimeAdvancedParams struct {
@@ -279,16 +304,28 @@ type VirtualTimeAdvancedParams struct {
 
 // Notification sent after the virtual time has advanced.
 // NOTE Experimental
-func (obj *Emulation) VirtualTimeAdvanced(fn func(params *VirtualTimeAdvancedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(VirtualTimeAdvanced, closeChn)
+func (obj *Emulation) VirtualTimeAdvanced(fn func(event string, params VirtualTimeAdvancedParams, err error) bool) {
+	listen, closer := obj.conn.On(VirtualTimeAdvanced)
 	go func() {
+		defer closer()
 		for {
-			params := VirtualTimeAdvancedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
+			var params VirtualTimeAdvancedParams
+			if !fn(VirtualTimeAdvanced, params, listen(&params)) {
+				return
+			}
+		}
+	}()
+}
+
+// Notification sent after the virtual time budget for the current VirtualTimePolicy has run out.
+// NOTE Experimental
+func (obj *Emulation) VirtualTimeBudgetExpired(fn func(event string, err error) bool) {
+	listen, closer := obj.conn.On(VirtualTimeBudgetExpired)
+	go func() {
+		defer closer()
+		for {
+			if !fn(VirtualTimeBudgetExpired, listen(nil)) {
+				return
 			}
 		}
 	}()
@@ -301,16 +338,14 @@ type VirtualTimePausedParams struct {
 
 // Notification sent after the virtual time has paused.
 // NOTE Experimental
-func (obj *Emulation) VirtualTimePaused(fn func(params *VirtualTimePausedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(VirtualTimePaused, closeChn)
+func (obj *Emulation) VirtualTimePaused(fn func(event string, params VirtualTimePausedParams, err error) bool) {
+	listen, closer := obj.conn.On(VirtualTimePaused)
 	go func() {
+		defer closer()
 		for {
-			params := VirtualTimePausedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
+			var params VirtualTimePausedParams
+			if !fn(VirtualTimePaused, params, listen(&params)) {
+				return
 			}
 		}
 	}()

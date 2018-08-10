@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -7,15 +7,15 @@
 package console
 
 import (
-	"github.com/SKatiyar/cri"
-	types "github.com/SKatiyar/cri/types"
+	"github.com/skatiyar/cri"
+	types "github.com/skatiyar/cri/types"
 )
 
 // List of commands in Console domain
 const (
-	Enable        = "Console.enable"
-	Disable       = "Console.disable"
 	ClearMessages = "Console.clearMessages"
+	Disable       = "Console.disable"
+	Enable        = "Console.enable"
 )
 
 // List of events in Console domain
@@ -33,9 +33,9 @@ func New(conn cri.Connector) *Console {
 	return &Console{conn}
 }
 
-// Enables console domain, sends the messages collected so far to the client by means of the <code>messageAdded</code> notification.
-func (obj *Console) Enable() (err error) {
-	err = obj.conn.Send(Enable, nil, nil)
+// Does nothing.
+func (obj *Console) ClearMessages() (err error) {
+	err = obj.conn.Send(ClearMessages, nil, nil)
 	return
 }
 
@@ -45,9 +45,9 @@ func (obj *Console) Disable() (err error) {
 	return
 }
 
-// Does nothing.
-func (obj *Console) ClearMessages() (err error) {
-	err = obj.conn.Send(ClearMessages, nil, nil)
+// Enables console domain, sends the messages collected so far to the client by means of the `messageAdded` notification.
+func (obj *Console) Enable() (err error) {
+	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 
@@ -57,16 +57,14 @@ type MessageAddedParams struct {
 }
 
 // Issued when new console message is added.
-func (obj *Console) MessageAdded(fn func(params *MessageAddedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(MessageAdded, closeChn)
+func (obj *Console) MessageAdded(fn func(event string, params MessageAddedParams, err error) bool) {
+	listen, closer := obj.conn.On(MessageAdded)
 	go func() {
+		defer closer()
 		for {
-			params := MessageAddedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
+			var params MessageAddedParams
+			if !fn(MessageAdded, params, listen(&params)) {
+				return
 			}
 		}
 	}()

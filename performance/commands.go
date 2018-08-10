@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -7,14 +7,14 @@
 package performance
 
 import (
-	"github.com/SKatiyar/cri"
-	types "github.com/SKatiyar/cri/types"
+	"github.com/skatiyar/cri"
+	types "github.com/skatiyar/cri/types"
 )
 
 // List of commands in Performance domain
 const (
-	Enable     = "Performance.enable"
 	Disable    = "Performance.disable"
+	Enable     = "Performance.enable"
 	GetMetrics = "Performance.getMetrics"
 )
 
@@ -32,15 +32,15 @@ func New(conn cri.Connector) *Performance {
 	return &Performance{conn}
 }
 
-// Enable collecting and reporting metrics.
-func (obj *Performance) Enable() (err error) {
-	err = obj.conn.Send(Enable, nil, nil)
-	return
-}
-
 // Disable collecting and reporting metrics.
 func (obj *Performance) Disable() (err error) {
 	err = obj.conn.Send(Disable, nil, nil)
+	return
+}
+
+// Enable collecting and reporting metrics.
+func (obj *Performance) Enable() (err error) {
+	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 
@@ -63,16 +63,14 @@ type MetricsParams struct {
 }
 
 // Current values of the metrics.
-func (obj *Performance) Metrics(fn func(params *MetricsParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(Metrics, closeChn)
+func (obj *Performance) Metrics(fn func(event string, params MetricsParams, err error) bool) {
+	listen, closer := obj.conn.On(Metrics)
 	go func() {
+		defer closer()
 		for {
-			params := MetricsParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
+			var params MetricsParams
+			if !fn(Metrics, params, listen(&params)) {
+				return
 			}
 		}
 	}()

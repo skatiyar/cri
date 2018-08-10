@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -10,13 +10,13 @@ type DOMDebugger_DOMBreakpointType string
 
 // Object event listener.
 type DOMDebugger_EventListener struct {
-	// <code>EventListener</code>'s type.
+	// `EventListener`'s type.
 	Type string `json:"type"`
-	// <code>EventListener</code>'s useCapture.
+	// `EventListener`'s useCapture.
 	UseCapture bool `json:"useCapture"`
-	// <code>EventListener</code>'s passive flag.
+	// `EventListener`'s passive flag.
 	Passive bool `json:"passive"`
-	// <code>EventListener</code>'s once flag.
+	// `EventListener`'s once flag.
 	Once bool `json:"once"`
 	// Script id of the handler code.
 	ScriptId Runtime_ScriptId `json:"scriptId"`

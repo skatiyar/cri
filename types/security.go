@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -18,6 +18,8 @@ type Security_SecurityState string
 type Security_SecurityStateExplanation struct {
 	// Security state representing the severity of the factor being explained.
 	SecurityState Security_SecurityState `json:"securityState"`
+	// Title describing the type of factor.
+	Title string `json:"title"`
 	// Short phrase describing the type of factor.
 	Summary string `json:"summary"`
 	// Full text explanation of the factor.

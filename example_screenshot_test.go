@@ -4,17 +4,17 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io/ioutil"
-	"os"
-	"strconv"
+	// "os"
+	"time"
 
-	"github.com/SKatiyar/cri"
-	"github.com/SKatiyar/cri/emulation"
-	"github.com/SKatiyar/cri/page"
+	"github.com/skatiyar/cri"
+	"github.com/skatiyar/cri/emulation"
+	"github.com/skatiyar/cri/page"
 )
 
 // Example shows steps to take screenshot of a page.
 func Example() {
-	conn, connErr := cri.NewConnection()
+	conn, connErr := cri.NewConnection(cri.SetCommandTimeout(20 * time.Second))
 	if connErr != nil {
 		panic(connErr)
 	}
@@ -33,27 +33,31 @@ func Example() {
 	}
 
 	urls := []string{
-		"https://www.google.com",
-		"https://www.chromestatus.com",
-		"https://www.facebook.com",
-		"https://www.example.com",
+		"www.google.com",
+		"www.chromestatus.com",
+		"www.facebook.com",
+		"www.example.com",
 	}
 
 	for i := 0; i < len(urls); i++ {
-		doneChn := make(chan struct{})
-		pi.LoadEventFired(func(params *page.LoadEventFiredParams, err error) bool {
-			close(doneChn)
+		eventRecv := make(chan page.LoadEventFiredParams)
+		pi.LoadEventFired(func(event string, params page.LoadEventFiredParams, err error) bool {
+			if err != nil {
+				panic(err)
+			}
+
+			eventRecv <- params
 			return false
 		})
 
 		_, navErr := pi.Navigate(&page.NavigateRequest{
-			Url: urls[i],
+			Url: "https://" + urls[i],
 		})
 		if navErr != nil {
 			panic(navErr)
 		}
 
-		<-doneChn
+		<-eventRecv
 
 		pic, picErr := pi.CaptureScreenshot(nil)
 		if picErr != nil {
@@ -65,21 +69,23 @@ func Example() {
 			panic(imgErr)
 		}
 
-		fileName := strconv.Itoa(i) + ".png"
+		fileName := urls[i] + ".png"
 		if writeErr := ioutil.WriteFile(fileName, img, 0700); writeErr != nil {
 			panic(writeErr)
 		}
 
 		fmt.Println(fileName)
 
-		if removeErr := os.Remove(fileName); removeErr != nil {
-			panic(removeErr)
-		}
+		/*
+			if removeErr := os.Remove(fileName); removeErr != nil {
+				panic(removeErr)
+			}
+		*/
 	}
 
 	// Unordered output:
-	// 0.png
-	// 1.png
-	// 2.png
-	// 3.png
+	// www.google.com.png
+	// www.chromestatus.com.png
+	// www.facebook.com.png
+	// www.example.com.png
 }

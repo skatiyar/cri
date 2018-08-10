@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -7,15 +7,15 @@
 package log
 
 import (
-	"github.com/SKatiyar/cri"
-	types "github.com/SKatiyar/cri/types"
+	"github.com/skatiyar/cri"
+	types "github.com/skatiyar/cri/types"
 )
 
 // List of commands in Log domain
 const (
-	Enable                = "Log.enable"
-	Disable               = "Log.disable"
 	Clear                 = "Log.clear"
+	Disable               = "Log.disable"
+	Enable                = "Log.enable"
 	StartViolationsReport = "Log.startViolationsReport"
 	StopViolationsReport  = "Log.stopViolationsReport"
 )
@@ -35,9 +35,9 @@ func New(conn cri.Connector) *Log {
 	return &Log{conn}
 }
 
-// Enables log domain, sends the entries collected so far to the client by means of the <code>entryAdded</code> notification.
-func (obj *Log) Enable() (err error) {
-	err = obj.conn.Send(Enable, nil, nil)
+// Clears the log.
+func (obj *Log) Clear() (err error) {
+	err = obj.conn.Send(Clear, nil, nil)
 	return
 }
 
@@ -47,9 +47,9 @@ func (obj *Log) Disable() (err error) {
 	return
 }
 
-// Clears the log.
-func (obj *Log) Clear() (err error) {
-	err = obj.conn.Send(Clear, nil, nil)
+// Enables log domain, sends the entries collected so far to the client by means of the `entryAdded` notification.
+func (obj *Log) Enable() (err error) {
+	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 
@@ -76,16 +76,14 @@ type EntryAddedParams struct {
 }
 
 // Issued when new message was logged.
-func (obj *Log) EntryAdded(fn func(params *EntryAddedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(EntryAdded, closeChn)
+func (obj *Log) EntryAdded(fn func(event string, params EntryAddedParams, err error) bool) {
+	listen, closer := obj.conn.On(EntryAdded)
 	go func() {
+		defer closer()
 		for {
-			params := EntryAddedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
+			var params EntryAddedParams
+			if !fn(EntryAdded, params, listen(&params)) {
+				return
 			}
 		}
 	}()

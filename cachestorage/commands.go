@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -7,17 +7,17 @@
 package cachestorage
 
 import (
-	"github.com/SKatiyar/cri"
-	types "github.com/SKatiyar/cri/types"
+	"github.com/skatiyar/cri"
+	types "github.com/skatiyar/cri/types"
 )
 
 // List of commands in CacheStorage domain
 const (
-	RequestCacheNames     = "CacheStorage.requestCacheNames"
-	RequestEntries        = "CacheStorage.requestEntries"
 	DeleteCache           = "CacheStorage.deleteCache"
 	DeleteEntry           = "CacheStorage.deleteEntry"
+	RequestCacheNames     = "CacheStorage.requestCacheNames"
 	RequestCachedResponse = "CacheStorage.requestCachedResponse"
+	RequestEntries        = "CacheStorage.requestEntries"
 )
 
 type CacheStorage struct {
@@ -27,44 +27,6 @@ type CacheStorage struct {
 // New creates a CacheStorage instance
 func New(conn cri.Connector) *CacheStorage {
 	return &CacheStorage{conn}
-}
-
-type RequestCacheNamesRequest struct {
-	// Security origin.
-	SecurityOrigin string `json:"securityOrigin"`
-}
-
-type RequestCacheNamesResponse struct {
-	// Caches for the security origin.
-	Caches []types.CacheStorage_Cache `json:"caches"`
-}
-
-// Requests cache names.
-func (obj *CacheStorage) RequestCacheNames(request *RequestCacheNamesRequest) (response RequestCacheNamesResponse, err error) {
-	err = obj.conn.Send(RequestCacheNames, request, &response)
-	return
-}
-
-type RequestEntriesRequest struct {
-	// ID of cache to get entries from.
-	CacheId types.CacheStorage_CacheId `json:"cacheId"`
-	// Number of records to skip.
-	SkipCount int `json:"skipCount"`
-	// Number of records to fetch.
-	PageSize int `json:"pageSize"`
-}
-
-type RequestEntriesResponse struct {
-	// Array of object store data entries.
-	CacheDataEntries []types.CacheStorage_DataEntry `json:"cacheDataEntries"`
-	// If true, there are more entries to fetch in the given range.
-	HasMore bool `json:"hasMore"`
-}
-
-// Requests data from cache.
-func (obj *CacheStorage) RequestEntries(request *RequestEntriesRequest) (response RequestEntriesResponse, err error) {
-	err = obj.conn.Send(RequestEntries, request, &response)
-	return
 }
 
 type DeleteCacheRequest struct {
@@ -91,6 +53,22 @@ func (obj *CacheStorage) DeleteEntry(request *DeleteEntryRequest) (err error) {
 	return
 }
 
+type RequestCacheNamesRequest struct {
+	// Security origin.
+	SecurityOrigin string `json:"securityOrigin"`
+}
+
+type RequestCacheNamesResponse struct {
+	// Caches for the security origin.
+	Caches []types.CacheStorage_Cache `json:"caches"`
+}
+
+// Requests cache names.
+func (obj *CacheStorage) RequestCacheNames(request *RequestCacheNamesRequest) (response RequestCacheNamesResponse, err error) {
+	err = obj.conn.Send(RequestCacheNames, request, &response)
+	return
+}
+
 type RequestCachedResponseRequest struct {
 	// Id of cache that contains the enty.
 	CacheId types.CacheStorage_CacheId `json:"cacheId"`
@@ -106,5 +84,27 @@ type RequestCachedResponseResponse struct {
 // Fetches cache entry.
 func (obj *CacheStorage) RequestCachedResponse(request *RequestCachedResponseRequest) (response RequestCachedResponseResponse, err error) {
 	err = obj.conn.Send(RequestCachedResponse, request, &response)
+	return
+}
+
+type RequestEntriesRequest struct {
+	// ID of cache to get entries from.
+	CacheId types.CacheStorage_CacheId `json:"cacheId"`
+	// Number of records to skip.
+	SkipCount int `json:"skipCount"`
+	// Number of records to fetch.
+	PageSize int `json:"pageSize"`
+}
+
+type RequestEntriesResponse struct {
+	// Array of object store data entries.
+	CacheDataEntries []types.CacheStorage_DataEntry `json:"cacheDataEntries"`
+	// If true, there are more entries to fetch in the given range.
+	HasMore bool `json:"hasMore"`
+}
+
+// Requests data from cache.
+func (obj *CacheStorage) RequestEntries(request *RequestEntriesRequest) (response RequestEntriesResponse, err error) {
+	err = obj.conn.Send(RequestEntries, request, &response)
 	return
 }

@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -12,5 +12,5 @@ func BrowserProtocolVersion() (major, minor string) {
 
 // JsProtocolVersion returns current major and minor version of js protocol.
 func JsProtocolVersion() (major, minor string) {
-	return "1", "2"
+	return "1", "3"
 }

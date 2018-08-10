@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -7,26 +7,26 @@
 package domstorage
 
 import (
-	"github.com/SKatiyar/cri"
-	types "github.com/SKatiyar/cri/types"
+	"github.com/skatiyar/cri"
+	types "github.com/skatiyar/cri/types"
 )
 
 // List of commands in DOMStorage domain
 const (
-	Enable               = "DOMStorage.enable"
-	Disable              = "DOMStorage.disable"
 	Clear                = "DOMStorage.clear"
+	Disable              = "DOMStorage.disable"
+	Enable               = "DOMStorage.enable"
 	GetDOMStorageItems   = "DOMStorage.getDOMStorageItems"
-	SetDOMStorageItem    = "DOMStorage.setDOMStorageItem"
 	RemoveDOMStorageItem = "DOMStorage.removeDOMStorageItem"
+	SetDOMStorageItem    = "DOMStorage.setDOMStorageItem"
 )
 
 // List of events in DOMStorage domain
 const (
-	DomStorageItemsCleared = "DOMStorage.domStorageItemsCleared"
-	DomStorageItemRemoved  = "DOMStorage.domStorageItemRemoved"
 	DomStorageItemAdded    = "DOMStorage.domStorageItemAdded"
+	DomStorageItemRemoved  = "DOMStorage.domStorageItemRemoved"
 	DomStorageItemUpdated  = "DOMStorage.domStorageItemUpdated"
+	DomStorageItemsCleared = "DOMStorage.domStorageItemsCleared"
 )
 
 // Query and modify DOM storage.
@@ -39,9 +39,12 @@ func New(conn cri.Connector) *DOMStorage {
 	return &DOMStorage{conn}
 }
 
-// Enables storage tracking, storage events will now be delivered to the client.
-func (obj *DOMStorage) Enable() (err error) {
-	err = obj.conn.Send(Enable, nil, nil)
+type ClearRequest struct {
+	StorageId types.DOMStorage_StorageId `json:"storageId"`
+}
+
+func (obj *DOMStorage) Clear(request *ClearRequest) (err error) {
+	err = obj.conn.Send(Clear, request, nil)
 	return
 }
 
@@ -51,12 +54,9 @@ func (obj *DOMStorage) Disable() (err error) {
 	return
 }
 
-type ClearRequest struct {
-	StorageId types.DOMStorage_StorageId `json:"storageId"`
-}
-
-func (obj *DOMStorage) Clear(request *ClearRequest) (err error) {
-	err = obj.conn.Send(Clear, request, nil)
+// Enables storage tracking, storage events will now be delivered to the client.
+func (obj *DOMStorage) Enable() (err error) {
+	err = obj.conn.Send(Enable, nil, nil)
 	return
 }
 
@@ -73,6 +73,16 @@ func (obj *DOMStorage) GetDOMStorageItems(request *GetDOMStorageItemsRequest) (r
 	return
 }
 
+type RemoveDOMStorageItemRequest struct {
+	StorageId types.DOMStorage_StorageId `json:"storageId"`
+	Key       string                     `json:"key"`
+}
+
+func (obj *DOMStorage) RemoveDOMStorageItem(request *RemoveDOMStorageItemRequest) (err error) {
+	err = obj.conn.Send(RemoveDOMStorageItem, request, nil)
+	return
+}
+
 type SetDOMStorageItemRequest struct {
 	StorageId types.DOMStorage_StorageId `json:"storageId"`
 	Key       string                     `json:"key"`
@@ -84,30 +94,20 @@ func (obj *DOMStorage) SetDOMStorageItem(request *SetDOMStorageItemRequest) (err
 	return
 }
 
-type RemoveDOMStorageItemRequest struct {
+type DomStorageItemAddedParams struct {
 	StorageId types.DOMStorage_StorageId `json:"storageId"`
 	Key       string                     `json:"key"`
+	NewValue  string                     `json:"newValue"`
 }
 
-func (obj *DOMStorage) RemoveDOMStorageItem(request *RemoveDOMStorageItemRequest) (err error) {
-	err = obj.conn.Send(RemoveDOMStorageItem, request, nil)
-	return
-}
-
-type DomStorageItemsClearedParams struct {
-	StorageId types.DOMStorage_StorageId `json:"storageId"`
-}
-
-func (obj *DOMStorage) DomStorageItemsCleared(fn func(params *DomStorageItemsClearedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(DomStorageItemsCleared, closeChn)
+func (obj *DOMStorage) DomStorageItemAdded(fn func(event string, params DomStorageItemAddedParams, err error) bool) {
+	listen, closer := obj.conn.On(DomStorageItemAdded)
 	go func() {
+		defer closer()
 		for {
-			params := DomStorageItemsClearedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
+			var params DomStorageItemAddedParams
+			if !fn(DomStorageItemAdded, params, listen(&params)) {
+				return
 			}
 		}
 	}()
@@ -118,37 +118,14 @@ type DomStorageItemRemovedParams struct {
 	Key       string                     `json:"key"`
 }
 
-func (obj *DOMStorage) DomStorageItemRemoved(fn func(params *DomStorageItemRemovedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(DomStorageItemRemoved, closeChn)
+func (obj *DOMStorage) DomStorageItemRemoved(fn func(event string, params DomStorageItemRemovedParams, err error) bool) {
+	listen, closer := obj.conn.On(DomStorageItemRemoved)
 	go func() {
+		defer closer()
 		for {
-			params := DomStorageItemRemovedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
-}
-
-type DomStorageItemAddedParams struct {
-	StorageId types.DOMStorage_StorageId `json:"storageId"`
-	Key       string                     `json:"key"`
-	NewValue  string                     `json:"newValue"`
-}
-
-func (obj *DOMStorage) DomStorageItemAdded(fn func(params *DomStorageItemAddedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(DomStorageItemAdded, closeChn)
-	go func() {
-		for {
-			params := DomStorageItemAddedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
+			var params DomStorageItemRemovedParams
+			if !fn(DomStorageItemRemoved, params, listen(&params)) {
+				return
 			}
 		}
 	}()
@@ -161,16 +138,31 @@ type DomStorageItemUpdatedParams struct {
 	NewValue  string                     `json:"newValue"`
 }
 
-func (obj *DOMStorage) DomStorageItemUpdated(fn func(params *DomStorageItemUpdatedParams, err error) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On(DomStorageItemUpdated, closeChn)
+func (obj *DOMStorage) DomStorageItemUpdated(fn func(event string, params DomStorageItemUpdatedParams, err error) bool) {
+	listen, closer := obj.conn.On(DomStorageItemUpdated)
 	go func() {
+		defer closer()
 		for {
-			params := DomStorageItemUpdatedParams{}
-			readErr := decoder(&params)
-			if !fn(&params, readErr) {
-				close(closeChn)
-				break
+			var params DomStorageItemUpdatedParams
+			if !fn(DomStorageItemUpdated, params, listen(&params)) {
+				return
+			}
+		}
+	}()
+}
+
+type DomStorageItemsClearedParams struct {
+	StorageId types.DOMStorage_StorageId `json:"storageId"`
+}
+
+func (obj *DOMStorage) DomStorageItemsCleared(fn func(event string, params DomStorageItemsClearedParams, err error) bool) {
+	listen, closer := obj.conn.On(DomStorageItemsCleared)
+	go func() {
+		defer closer()
+		for {
+			var params DomStorageItemsClearedParams
+			if !fn(DomStorageItemsCleared, params, listen(&params)) {
+				return
 			}
 		}
 	}()

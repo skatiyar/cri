@@ -4,10 +4,10 @@ import (
 	"crypto/tls"
 	"testing"
 
-	"github.com/SKatiyar/cri"
-	"github.com/SKatiyar/cri/browser"
-	"github.com/SKatiyar/cri/emulation"
-	"github.com/SKatiyar/cri/page"
+	"github.com/skatiyar/cri"
+	"github.com/skatiyar/cri/browser"
+	"github.com/skatiyar/cri/emulation"
+	"github.com/skatiyar/cri/page"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -16,7 +16,7 @@ func TestNewConnection(t *testing.T) {
 
 	defaultConn, defaultConnErr := cri.NewConnection()
 	assert.Nil(defaultConnErr)
-	assert.NotNil(defaultConn, "connection object should returned for default address")
+	assert.NotNil(defaultConn, "connection object should be returned for default address")
 
 	defaultCloseErr := defaultConn.Close()
 	assert.Nil(defaultCloseErr)
@@ -54,16 +54,8 @@ func ExampleConnection_On() {
 	conn, _ := cri.NewConnection()
 
 	// listen for page load
-	// create close channel
-	closeChn := make(chan struct{})
-	// start listening
-	decoder := conn.On(page.LoadEventFired, closeChn)
-	for {
-		var params page.LoadEventFiredParams
-		if readErr := decoder(&params); readErr != nil {
-			// if error occurs, signal close.
-			close(closeChn)
-			break
-		}
-	}
+	listen, closer := conn.On(page.LoadEventFired)
+	var params page.LoadEventFiredParams
+	listen(&params)
+	closer()
 }

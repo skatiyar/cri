@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
 */
 
@@ -7,7 +7,7 @@
 package {{.Package}}
 
 import (
-    "github.com/SKatiyar/cri"
+    "github.com/skatiyar/cri"
 {{- range .Imports}}
     {{.Name}} {{printf "%q" .Path -}}
 {{end}}
@@ -57,18 +57,16 @@ func (obj *{{.Domain}}) {{.Name}}({{.RequestName}}) ({{.ResponseName}}) {
 type {{.ID}} {{.Type}}
 {{end}}
 {{.Doc}}
-func (obj *{{.Domain}}) {{.Name}}(fn func({{.EventParams}}) bool) {
-	closeChn := make(chan struct{})
-	decoder := obj.conn.On({{.Name}}, closeChn)
-	go func() {
-		for {
-            {{.ParamsDecl}}
-			readErr := decoder({{.ParamsValue}})
-            if !fn({{.CallParams}}) {
-				close(closeChn)
-				break
-			}
-		}
-	}()
+func (obj *{{.Domain}}) {{.Name}}(fn func(event string, {{.ResponseName}}) bool) {
+	listen, closer := obj.conn.On({{.Name}})
+    go func() {
+        defer closer()
+        for {
+            {{- .CallParams}}
+            if !fn({{.Name}}, {{.ResponseValue}}) {
+                return
+            }
+        }
+    }()
 }
 {{end -}}
