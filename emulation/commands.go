@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -7,8 +7,8 @@
 package emulation
 
 import (
-	"github.com/SKatiyar/cri"
 	types "github.com/SKatiyar/cri/types"
+	"github.com/skatiyar/cri"
 )
 
 // List of commands in Emulation domain
@@ -20,6 +20,8 @@ const (
 	SetCPUThrottlingRate              = "Emulation.setCPUThrottlingRate"
 	SetDefaultBackgroundColorOverride = "Emulation.setDefaultBackgroundColorOverride"
 	SetDeviceMetricsOverride          = "Emulation.setDeviceMetricsOverride"
+	SetScrollbarsHidden               = "Emulation.setScrollbarsHidden"
+	SetDocumentCookieDisabled         = "Emulation.setDocumentCookieDisabled"
 	SetEmitTouchEventsForMouse        = "Emulation.setEmitTouchEventsForMouse"
 	SetEmulatedMedia                  = "Emulation.setEmulatedMedia"
 	SetGeolocationOverride            = "Emulation.setGeolocationOverride"
@@ -29,6 +31,7 @@ const (
 	SetTouchEmulationEnabled          = "Emulation.setTouchEmulationEnabled"
 	SetVirtualTimePolicy              = "Emulation.setVirtualTimePolicy"
 	SetVisibleSize                    = "Emulation.setVisibleSize"
+	SetUserAgentOverride              = "Emulation.setUserAgentOverride"
 )
 
 // List of events in Emulation domain
@@ -139,6 +142,26 @@ func (obj *Emulation) SetDeviceMetricsOverride(request *SetDeviceMetricsOverride
 	return
 }
 
+type SetScrollbarsHiddenRequest struct {
+	// Whether scrollbars should be always hidden.
+	Hidden bool `json:"hidden"`
+}
+
+func (obj *Emulation) SetScrollbarsHidden(request *SetScrollbarsHiddenRequest) (err error) {
+	err = obj.conn.Send(SetScrollbarsHidden, request, nil)
+	return
+}
+
+type SetDocumentCookieDisabledRequest struct {
+	// Whether document.coookie API should be disabled.
+	Disabled bool `json:"disabled"`
+}
+
+func (obj *Emulation) SetDocumentCookieDisabled(request *SetDocumentCookieDisabledRequest) (err error) {
+	err = obj.conn.Send(SetDocumentCookieDisabled, request, nil)
+	return
+}
+
 type SetEmitTouchEventsForMouseRequest struct {
 	// Whether touch emulation based on mouse input should be enabled.
 	Enabled bool `json:"enabled"`
@@ -231,11 +254,11 @@ type SetVirtualTimePolicyRequest struct {
 	MaxVirtualTimeTaskStarvationCount *int `json:"maxVirtualTimeTaskStarvationCount,omitempty"`
 	// If set the virtual time policy change should be deferred until any frame starts navigating. Note any previous deferred policy change is superseded.
 	WaitForNavigation *bool `json:"waitForNavigation,omitempty"`
+	// If set, base::Time::Now will be overriden to initially return this value.
+	InitialVirtualTime *types.Network_TimeSinceEpoch `json:"initialVirtualTime,omitempty"`
 }
 
 type SetVirtualTimePolicyResponse struct {
-	// Absolute timestamp at which virtual time was first enabled (milliseconds since epoch).
-	VirtualTimeBase types.Runtime_Timestamp `json:"virtualTimeBase"`
 	// Absolute timestamp at which virtual time was first enabled (up time in milliseconds).
 	VirtualTimeTicksBase float32 `json:"virtualTimeTicksBase"`
 }
@@ -256,6 +279,21 @@ type SetVisibleSizeRequest struct {
 // Resizes the frame/viewport of the page. Note that this does not affect the frame's container (e.g. browser window). Can be used to produce screenshots of the specified size. Not supported on Android.
 func (obj *Emulation) SetVisibleSize(request *SetVisibleSizeRequest) (err error) {
 	err = obj.conn.Send(SetVisibleSize, request, nil)
+	return
+}
+
+type SetUserAgentOverrideRequest struct {
+	// User agent to use.
+	UserAgent string `json:"userAgent"`
+	// Browser langugage to emulate.
+	AcceptLanguage *string `json:"acceptLanguage,omitempty"`
+	// The platform navigator.platform should return.
+	Platform *string `json:"platform,omitempty"`
+}
+
+// Allows overriding user agent with the given string.
+func (obj *Emulation) SetUserAgentOverride(request *SetUserAgentOverrideRequest) (err error) {
+	err = obj.conn.Send(SetUserAgentOverride, request, nil)
 	return
 }
 

@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -7,8 +7,8 @@
 package browser
 
 import (
-	"github.com/SKatiyar/cri"
 	types "github.com/SKatiyar/cri/types"
+	"github.com/skatiyar/cri"
 )
 
 // List of commands in Browser domain
@@ -72,6 +72,8 @@ func (obj *Browser) GetBrowserCommandLine() (response GetBrowserCommandLineRespo
 type GetHistogramsRequest struct {
 	// Requested substring in name. Only histograms which have query as a substring in their name are extracted. An empty or absent query returns all histograms.
 	Query *string `json:"query,omitempty"`
+	// If true, retrieve delta since last call.
+	Delta *bool `json:"delta,omitempty"`
 }
 
 type GetHistogramsResponse struct {
@@ -88,6 +90,8 @@ func (obj *Browser) GetHistograms(request *GetHistogramsRequest) (response GetHi
 type GetHistogramRequest struct {
 	// Requested histogram name.
 	Name string `json:"name"`
+	// If true, retrieve delta since last call.
+	Delta *bool `json:"delta,omitempty"`
 }
 
 type GetHistogramResponse struct {

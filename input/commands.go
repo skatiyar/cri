@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -7,13 +7,14 @@
 package input
 
 import (
-	"github.com/SKatiyar/cri"
 	types "github.com/SKatiyar/cri/types"
+	"github.com/skatiyar/cri"
 )
 
 // List of commands in Input domain
 const (
 	DispatchKeyEvent           = "Input.dispatchKeyEvent"
+	InsertText                 = "Input.insertText"
 	DispatchMouseEvent         = "Input.dispatchMouseEvent"
 	DispatchTouchEvent         = "Input.dispatchTouchEvent"
 	EmulateTouchFromMouseEvent = "Input.emulateTouchFromMouseEvent"
@@ -66,6 +67,17 @@ type DispatchKeyEventRequest struct {
 // Dispatches a key event to the page.
 func (obj *Input) DispatchKeyEvent(request *DispatchKeyEventRequest) (err error) {
 	err = obj.conn.Send(DispatchKeyEvent, request, nil)
+	return
+}
+
+type InsertTextRequest struct {
+	// The text to insert.
+	Text string `json:"text"`
+}
+
+// This method emulates inserting text that doesn't come from a key press, for example an emoji keyboard or an IME.
+func (obj *Input) InsertText(request *InsertTextRequest) (err error) {
+	err = obj.conn.Send(InsertText, request, nil)
 	return
 }
 

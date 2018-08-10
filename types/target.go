@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -21,6 +21,8 @@ type Target_TargetInfo struct {
 	Attached bool `json:"attached"`
 	// Opener target Id
 	OpenerId *Target_TargetID `json:"openerId,omitempty"`
+	// NOTE Experimental
+	BrowserContextId *Target_BrowserContextID `json:"browserContextId,omitempty"`
 }
 
 type Target_RemoteLocation struct {

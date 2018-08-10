@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -7,8 +7,8 @@
 package page
 
 import (
-	"github.com/SKatiyar/cri"
 	types "github.com/SKatiyar/cri/types"
+	"github.com/skatiyar/cri"
 )
 
 // List of commands in Page domain
@@ -45,6 +45,8 @@ const (
 	SetBypassCSP                        = "Page.setBypassCSP"
 	SetDeviceMetricsOverride            = "Page.setDeviceMetricsOverride"
 	SetDeviceOrientationOverride        = "Page.setDeviceOrientationOverride"
+	SetFontFamilies                     = "Page.setFontFamilies"
+	SetFontSizes                        = "Page.setFontSizes"
 	SetDocumentContent                  = "Page.setDocumentContent"
 	SetDownloadBehavior                 = "Page.setDownloadBehavior"
 	SetGeolocationOverride              = "Page.setGeolocationOverride"
@@ -53,7 +55,12 @@ const (
 	StartScreencast                     = "Page.startScreencast"
 	StopLoading                         = "Page.stopLoading"
 	Crash                               = "Page.crash"
+	Close                               = "Page.close"
+	SetWebLifecycleState                = "Page.setWebLifecycleState"
 	StopScreencast                      = "Page.stopScreencast"
+	SetProduceCompilationCache          = "Page.setProduceCompilationCache"
+	AddCompilationCache                 = "Page.addCompilationCache"
+	ClearCompilationCache               = "Page.clearCompilationCache"
 )
 
 // List of events in Page domain
@@ -77,6 +84,7 @@ const (
 	ScreencastFrame                 = "Page.screencastFrame"
 	ScreencastVisibilityChanged     = "Page.screencastVisibilityChanged"
 	WindowOpen                      = "Page.windowOpen"
+	CompilationCacheProduced        = "Page.compilationCacheProduced"
 )
 
 // Actions and events related to the inspected page belong to the page domain.
@@ -542,6 +550,28 @@ func (obj *Page) SetDeviceOrientationOverride(request *SetDeviceOrientationOverr
 	return
 }
 
+type SetFontFamiliesRequest struct {
+	// Specifies font families to set. If a font family is not specified, it won't be changed.
+	FontFamilies types.Page_FontFamilies `json:"fontFamilies"`
+}
+
+// Set generic font families.
+func (obj *Page) SetFontFamilies(request *SetFontFamiliesRequest) (err error) {
+	err = obj.conn.Send(SetFontFamilies, request, nil)
+	return
+}
+
+type SetFontSizesRequest struct {
+	// Specifies font sizes to set. If a font size is not specified, it won't be changed.
+	FontSizes types.Page_FontSizes `json:"fontSizes"`
+}
+
+// Set default font sizes.
+func (obj *Page) SetFontSizes(request *SetFontSizesRequest) (err error) {
+	err = obj.conn.Send(SetFontSizes, request, nil)
+	return
+}
+
 type SetDocumentContentRequest struct {
 	// Frame id to set HTML for.
 	FrameId types.Page_FrameId `json:"frameId"`
@@ -638,9 +668,54 @@ func (obj *Page) Crash() (err error) {
 	return
 }
 
+// Tries to close page, running its beforeunload hooks, if any.
+func (obj *Page) Close() (err error) {
+	err = obj.conn.Send(Close, nil, nil)
+	return
+}
+
+type SetWebLifecycleStateRequest struct {
+	// Target lifecycle state
+	State string `json:"state"`
+}
+
+// Tries to update the web lifecycle state of the page. It will transition the page to the given state according to: https://github.com/WICG/web-lifecycle/
+func (obj *Page) SetWebLifecycleState(request *SetWebLifecycleStateRequest) (err error) {
+	err = obj.conn.Send(SetWebLifecycleState, request, nil)
+	return
+}
+
 // Stops sending each frame in the `screencastFrame`.
 func (obj *Page) StopScreencast() (err error) {
 	err = obj.conn.Send(StopScreencast, nil, nil)
+	return
+}
+
+type SetProduceCompilationCacheRequest struct {
+	Enabled bool `json:"enabled"`
+}
+
+// Forces compilation cache to be generated for every subresource script.
+func (obj *Page) SetProduceCompilationCache(request *SetProduceCompilationCacheRequest) (err error) {
+	err = obj.conn.Send(SetProduceCompilationCache, request, nil)
+	return
+}
+
+type AddCompilationCacheRequest struct {
+	Url string `json:"url"`
+	// Base64-encoded data
+	Data string `json:"data"`
+}
+
+// Seeds compilation cache for given url. Compilation cache does not survive cross-process navigation.
+func (obj *Page) AddCompilationCache(request *AddCompilationCacheRequest) (err error) {
+	err = obj.conn.Send(AddCompilationCache, request, nil)
+	return
+}
+
+// Clears seeded compilation cache.
+func (obj *Page) ClearCompilationCache() (err error) {
+	err = obj.conn.Send(ClearCompilationCache, nil, nil)
 	return
 }
 
@@ -1020,6 +1095,27 @@ func (obj *Page) WindowOpen(fn func(event string, params WindowOpenParams, err e
 		for {
 			var params WindowOpenParams
 			if !fn(WindowOpen, params, listen(&params)) {
+				return
+			}
+		}
+	}()
+}
+
+type CompilationCacheProducedParams struct {
+	Url string `json:"url"`
+	// Base64-encoded data
+	Data string `json:"data"`
+}
+
+// Issued for every compilation cache generated. Is only available if Page.setGenerateCompilationCache is enabled.
+// NOTE Experimental
+func (obj *Page) CompilationCacheProduced(fn func(event string, params CompilationCacheProducedParams, err error) bool) {
+	listen, closer := obj.conn.On(CompilationCacheProduced)
+	go func() {
+		defer closer()
+		for {
+			var params CompilationCacheProducedParams
+			if !fn(CompilationCacheProduced, params, listen(&params)) {
 				return
 			}
 		}

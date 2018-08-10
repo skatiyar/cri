@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -7,39 +7,40 @@
 package network
 
 import (
-	"github.com/SKatiyar/cri"
 	types "github.com/SKatiyar/cri/types"
+	"github.com/skatiyar/cri"
 )
 
 // List of commands in Network domain
 const (
-	CanClearBrowserCache           = "Network.canClearBrowserCache"
-	CanClearBrowserCookies         = "Network.canClearBrowserCookies"
-	CanEmulateNetworkConditions    = "Network.canEmulateNetworkConditions"
-	ClearBrowserCache              = "Network.clearBrowserCache"
-	ClearBrowserCookies            = "Network.clearBrowserCookies"
-	ContinueInterceptedRequest     = "Network.continueInterceptedRequest"
-	DeleteCookies                  = "Network.deleteCookies"
-	Disable                        = "Network.disable"
-	EmulateNetworkConditions       = "Network.emulateNetworkConditions"
-	Enable                         = "Network.enable"
-	GetAllCookies                  = "Network.getAllCookies"
-	GetCertificate                 = "Network.getCertificate"
-	GetCookies                     = "Network.getCookies"
-	GetResponseBody                = "Network.getResponseBody"
-	GetRequestPostData             = "Network.getRequestPostData"
-	GetResponseBodyForInterception = "Network.getResponseBodyForInterception"
-	ReplayXHR                      = "Network.replayXHR"
-	SearchInResponseBody           = "Network.searchInResponseBody"
-	SetBlockedURLs                 = "Network.setBlockedURLs"
-	SetBypassServiceWorker         = "Network.setBypassServiceWorker"
-	SetCacheDisabled               = "Network.setCacheDisabled"
-	SetCookie                      = "Network.setCookie"
-	SetCookies                     = "Network.setCookies"
-	SetDataSizeLimitsForTest       = "Network.setDataSizeLimitsForTest"
-	SetExtraHTTPHeaders            = "Network.setExtraHTTPHeaders"
-	SetRequestInterception         = "Network.setRequestInterception"
-	SetUserAgentOverride           = "Network.setUserAgentOverride"
+	CanClearBrowserCache                    = "Network.canClearBrowserCache"
+	CanClearBrowserCookies                  = "Network.canClearBrowserCookies"
+	CanEmulateNetworkConditions             = "Network.canEmulateNetworkConditions"
+	ClearBrowserCache                       = "Network.clearBrowserCache"
+	ClearBrowserCookies                     = "Network.clearBrowserCookies"
+	ContinueInterceptedRequest              = "Network.continueInterceptedRequest"
+	DeleteCookies                           = "Network.deleteCookies"
+	Disable                                 = "Network.disable"
+	EmulateNetworkConditions                = "Network.emulateNetworkConditions"
+	Enable                                  = "Network.enable"
+	GetAllCookies                           = "Network.getAllCookies"
+	GetCertificate                          = "Network.getCertificate"
+	GetCookies                              = "Network.getCookies"
+	GetResponseBody                         = "Network.getResponseBody"
+	GetRequestPostData                      = "Network.getRequestPostData"
+	GetResponseBodyForInterception          = "Network.getResponseBodyForInterception"
+	TakeResponseBodyForInterceptionAsStream = "Network.takeResponseBodyForInterceptionAsStream"
+	ReplayXHR                               = "Network.replayXHR"
+	SearchInResponseBody                    = "Network.searchInResponseBody"
+	SetBlockedURLs                          = "Network.setBlockedURLs"
+	SetBypassServiceWorker                  = "Network.setBypassServiceWorker"
+	SetCacheDisabled                        = "Network.setCacheDisabled"
+	SetCookie                               = "Network.setCookie"
+	SetCookies                              = "Network.setCookies"
+	SetDataSizeLimitsForTest                = "Network.setDataSizeLimitsForTest"
+	SetExtraHTTPHeaders                     = "Network.setExtraHTTPHeaders"
+	SetRequestInterception                  = "Network.setRequestInterception"
+	SetUserAgentOverride                    = "Network.setUserAgentOverride"
 )
 
 // List of events in Network domain
@@ -52,6 +53,7 @@ const (
 	RequestServedFromCache             = "Network.requestServedFromCache"
 	RequestWillBeSent                  = "Network.requestWillBeSent"
 	ResourceChangedPriority            = "Network.resourceChangedPriority"
+	SignedExchangeReceived             = "Network.signedExchangeReceived"
 	ResponseReceived                   = "Network.responseReceived"
 	WebSocketClosed                    = "Network.webSocketClosed"
 	WebSocketCreated                   = "Network.webSocketCreated"
@@ -294,6 +296,20 @@ func (obj *Network) GetResponseBodyForInterception(request *GetResponseBodyForIn
 	return
 }
 
+type TakeResponseBodyForInterceptionAsStreamRequest struct {
+	InterceptionId types.Network_InterceptionId `json:"interceptionId"`
+}
+
+type TakeResponseBodyForInterceptionAsStreamResponse struct {
+	Stream types.IO_StreamHandle `json:"stream"`
+}
+
+// Returns a handle to the stream representing the response body. Note that after this command, the intercepted request can't be continued as is -- you either need to cancel it or to provide the response body. The stream only supports sequential read, IO.read will fail if the position is specified.
+func (obj *Network) TakeResponseBodyForInterceptionAsStream(request *TakeResponseBodyForInterceptionAsStreamRequest) (response TakeResponseBodyForInterceptionAsStreamResponse, err error) {
+	err = obj.conn.Send(TakeResponseBodyForInterceptionAsStream, request, &response)
+	return
+}
+
 type ReplayXHRRequest struct {
 	// Identifier of XHR to replay.
 	RequestId types.Network_RequestId `json:"requestId"`
@@ -441,6 +457,10 @@ func (obj *Network) SetRequestInterception(request *SetRequestInterceptionReques
 type SetUserAgentOverrideRequest struct {
 	// User agent to use.
 	UserAgent string `json:"userAgent"`
+	// Browser langugage to emulate.
+	AcceptLanguage *string `json:"acceptLanguage,omitempty"`
+	// The platform navigator.platform should return.
+	Platform *string `json:"platform,omitempty"`
 }
 
 // Allows overriding user agent with the given string.
@@ -537,8 +557,8 @@ type LoadingFinishedParams struct {
 	Timestamp types.Network_MonotonicTime `json:"timestamp"`
 	// Total number of bytes received for this request.
 	EncodedDataLength float32 `json:"encodedDataLength"`
-	// Set when response was blocked due to being cross-site document response.
-	BlockedCrossSiteDocument *bool `json:"blockedCrossSiteDocument,omitempty"`
+	// Set when 1) response was blocked by Cross-Origin Read Blocking and also 2) this needs to be reported to the DevTools console.
+	ShouldReportCorbBlocking *bool `json:"shouldReportCorbBlocking,omitempty"`
 }
 
 // Fired when HTTP request has finished loading.
@@ -565,6 +585,8 @@ type RequestInterceptedParams struct {
 	ResourceType types.Page_ResourceType `json:"resourceType"`
 	// Whether this is a navigation request, which can abort the navigation completely.
 	IsNavigationRequest bool `json:"isNavigationRequest"`
+	// Set if the request is a navigation that will result in a download. Only present after response is received from the server (i.e. HeadersReceived stage).
+	IsDownload *bool `json:"isDownload,omitempty"`
 	// Redirect location, only sent if a redirect was intercepted.
 	RedirectUrl *string `json:"redirectUrl,omitempty"`
 	// Details of the Authorization Challenge encountered. If this is set then continueInterceptedRequest must contain an authChallengeResponse.
@@ -668,6 +690,28 @@ func (obj *Network) ResourceChangedPriority(fn func(event string, params Resourc
 		for {
 			var params ResourceChangedPriorityParams
 			if !fn(ResourceChangedPriority, params, listen(&params)) {
+				return
+			}
+		}
+	}()
+}
+
+type SignedExchangeReceivedParams struct {
+	// Request identifier.
+	RequestId types.Network_RequestId `json:"requestId"`
+	// Information about the signed exchange response.
+	Info types.Network_SignedExchangeInfo `json:"info"`
+}
+
+// Fired when a signed exchange was received over the network
+// NOTE Experimental
+func (obj *Network) SignedExchangeReceived(fn func(event string, params SignedExchangeReceivedParams, err error) bool) {
+	listen, closer := obj.conn.On(SignedExchangeReceived)
+	go func() {
+		defer closer()
+		for {
+			var params SignedExchangeReceivedParams
+			if !fn(SignedExchangeReceived, params, listen(&params)) {
 				return
 			}
 		}

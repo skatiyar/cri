@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -7,8 +7,8 @@
 package debugger
 
 import (
-	"github.com/SKatiyar/cri"
 	types "github.com/SKatiyar/cri/types"
+	"github.com/skatiyar/cri"
 )
 
 // List of commands in Debugger domain
@@ -111,6 +111,9 @@ type EvaluateOnCallFrameRequest struct {
 	GeneratePreview *bool `json:"generatePreview,omitempty"`
 	// Whether to throw an exception if side effect cannot be ruled out during evaluation.
 	ThrowOnSideEffect *bool `json:"throwOnSideEffect,omitempty"`
+	// Terminate execution after timing out (number of milliseconds).
+	// NOTE Experimental
+	Timeout *types.Runtime_TimeDelta `json:"timeout,omitempty"`
 }
 
 type EvaluateOnCallFrameResponse struct {

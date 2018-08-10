@@ -82,7 +82,7 @@ func SetCommandTimeout(timeout time.Duration) ConnectionOption {
 	}
 }
 
-// SetLogger sets logging for connection
+// SetError sets error callback for connection
 func SetError(fn func(err error)) ConnectionOption {
 	return func(co *ConnectionOptions) {
 		co.Error = fn

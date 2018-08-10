@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -47,10 +47,6 @@ type DOMSnapshot_DOMNode struct {
 	FrameId *Page_FrameId `json:"frameId,omitempty"`
 	// The index of a frame owner element's content document in the `domNodes` array returned by `getSnapshot`, if any.
 	ContentDocumentIndex *int `json:"contentDocumentIndex,omitempty"`
-	// Index of the imported document's node of a link element in the `domNodes` array returned by `getSnapshot`, if any.
-	ImportedDocumentIndex *int `json:"importedDocumentIndex,omitempty"`
-	// Index of the content node of a template element in the `domNodes` array returned by `getSnapshot`.
-	TemplateContentIndex *int `json:"templateContentIndex,omitempty"`
 	// Type of a pseudo element node.
 	PseudoType *DOM_PseudoType `json:"pseudoType,omitempty"`
 	// Shadow root type.
@@ -61,6 +57,8 @@ type DOMSnapshot_DOMNode struct {
 	EventListeners []DOMDebugger_EventListener `json:"eventListeners,omitempty"`
 	// The selected url for nodes with a srcset attribute.
 	CurrentSourceURL *string `json:"currentSourceURL,omitempty"`
+	// The url of the script (if any) that generates this node.
+	OriginURL *string `json:"originURL,omitempty"`
 }
 
 // Details of post layout rendered text positions. The exact layout should not be regarded as stable and may change between versions.
@@ -101,4 +99,109 @@ type DOMSnapshot_NameValue struct {
 	Name string `json:"name"`
 	// Attribute/property value.
 	Value string `json:"value"`
+}
+
+// Index of the string in the strings table.
+type DOMSnapshot_StringIndex int
+
+// Index of the string in the strings table.
+type DOMSnapshot_ArrayOfStrings []DOMSnapshot_StringIndex
+
+// Data that is only present on rare nodes.
+type DOMSnapshot_RareStringData struct {
+	Index []int                     `json:"index"`
+	Value []DOMSnapshot_StringIndex `json:"value"`
+}
+
+type DOMSnapshot_RareBooleanData struct {
+	Index []int `json:"index"`
+}
+
+type DOMSnapshot_RareIntegerData struct {
+	Index []int `json:"index"`
+	Value []int `json:"value"`
+}
+
+type DOMSnapshot_Rectangle []float32
+
+// Document snapshot.
+type DOMSnapshot_DocumentSnapshot struct {
+	// Document URL that `Document` or `FrameOwner` node points to.
+	DocumentURL DOMSnapshot_StringIndex `json:"documentURL"`
+	// Base URL that `Document` or `FrameOwner` node uses for URL completion.
+	BaseURL DOMSnapshot_StringIndex `json:"baseURL"`
+	// Contains the document's content language.
+	ContentLanguage DOMSnapshot_StringIndex `json:"contentLanguage"`
+	// Contains the document's character set encoding.
+	EncodingName DOMSnapshot_StringIndex `json:"encodingName"`
+	// `DocumentType` node's publicId.
+	PublicId DOMSnapshot_StringIndex `json:"publicId"`
+	// `DocumentType` node's systemId.
+	SystemId DOMSnapshot_StringIndex `json:"systemId"`
+	// Frame ID for frame owner elements and also for the document node.
+	FrameId DOMSnapshot_StringIndex `json:"frameId"`
+	// A table with dom nodes.
+	Nodes DOMSnapshot_NodeTreeSnapshot `json:"nodes"`
+	// The nodes in the layout tree.
+	Layout DOMSnapshot_LayoutTreeSnapshot `json:"layout"`
+	// The post-layout inline text nodes.
+	TextBoxes DOMSnapshot_TextBoxSnapshot `json:"textBoxes"`
+}
+
+// Table containing nodes.
+type DOMSnapshot_NodeTreeSnapshot struct {
+	// Parent node index.
+	ParentIndex []int `json:"parentIndex,omitempty"`
+	// `Node`'s nodeType.
+	NodeType []int `json:"nodeType,omitempty"`
+	// `Node`'s nodeName.
+	NodeName []DOMSnapshot_StringIndex `json:"nodeName,omitempty"`
+	// `Node`'s nodeValue.
+	NodeValue []DOMSnapshot_StringIndex `json:"nodeValue,omitempty"`
+	// `Node`'s id, corresponds to DOM.Node.backendNodeId.
+	BackendNodeId []DOM_BackendNodeId `json:"backendNodeId,omitempty"`
+	// Attributes of an `Element` node. Flatten name, value pairs.
+	Attributes []DOMSnapshot_ArrayOfStrings `json:"attributes,omitempty"`
+	// Only set for textarea elements, contains the text value.
+	TextValue *DOMSnapshot_RareStringData `json:"textValue,omitempty"`
+	// Only set for input elements, contains the input's associated text value.
+	InputValue *DOMSnapshot_RareStringData `json:"inputValue,omitempty"`
+	// Only set for radio and checkbox input elements, indicates if the element has been checked
+	InputChecked *DOMSnapshot_RareBooleanData `json:"inputChecked,omitempty"`
+	// Only set for option elements, indicates if the element has been selected
+	OptionSelected *DOMSnapshot_RareBooleanData `json:"optionSelected,omitempty"`
+	// The index of the document in the list of the snapshot documents.
+	ContentDocumentIndex *DOMSnapshot_RareIntegerData `json:"contentDocumentIndex,omitempty"`
+	// Type of a pseudo element node.
+	PseudoType *DOMSnapshot_RareStringData `json:"pseudoType,omitempty"`
+	// Whether this DOM node responds to mouse clicks. This includes nodes that have had click event listeners attached via JavaScript as well as anchor tags that naturally navigate when clicked.
+	IsClickable *DOMSnapshot_RareBooleanData `json:"isClickable,omitempty"`
+	// The selected url for nodes with a srcset attribute.
+	CurrentSourceURL *DOMSnapshot_RareStringData `json:"currentSourceURL,omitempty"`
+	// The url of the script (if any) that generates this node.
+	OriginURL *DOMSnapshot_RareStringData `json:"originURL,omitempty"`
+}
+
+// Details of an element in the DOM tree with a LayoutObject.
+type DOMSnapshot_LayoutTreeSnapshot struct {
+	// The index of the related DOM node in the `domNodes` array returned by `getSnapshot`.
+	NodeIndex []int `json:"nodeIndex"`
+	// Index into the `computedStyles` array returned by `captureSnapshot`.
+	Styles []DOMSnapshot_ArrayOfStrings `json:"styles"`
+	// The absolute position bounding box.
+	Bounds []DOMSnapshot_Rectangle `json:"bounds"`
+	// Contents of the LayoutText, if any.
+	Text []DOMSnapshot_StringIndex `json:"text"`
+}
+
+// Details of post layout rendered text positions. The exact layout should not be regarded as stable and may change between versions.
+type DOMSnapshot_TextBoxSnapshot struct {
+	// Intex of th elayout tree node that owns this box collection.
+	LayoutIndex []int `json:"layoutIndex"`
+	// The absolute position bounding box.
+	Bounds []DOMSnapshot_Rectangle `json:"bounds"`
+	// The starting index in characters, for this post layout textbox substring. Characters that would be represented as a surrogate pair in UTF-16 have length 2.
+	Start []int `json:"start"`
+	// The number of characters in this post layout textbox substring. Characters that would be represented as a surrogate pair in UTF-16 have length 2.
+	Length []int `json:"length"`
 }

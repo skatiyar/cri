@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -7,8 +7,8 @@
 package dom
 
 import (
-	"github.com/SKatiyar/cri"
 	types "github.com/SKatiyar/cri/types"
+	"github.com/skatiyar/cri"
 )
 
 // List of commands in DOM domain
@@ -22,6 +22,7 @@ const (
 	Focus                           = "DOM.focus"
 	GetAttributes                   = "DOM.getAttributes"
 	GetBoxModel                     = "DOM.getBoxModel"
+	GetContentQuads                 = "DOM.getContentQuads"
 	GetDocument                     = "DOM.getDocument"
 	GetFlattenedDocument            = "DOM.getFlattenedDocument"
 	GetNodeForLocation              = "DOM.getNodeForLocation"
@@ -214,6 +215,26 @@ type GetBoxModelResponse struct {
 // Returns boxes for the given node.
 func (obj *DOM) GetBoxModel(request *GetBoxModelRequest) (response GetBoxModelResponse, err error) {
 	err = obj.conn.Send(GetBoxModel, request, &response)
+	return
+}
+
+type GetContentQuadsRequest struct {
+	// Identifier of the node.
+	NodeId *types.DOM_NodeId `json:"nodeId,omitempty"`
+	// Identifier of the backend node.
+	BackendNodeId *types.DOM_BackendNodeId `json:"backendNodeId,omitempty"`
+	// JavaScript object id of the node wrapper.
+	ObjectId *types.Runtime_RemoteObjectId `json:"objectId,omitempty"`
+}
+
+type GetContentQuadsResponse struct {
+	// Quads that describe node layout relative to viewport.
+	Quads []types.DOM_Quad `json:"quads"`
+}
+
+// Returns quads that describe node position on the page. This method might return multiple quads for inline nodes.
+func (obj *DOM) GetContentQuads(request *GetContentQuadsRequest) (response GetContentQuadsResponse, err error) {
+	err = obj.conn.Send(GetContentQuads, request, &response)
 	return
 }
 

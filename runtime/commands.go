@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -7,8 +7,8 @@
 package runtime
 
 import (
-	"github.com/SKatiyar/cri"
 	types "github.com/SKatiyar/cri/types"
+	"github.com/skatiyar/cri"
 )
 
 // List of commands in Runtime domain
@@ -29,12 +29,17 @@ const (
 	ReleaseObjectGroup              = "Runtime.releaseObjectGroup"
 	RunIfWaitingForDebugger         = "Runtime.runIfWaitingForDebugger"
 	RunScript                       = "Runtime.runScript"
+	SetAsyncCallStackDepth          = "Runtime.setAsyncCallStackDepth"
 	SetCustomObjectFormatterEnabled = "Runtime.setCustomObjectFormatterEnabled"
+	SetMaxCallStackSizeToCapture    = "Runtime.setMaxCallStackSizeToCapture"
 	TerminateExecution              = "Runtime.terminateExecution"
+	AddBinding                      = "Runtime.addBinding"
+	RemoveBinding                   = "Runtime.removeBinding"
 )
 
 // List of events in Runtime domain
 const (
+	BindingCalled             = "Runtime.bindingCalled"
 	ConsoleAPICalled          = "Runtime.consoleAPICalled"
 	ExceptionRevoked          = "Runtime.exceptionRevoked"
 	ExceptionThrown           = "Runtime.exceptionThrown"
@@ -340,6 +345,17 @@ func (obj *Runtime) RunScript(request *RunScriptRequest) (response RunScriptResp
 	return
 }
 
+type SetAsyncCallStackDepthRequest struct {
+	// Maximum depth of async call stacks. Setting to `0` will effectively disable collecting async call stacks (default).
+	MaxDepth int `json:"maxDepth"`
+}
+
+// Enables or disables async call stacks tracking.
+func (obj *Runtime) SetAsyncCallStackDepth(request *SetAsyncCallStackDepthRequest) (err error) {
+	err = obj.conn.Send(SetAsyncCallStackDepth, request, nil)
+	return
+}
+
 type SetCustomObjectFormatterEnabledRequest struct {
 	Enabled bool `json:"enabled"`
 }
@@ -349,10 +365,62 @@ func (obj *Runtime) SetCustomObjectFormatterEnabled(request *SetCustomObjectForm
 	return
 }
 
+type SetMaxCallStackSizeToCaptureRequest struct {
+	Size int `json:"size"`
+}
+
+func (obj *Runtime) SetMaxCallStackSizeToCapture(request *SetMaxCallStackSizeToCaptureRequest) (err error) {
+	err = obj.conn.Send(SetMaxCallStackSizeToCapture, request, nil)
+	return
+}
+
 // Terminate current or next JavaScript execution. Will cancel the termination when the outer-most script execution ends.
 func (obj *Runtime) TerminateExecution() (err error) {
 	err = obj.conn.Send(TerminateExecution, nil, nil)
 	return
+}
+
+type AddBindingRequest struct {
+	Name               string                            `json:"name"`
+	ExecutionContextId *types.Runtime_ExecutionContextId `json:"executionContextId,omitempty"`
+}
+
+// If executionContextId is empty, adds binding with the given name on the global objects of all inspected contexts, including those created later, bindings survive reloads. If executionContextId is specified, adds binding only on global object of given execution context. Binding function takes exactly one argument, this argument should be string, in case of any other input, function throws an exception. Each binding function call produces Runtime.bindingCalled notification.
+func (obj *Runtime) AddBinding(request *AddBindingRequest) (err error) {
+	err = obj.conn.Send(AddBinding, request, nil)
+	return
+}
+
+type RemoveBindingRequest struct {
+	Name string `json:"name"`
+}
+
+// This method does not remove binding function from global object but unsubscribes current runtime agent from Runtime.bindingCalled notifications.
+func (obj *Runtime) RemoveBinding(request *RemoveBindingRequest) (err error) {
+	err = obj.conn.Send(RemoveBinding, request, nil)
+	return
+}
+
+type BindingCalledParams struct {
+	Name    string `json:"name"`
+	Payload string `json:"payload"`
+	// Identifier of the context where the call was made.
+	ExecutionContextId types.Runtime_ExecutionContextId `json:"executionContextId"`
+}
+
+// Notification is issued every time when binding is called.
+// NOTE Experimental
+func (obj *Runtime) BindingCalled(fn func(event string, params BindingCalledParams, err error) bool) {
+	listen, closer := obj.conn.On(BindingCalled)
+	go func() {
+		defer closer()
+		for {
+			var params BindingCalledParams
+			if !fn(BindingCalled, params, listen(&params)) {
+				return
+			}
+		}
+	}()
 }
 
 type ConsoleAPICalledParams struct {

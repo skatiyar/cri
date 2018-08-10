@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -7,25 +7,28 @@
 package target
 
 import (
-	"github.com/SKatiyar/cri"
 	types "github.com/SKatiyar/cri/types"
+	"github.com/skatiyar/cri"
 )
 
 // List of commands in Target domain
 const (
-	ActivateTarget        = "Target.activateTarget"
-	AttachToTarget        = "Target.attachToTarget"
-	CloseTarget           = "Target.closeTarget"
-	CreateBrowserContext  = "Target.createBrowserContext"
-	CreateTarget          = "Target.createTarget"
-	DetachFromTarget      = "Target.detachFromTarget"
-	DisposeBrowserContext = "Target.disposeBrowserContext"
-	GetTargetInfo         = "Target.getTargetInfo"
-	GetTargets            = "Target.getTargets"
-	SendMessageToTarget   = "Target.sendMessageToTarget"
-	SetAutoAttach         = "Target.setAutoAttach"
-	SetDiscoverTargets    = "Target.setDiscoverTargets"
-	SetRemoteLocations    = "Target.setRemoteLocations"
+	ActivateTarget         = "Target.activateTarget"
+	AttachToTarget         = "Target.attachToTarget"
+	AttachToBrowserTarget  = "Target.attachToBrowserTarget"
+	CloseTarget            = "Target.closeTarget"
+	ExposeDevToolsProtocol = "Target.exposeDevToolsProtocol"
+	CreateBrowserContext   = "Target.createBrowserContext"
+	GetBrowserContexts     = "Target.getBrowserContexts"
+	CreateTarget           = "Target.createTarget"
+	DetachFromTarget       = "Target.detachFromTarget"
+	DisposeBrowserContext  = "Target.disposeBrowserContext"
+	GetTargetInfo          = "Target.getTargetInfo"
+	GetTargets             = "Target.getTargets"
+	SendMessageToTarget    = "Target.sendMessageToTarget"
+	SetAutoAttach          = "Target.setAutoAttach"
+	SetDiscoverTargets     = "Target.setDiscoverTargets"
+	SetRemoteLocations     = "Target.setRemoteLocations"
 )
 
 // List of events in Target domain
@@ -35,6 +38,7 @@ const (
 	ReceivedMessageFromTarget = "Target.receivedMessageFromTarget"
 	TargetCreated             = "Target.targetCreated"
 	TargetDestroyed           = "Target.targetDestroyed"
+	TargetCrashed             = "Target.targetCrashed"
 	TargetInfoChanged         = "Target.targetInfoChanged"
 )
 
@@ -60,6 +64,9 @@ func (obj *Target) ActivateTarget(request *ActivateTargetRequest) (err error) {
 
 type AttachToTargetRequest struct {
 	TargetId types.Target_TargetID `json:"targetId"`
+	// Enables "flat" access to the session via specifying sessionId attribute in the commands.
+	// NOTE Experimental
+	Flatten *bool `json:"flatten,omitempty"`
 }
 
 type AttachToTargetResponse struct {
@@ -70,6 +77,17 @@ type AttachToTargetResponse struct {
 // Attaches to the target with given id.
 func (obj *Target) AttachToTarget(request *AttachToTargetRequest) (response AttachToTargetResponse, err error) {
 	err = obj.conn.Send(AttachToTarget, request, &response)
+	return
+}
+
+type AttachToBrowserTargetResponse struct {
+	// Id assigned to the session.
+	SessionId types.Target_SessionID `json:"sessionId"`
+}
+
+// Attaches to the browser target, only uses flat sessionId mode.
+func (obj *Target) AttachToBrowserTarget() (response AttachToBrowserTargetResponse, err error) {
+	err = obj.conn.Send(AttachToBrowserTarget, nil, &response)
 	return
 }
 
@@ -87,6 +105,18 @@ func (obj *Target) CloseTarget(request *CloseTargetRequest) (response CloseTarge
 	return
 }
 
+type ExposeDevToolsProtocolRequest struct {
+	TargetId types.Target_TargetID `json:"targetId"`
+	// Binding name, 'cdp' if not specified.
+	BindingName *string `json:"bindingName,omitempty"`
+}
+
+// Inject object to the target's main frame that provides a communication channel with browser target.  Injected object will be available as `window[bindingName]`.  The object has the follwing API: - `binding.send(json)` - a method to send messages over the remote debugging protocol - `binding.onmessage = json => handleMessage(json)` - a callback that will be called for the protocol notifications and command responses.
+func (obj *Target) ExposeDevToolsProtocol(request *ExposeDevToolsProtocolRequest) (err error) {
+	err = obj.conn.Send(ExposeDevToolsProtocol, request, nil)
+	return
+}
+
 type CreateBrowserContextResponse struct {
 	// The id of the context created.
 	BrowserContextId types.Target_BrowserContextID `json:"browserContextId"`
@@ -98,6 +128,17 @@ func (obj *Target) CreateBrowserContext() (response CreateBrowserContextResponse
 	return
 }
 
+type GetBrowserContextsResponse struct {
+	// An array of browser context ids.
+	BrowserContextIds []types.Target_BrowserContextID `json:"browserContextIds"`
+}
+
+// Returns all browser contexts created with `Target.createBrowserContext` method.
+func (obj *Target) GetBrowserContexts() (response GetBrowserContextsResponse, err error) {
+	err = obj.conn.Send(GetBrowserContexts, nil, &response)
+	return
+}
+
 type CreateTargetRequest struct {
 	// The initial URL the page will be navigated to.
 	Url string `json:"url"`
@@ -105,7 +146,7 @@ type CreateTargetRequest struct {
 	Width *int `json:"width,omitempty"`
 	// Frame height in DIP (headless chrome only).
 	Height *int `json:"height,omitempty"`
-	// The browser context to create the page in (headless chrome only).
+	// The browser context to create the page in.
 	BrowserContextId *types.Target_BrowserContextID `json:"browserContextId,omitempty"`
 	// Whether BeginFrames for this target will be controlled via DevTools (headless chrome only, not supported on MacOS yet, false by default).
 	// NOTE Experimental
@@ -140,18 +181,14 @@ type DisposeBrowserContextRequest struct {
 	BrowserContextId types.Target_BrowserContextID `json:"browserContextId"`
 }
 
-type DisposeBrowserContextResponse struct {
-	Success bool `json:"success"`
-}
-
-// Deletes a BrowserContext, will fail of any open page uses it.
-func (obj *Target) DisposeBrowserContext(request *DisposeBrowserContextRequest) (response DisposeBrowserContextResponse, err error) {
-	err = obj.conn.Send(DisposeBrowserContext, request, &response)
+// Deletes a BrowserContext. All the belonging pages will be closed without calling their beforeunload hooks.
+func (obj *Target) DisposeBrowserContext(request *DisposeBrowserContextRequest) (err error) {
+	err = obj.conn.Send(DisposeBrowserContext, request, nil)
 	return
 }
 
 type GetTargetInfoRequest struct {
-	TargetId types.Target_TargetID `json:"targetId"`
+	TargetId *types.Target_TargetID `json:"targetId,omitempty"`
 }
 
 type GetTargetInfoResponse struct {
@@ -194,6 +231,9 @@ type SetAutoAttachRequest struct {
 	AutoAttach bool `json:"autoAttach"`
 	// Whether to pause new targets when attaching to them. Use `Runtime.runIfWaitingForDebugger` to run paused targets.
 	WaitForDebuggerOnStart bool `json:"waitForDebuggerOnStart"`
+	// Enables "flat" access to the session via specifying sessionId attribute in the commands.
+	// NOTE Experimental
+	Flatten *bool `json:"flatten,omitempty"`
 }
 
 // Controls whether to automatically attach to new targets which are considered to be related to this one. When turned on, attaches to all existing related targets as well. When turned off, automatically detaches from all currently attached targets.
@@ -320,6 +360,28 @@ func (obj *Target) TargetDestroyed(fn func(event string, params TargetDestroyedP
 		for {
 			var params TargetDestroyedParams
 			if !fn(TargetDestroyed, params, listen(&params)) {
+				return
+			}
+		}
+	}()
+}
+
+type TargetCrashedParams struct {
+	TargetId types.Target_TargetID `json:"targetId"`
+	// Termination status type.
+	Status string `json:"status"`
+	// Termination error code.
+	ErrorCode int `json:"errorCode"`
+}
+
+// Issued when a target has crashed.
+func (obj *Target) TargetCrashed(fn func(event string, params TargetCrashedParams, err error) bool) {
+	listen, closer := obj.conn.On(TargetCrashed)
+	go func() {
+		defer closer()
+		for {
+			var params TargetCrashedParams
+			if !fn(TargetCrashed, params, listen(&params)) {
 				return
 			}
 		}

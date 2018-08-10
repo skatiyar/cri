@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -7,16 +7,15 @@
 package headlessexperimental
 
 import (
-	"github.com/SKatiyar/cri"
 	types "github.com/SKatiyar/cri/types"
+	"github.com/skatiyar/cri"
 )
 
 // List of commands in HeadlessExperimental domain
 const (
-	BeginFrame             = "HeadlessExperimental.beginFrame"
-	EnterDeterministicMode = "HeadlessExperimental.enterDeterministicMode"
-	Disable                = "HeadlessExperimental.disable"
-	Enable                 = "HeadlessExperimental.enable"
+	BeginFrame = "HeadlessExperimental.beginFrame"
+	Disable    = "HeadlessExperimental.disable"
+	Enable     = "HeadlessExperimental.enable"
 )
 
 // List of events in HeadlessExperimental domain
@@ -35,14 +34,8 @@ func New(conn cri.Connector) *HeadlessExperimental {
 }
 
 type BeginFrameRequest struct {
-	// Timestamp of this BeginFrame (milliseconds since epoch). If not set, the current time will be used unless frameTicks is specified.
-	FrameTime *types.Runtime_Timestamp `json:"frameTime,omitempty"`
-	// Timestamp of this BeginFrame in Renderer TimeTicks (milliseconds of uptime). If not set, the current time will be used unless frameTime is specified.
+	// Timestamp of this BeginFrame in Renderer TimeTicks (milliseconds of uptime). If not set, the current time will be used.
 	FrameTimeTicks *float32 `json:"frameTimeTicks,omitempty"`
-	// Deadline of this BeginFrame (milliseconds since epoch). If not set, the deadline will be calculated from the frameTime and interval unless deadlineTicks is specified.
-	Deadline *types.Runtime_Timestamp `json:"deadline,omitempty"`
-	// Deadline of this BeginFrame in Renderer TimeTicks  (milliseconds of uptime). If not set, the deadline will be calculated from the frameTime and interval unless deadline is specified.
-	DeadlineTicks *float32 `json:"deadlineTicks,omitempty"`
 	// The interval between BeginFrames that is reported to the compositor, in milliseconds. Defaults to a 60 frames/second interval, i.e. about 16.666 milliseconds.
 	Interval *float32 `json:"interval,omitempty"`
 	// Whether updates should not be committed and drawn onto the display. False by default. If true, only side effects of the BeginFrame will be run, such as layout and animations, but any visual updates may not be visible on the display or in screenshots.
@@ -61,17 +54,6 @@ type BeginFrameResponse struct {
 // Sends a BeginFrame to the target and returns when the frame was completed. Optionally captures a screenshot from the resulting frame. Requires that the target was created with enabled BeginFrameControl. Designed for use with --run-all-compositor-stages-before-draw, see also https://goo.gl/3zHXhB for more background.
 func (obj *HeadlessExperimental) BeginFrame(request *BeginFrameRequest) (response BeginFrameResponse, err error) {
 	err = obj.conn.Send(BeginFrame, request, &response)
-	return
-}
-
-type EnterDeterministicModeRequest struct {
-	// Number of seconds since the Epoch
-	InitialDate *float32 `json:"initialDate,omitempty"`
-}
-
-// Puts the browser into deterministic mode.  Only effective for subsequently created web contents. Only supported in headless mode.  Once set there's no way of leaving deterministic mode.
-func (obj *HeadlessExperimental) EnterDeterministicMode(request *EnterDeterministicModeRequest) (err error) {
-	err = obj.conn.Send(EnterDeterministicMode, request, nil)
 	return
 }
 

@@ -1,5 +1,5 @@
 /*
-* CODE GENERATED AUTOMATICALLY WITH github.com/SKatiyar/cri/cmd/cri-gen
+* CODE GENERATED AUTOMATICALLY WITH github.com/skatiyar/cri/cmd/cri-gen
 * THIS FILE SHOULD NOT BE EDITED BY HAND
  */
 
@@ -7,8 +7,8 @@
 package io
 
 import (
-	"github.com/SKatiyar/cri"
 	types "github.com/SKatiyar/cri/types"
+	"github.com/skatiyar/cri"
 )
 
 // List of commands in IO domain
@@ -42,7 +42,7 @@ func (obj *IO) Close(request *CloseRequest) (err error) {
 type ReadRequest struct {
 	// Handle of the stream to read.
 	Handle types.IO_StreamHandle `json:"handle"`
-	// Seek to the specified offset before reading (if not specificed, proceed with offset following the last read).
+	// Seek to the specified offset before reading (if not specificed, proceed with offset following the last read). Some types of streams may only support sequential reads.
 	Offset *int `json:"offset,omitempty"`
 	// Maximum number of bytes to read (left upon the agent discretion if not specified).
 	Size *int `json:"size,omitempty"`
