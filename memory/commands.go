@@ -7,8 +7,8 @@
 package memory
 
 import (
-	types "github.com/SKatiyar/cri/types"
 	"github.com/skatiyar/cri"
+	types "github.com/skatiyar/cri/types"
 )
 
 // List of commands in Memory domain

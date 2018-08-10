@@ -7,8 +7,8 @@
 package applicationcache
 
 import (
-	types "github.com/SKatiyar/cri/types"
 	"github.com/skatiyar/cri"
+	types "github.com/skatiyar/cri/types"
 )
 
 // List of commands in ApplicationCache domain

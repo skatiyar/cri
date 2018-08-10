@@ -1,8 +1,8 @@
 # cri - chrome remote interface
 
-[![GoDoc](https://godoc.org/github.com/SKatiyar/cri?status.svg)](https://godoc.org/github.com/SKatiyar/cri)
-[![Go Report Card](https://goreportcard.com/badge/github.com/SKatiyar/cri)](https://goreportcard.com/report/github.com/SKatiyar/cri)
-[![Go Report Card](https://travis-ci.org/SKatiyar/cri.svg?branch=develop)](https://travis-ci.org/SKatiyar/cri)
+[![GoDoc](https://godoc.org/github.com/skatiyar/cri?status.svg)](https://godoc.org/github.com/skatiyar/cri)
+[![Go Report Card](https://goreportcard.com/badge/github.com/skatiyar/cri)](https://goreportcard.com/report/github.com/skatiyar/cri)
+[![Go Report Card](https://travis-ci.org/skatiyar/cri.svg?branch=develop)](https://travis-ci.org/skatiyar/cri)
 
 Package cri provides type-safe bindings for devtools protocol. It can be used with Chrome or any other target that implements the interface.
 
@@ -16,7 +16,7 @@ Tested with go1.4 and above.
 ### Install
 
 ```
-go get -u github.com/SKatiyar/cri
+go get -u github.com/skatiyar/cri
 ```
 
 ### Usage
@@ -31,9 +31,9 @@ import (
 	"fmt"
 	"io/ioutil"
   
-	"github.com/SKatiyar/cri"
-	"github.com/SKatiyar/cri/browser"
-	"github.com/SKatiyar/cri/page"
+	"github.com/skatiyar/cri"
+	"github.com/skatiyar/cri/browser"
+	"github.com/skatiyar/cri/page"
 )
 
 func main() {

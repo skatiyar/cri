@@ -6,7 +6,7 @@ import (
 	"text/template"
 )
 
-const ImportPath = "github.com/SKatiyar/cri"
+const ImportPath = "github.com/skatiyar/cri"
 
 func transformBasicTypes(typ string) string {
 	if typ == "integer" {

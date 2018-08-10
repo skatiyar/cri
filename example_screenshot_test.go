@@ -7,9 +7,9 @@ import (
 	// "os"
 	"time"
 
-	"github.com/SKatiyar/cri"
-	"github.com/SKatiyar/cri/emulation"
-	"github.com/SKatiyar/cri/page"
+	"github.com/skatiyar/cri"
+	"github.com/skatiyar/cri/emulation"
+	"github.com/skatiyar/cri/page"
 )
 
 // Example shows steps to take screenshot of a page.

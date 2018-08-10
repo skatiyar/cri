@@ -4,10 +4,10 @@ import (
 	"crypto/tls"
 	"testing"
 
-	"github.com/SKatiyar/cri"
-	"github.com/SKatiyar/cri/browser"
-	"github.com/SKatiyar/cri/emulation"
-	"github.com/SKatiyar/cri/page"
+	"github.com/skatiyar/cri"
+	"github.com/skatiyar/cri/browser"
+	"github.com/skatiyar/cri/emulation"
+	"github.com/skatiyar/cri/page"
 	"github.com/stretchr/testify/assert"
 )
 
